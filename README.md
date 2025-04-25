@@ -36,34 +36,116 @@
 ## 2. Theoretical Foundation
 
 ### 2.1 MDP (Markov Decision Process)
-In Mahjong, the five core elements of MDP are:
-- **State (S)**: Current hand, visible tiles, remaining tile count
-- **Action (A)**: Possible tile discards
-- **Transition Probability (P)**: Probability distribution of next states after discarding
-- **Reward (R)**: Formation of sequences, triplets, ready hands
-- **Discount Factor (γ)**: Weight of future rewards
+The core challenge of Mahjong AI is to select optimal actions at each decision point based on the current state. MDP provides a mathematical framework to solve this sequential decision-making problem:
 
-### 2.2 Bellman Equation Application
-The Bellman equation for optimal strategy calculation:
-```
-V(s) = max[F(s,a) + γV(s')]
-```
-Where:
-- V(s): Value of state s
-- F(s,a): Immediate reward for action a
-- γ: Discount factor
-- V(s'): Value of next state
+1. **Markov Property**: The next state depends only on the current state and action, independent of history
+   - Example: Current hand + visible tiles contain all information needed for decision making
+   
+2. **State Transition**: Each action leads to state transitions with certain probabilities
+   - Example: After discarding a tile, the next drawn tile is random
+   
+3. **Immediate Rewards**: Each state transition has an associated reward value
+   - Example: Forming a sequence yields positive reward, breaking a potential set yields negative reward
+
+#### State Space (S)
+- **Hand State**: [t1, t2, ..., tn] where ti represents each tile
+- **Visible Information**: 
+  * Discarded tiles by all players
+  * Exposed melds (Chi/Pon)
+- **Game Progress**: 
+  * Remaining tile count
+  * Current round/wind
+
+#### Action Space (A)
+- **Discard Actions**: Choose one tile to discard
+- **Meld Actions**:
+  * Chi (Sequence formation)
+  * Pon (Triplet formation)
+- **Special Actions**:
+  * Declare win
+  * Skip (Pass on opponent's discard)
+
+#### Transition Probability (P)
+P(s'|s,a) = P(draw) * P(opponents_actions)
+where:
+- P(draw): Probability of drawing each possible tile
+  * Based on visible tiles and remaining count
+- P(opponents_actions): Probability of opponent actions
+  * Estimated from visible discards and exposed melds
+
+#### Reward Function (R)
+R(s,a,s') = Immediate_Value + Potential_Value
+where:
+- Immediate_Value:
+  * Complete set (sequence/triplet): +3
+  * Partial set progress: +1
+  * Breaking existing set: -2
+  * Ready hand formation: +5
+- Potential_Value:
+  * Tile efficiency (flexibility for future sets)
+  * Distance to ready hand
+  * Safety consideration (avoid dangerous discards)
+
+### 2.2 Bellman Equation and Dynamic Programming
+
+The Bellman equation is the core tool for solving MDP problems. It expresses a key idea: the value of a state under optimal policy can be calculated recursively.
+
+1. **Core Concept**:
+   - State value = Immediate reward + Discounted sum of future values
+   - Using recursion to break down long-term decisions into a series of single-step decisions
+
+2. **Mathematical Expression**:
+   V(s) = max_a[R(s,a) + γ * Σ P(s'|s,a)V(s')]
+   - V(s): Value of state s
+   - R(s,a): Immediate reward for action a
+   - γ: Discount factor (0.8-0.95)
+   - P(s'|s,a): State transition probability
+   - V(s'): Value of next state
+
+3. **Application in Mahjong**:
+   - Evaluate the value of each tile discard option
+   - Balance immediate gains (e.g., forming a sequence) vs long-term benefits (e.g., ready hand opportunity)
+   - Find optimal discard strategy through iterative calculation
+
+#### Implementation Details
+For each state s and action a:
+1. Calculate immediate reward R(s,a)
+2. Estimate transition probabilities P(s'|s,a)
+3. Update value function:
+   V(s) = max_a[R(s,a) + γ * Σ P(s'|s,a)V(s')]
+
+#### Value Iteration Process
+1. Initialize V0(s) = 0 for all states
+2. For each iteration k:
+   Vk+1(s) = max_a[R(s,a) + γ * Σ P(s'|s,a)Vk(s')]
+3. Continue until ||Vk+1 - Vk|| < ε
 
 ### 2.3 Dynamic Programming Methods
-1. **State Value Calculation**:
-   - Value iteration
-   - Policy iteration
-   - Monte Carlo simulation
 
-2. **Strategy Optimization**:
-   - Value-based action selection
-   - Balance of immediate and long-term rewards
+#### State Value Calculation
+1. **Value Iteration**:
+   - Iteratively update state values
+   - Use Bellman equation for updates
+   - Stop when convergence reached
+
+2. **Policy Iteration**:
+   - Alternate between policy evaluation and improvement
+   - More stable but slower than value iteration
+
+3. **Monte Carlo Simulation**:
+   - Sample-based approach
+   - Good for high-dimensional state spaces
+   - Used for initial value estimation
+
+#### Strategy Optimization
+1. **Value-based Selection**:
+   - Choose actions that maximize expected value
+   - Consider both immediate and future rewards
+
+2. **Balance Considerations**:
    - Exploration vs exploitation
+   - Risk vs reward
+   - Offensive vs defensive play
 
 ## 3. System Flow Diagrams
 
@@ -140,32 +222,3 @@ Rewards:
 - Break pair -1
 - Ready hand opportunity +2
 ```
-
-### 3.5 Tile Notation
-
-#### Characters (万)
-- Notation: 1-9 with 'C' suffix (e.g., 1C, 2C)
-- Examples: 
-  
-  ![1 Character](img/tiles/small/1.jpg) ![2 Character](img/tiles/small/2.jpg) ![3 Character](img/tiles/small/3.jpg)
-
-#### Circles/Dots (筒)
-- Notation: 1-9 with 'D' suffix (e.g., 1D, 2D)
-- Examples:
-  
-  ![1 Dot](img/tiles/small/11.jpg) ![2 Dot](img/tiles/small/12.jpg) ![3 Dot](img/tiles/small/13.jpg)
-
-#### Bamboo (条)
-- Notation: 1-9 with 'B' suffix (e.g., 1B, 2B)
-- Examples:
-  
-  ![1 Bamboo](img/tiles/small/21.jpg) ![2 Bamboo](img/tiles/small/22.jpg) ![3 Bamboo](img/tiles/small/23.jpg)
-
-#### Honors
-- Winds: East (E), South (S), West (W), North (N)
-  
-  ![East](img/tiles/small/31.jpg) ![South](img/tiles/small/32.jpg) ![West](img/tiles/small/33.jpg) ![North](img/tiles/small/34.jpg)
-
-- Dragons: Red (R), Green (G), White (W)
-  
-  ![Red](img/tiles/small/35.jpg) ![Green](img/tiles/small/36.jpg) ![White](img/tiles/small/37.jpg)
