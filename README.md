@@ -112,14 +112,14 @@ flowchart TD
 ### 3.3 State Value Calculation Flow
 
 ```mermaid
-graph LR
-A[State s] --> B[Calculate F(s,a)]
-B --> C[For each action]
-C --> D[Simulate s']
-D --> E[Calculate V(s')]
-E --> F[Update V(s)]
-F --> C
-F --> G[Choose max]
+flowchart LR
+    A[State s] --> B[Calculate F(s,a)]
+    B --> C[For each action]
+    C --> D[Simulate s']
+    D --> E[Calculate V(s')]
+    E --> F[Update V(s)]
+    F --> C
+    F --> G[Choose max]
 ```
 
 ### 3.4 State Transition Example
