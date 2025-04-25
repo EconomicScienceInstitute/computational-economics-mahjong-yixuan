@@ -1,53 +1,144 @@
-# Mahjong. In the browser.
+# Mahjong AI System Design Document
 
-1: We're talking real "four players sitting around a table" mahjong here. Not the "one player solitaire" game. That game has literally nothing to do with mahjong.
+## 1. Project Overview
 
-2: This README.md has been kept sparse pending a set of full length development articles that walk through going from "having an idea" to "having finished writing a fully functional game".
+### 1.1 Project Goals
+- Implement a Mahjong AI system based on Dynamic Programming
+- Model Mahjong decision-making using Markov Decision Process (MDP)
+- Optimize strategy selection using Bellman equation
+- Support human-AI gameplay (0-4 human players)
 
-### Can I play this game?
+### 1.2 Technology Stack
+- Backend: Python
+  * FastAPI (Web Framework)
+  * NumPy (Vectorized Computation)
+  * WebSocket (Real-time Communication)
+- Performance Analysis:
+  * line_profiler (Code Performance Analysis)
+  * memory_profiler (Memory Usage Analysis)
 
-You sure can! And you don't even need to sign up for anything, or check out any programming code, or do anything beyond just clicking through to the live website: https://pomax.github.io/mahjong
+### 1.3 Core Features
+1. **Basic Game System**
+   - Tile representation and management
+   - Game state tracking
+   - Rule validation (winning hands, ready hands)
 
-Note that mostly due to "that's what we play in our house a lot", this implementation currently comes with "Chinese Classical" and "Cantonese" rules for play and scoring. Additional rules may eventually be written up, but if you want to get ahead of the game and implement one so it can be added to the repo, those will be more than welcome.
+2. **AI Decision System**
+   - State evaluation
+   - Action selection
+   - Strategy optimization
 
-### What it looks like
+3. **Performance Optimization**
+   - State space compression
+   - Computation result caching
+   - Vectorized operations
 
-![A screenshot of what the live game looks like when set to autoplay](https://user-images.githubusercontent.com/177243/53316594-5767d200-387d-11e9-86e2-ed8957d7feb2.png)
+## 2. Theoretical Foundation
 
-### What if I want a different look?
+### 2.1 MDP (Markov Decision Process)
+In Mahjong, the five core elements of MDP are:
+- **State (S)**: Current hand, visible tiles, remaining tile count
+- **Action (A)**: Possible tile discards
+- **Transition Probability (P)**: Probability distribution of next states after discarding
+- **Reward (R)**: Formation of sequences, triplets, ready hands
+- **Discount Factor (γ)**: Weight of future rewards
 
-Not a problem, since this is just a webpage, you can customize your look using [User Styles](https://userstyles.org/) as much as you like. In fact, if you want to try some of the other styles that other folks already made, have a look at any of the following to see if they suit your mood better!
+### 2.2 Bellman Equation Application
+The Bellman equation for optimal strategy calculation:
+```
+V(s) = max[F(s,a) + γV(s')]
+```
+Where:
+- V(s): Value of state s
+- F(s,a): Immediate reward for action a
+- γ: Discount factor
+- V(s'): Value of next state
 
-- https://userstyles.org/styles/217123/mahjong-woodsy-classic (by lexterror)
+### 2.3 Dynamic Programming Methods
+1. **State Value Calculation**:
+   - Value iteration
+   - Policy iteration
+   - Monte Carlo simulation
 
-### This is a pure HTML, CSS, and JavaScript game
+2. **Strategy Optimization**:
+   - Value-based action selection
+   - Balance of immediate and long-term rewards
+   - Exploration vs exploitation
 
-That means there are no bundlers, no web app packaging, no CSS preprocessors or JS transpiling, just an index.html, a bunch of CSS files, and a bunch of JS files. If you can load the page, you now have a full copy of the game that you can save to your desktop and congratulations, you now have your own copy "installed" without doing anything beyond just downloading the page and its local page assets.
+## 3. System Flow Diagrams
 
-I can hear the web devs amongst you thinking "but... then isn't it horribly inefficient?" to which I'm just going to point out that this is how we used to write the web and it was, and still is, blazing fast. This game has a [Google PageSpeed ranking of 97/98](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fpomax.github.io%2Fmj%2F), so: don't be fooled (or, don't fool yourself) into thinking everything needs to be a web app bundle to be performant.
+### 3.1 Basic Game Flow
+```
+[Game Start] -> [Deal] -> [Turn Start] -> [AI/Player Action] -> [Discard] -> [Win Check] -> [Turn End]
+                                         ^                                                    |
+                                         |____________________________________________________|
+```
 
-### Debugging using query parameters
+### 3.2 AI Decision Flow (Detailed Decision Tree)
 
-Open `index.html` in your browser. Debugging options are set via URL query parameter, however, the way to toggle these is via the settings menu.
+```mermaid
+graph TD
+    A[Current Game State] --> B{Winning Hand?}
+    B -->|Yes| C[Win Game]
+    B -->|No| D{Ready Hand?}
+    
+    D -->|Yes| E[Defensive Play]
+    D -->|No| F{Evaluate Hand}
+    
+    F --> G[Calculate Immediate Value]
+    F --> H[Estimate Future Value]
+    
+    G --> I{Choose Action}
+    H --> I
+    
+    I --> J[Form Sequence]
+    I --> K[Form Triplet]
+    I --> L[Prepare Ready Hand]
+    I --> M[Defensive Discard]
+    
+    J --> N[Execute Action]
+    K --> N
+    L --> N
+    M --> N
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style D fill:#bbf,stroke:#333,stroke-width:2px
+    style F fill:#bbf,stroke:#333,stroke-width:2px
+    style I fill:#bbf,stroke:#333,stroke-width:2px
+    style N fill:#bfb,stroke:#333,stroke-width:2px
+```
 
-![A screenshot of the settings menu](https://user-images.githubusercontent.com/177243/54255517-a9635580-4515-11e9-8988-0520214e9a52.png)
+### 3.3 State Value Calculation Flow
 
-### Node based testing
+```mermaid
+graph LR
+    A[State s] --> B[Calculate F(s,a)]
+    B --> C{For each action a}
+    C --> D[Simulate next state s']
+    D --> E[Calculate V(s')]
+    E --> F[Update V(s)]
+    F --> |Next action| C
+    F --> G[Choose max value]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style G fill:#bfb,stroke:#333,stroke-width:2px
+```
 
-Most of the code is aware of whether it's running in the browser, or in node context. As such, the following things work:
+### 3.4 State Transition Example
+```
+Current Hand    Action(Discard 8 Characters)    New State(After Draw)
+[1,1,1,8,8] -> [1,1,1,8]                    -> [1,1,1,8,?]
+Rewards:
+- Maintain sequence +1
+- Break pair -1
+- Ready hand opportunity +2
+```
 
-- `node src/js/test/hand-generator` generates all possible hand patterns (based on tile category, not tile face)
-- `node src/js/core/algorithm/tiles-needed.js` runs unit tests
-- `node src/js/core/scoring/chinese-classical.js` runs unit tests
-
-And for full gameplay debugging through play recordings, you can use `node src/js/test/play-game` with the following optional flags:
-
-- `-s <number>` the initial seed value for the pseudo-random number generator (defaults to 1).
-- `-r <number>` the number of games to play, bumping the seed up by 1 for each new game (defaults to 1).
-- `-nw` do **n**ot **w**rite a game log file upon finishing a game (defaults to writing log files).
-- `-cc` use the Chinese Classical ruleset (default ruleset).
-- `-cn` use the Cantonese ruleset.
-
-### I have (a) question(s)!
-
-I'd be happy to answer them! Feel free to [drop me a message](https://mastodon.social/@TheRealPomax) for shallow engagement, or file an issue over on [the issue tracker](https://github.com/Pomax/mahjong/issues) if you need deeper engagement.
+### 3.5 Tile Notation
+- Characters (万): 1-9 with 'C' suffix (e.g., 1C, 2C)
+- Circles/Dots (筒): 1-9 with 'D' suffix (e.g., 1D, 2D)
+- Bamboo (条): 1-9 with 'B' suffix (e.g., 1B, 2B)
+- Winds: East (E), South (S), West (W), North (N)
+- Dragons: Red (R), Green (G), White (W) 
