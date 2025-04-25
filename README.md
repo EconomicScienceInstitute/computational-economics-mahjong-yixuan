@@ -109,6 +109,11 @@ flowchart TD
     style N fill:#bfb,stroke:#333,stroke-width:2px
 ```
 
+**Legend:**
+- Pink nodes (🟪): Initial states
+- Blue nodes (🟦): Processing steps and decision points
+- Green nodes (🟩): Final results/actions
+
 ### 3.3 State Value Calculation Flow
 
 ```mermaid
@@ -125,6 +130,11 @@ flowchart TD
     style B fill:#bbf,stroke:#333,stroke-width:2px
     style G fill:#bfb,stroke:#333,stroke-width:2px
 ```
+
+**Legend:**
+- Pink nodes (🟪): Initial states (current state)
+- Blue nodes (🟦): Calculation and iteration processes
+- Green nodes (🟩): Final maximum value result
 
 ### 3.4 State Transition Example
 ```
