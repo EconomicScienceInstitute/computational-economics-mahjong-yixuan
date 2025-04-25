@@ -142,8 +142,30 @@ Rewards:
 ```
 
 ### 3.5 Tile Notation
-- Characters (万): 1-9 with 'C' suffix (e.g., 1C, 2C)
-- Circles/Dots (筒): 1-9 with 'D' suffix (e.g., 1D, 2D)
-- Bamboo (条): 1-9 with 'B' suffix (e.g., 1B, 2B)
+
+#### Characters (万)
+- Notation: 1-9 with 'C' suffix (e.g., 1C, 2C)
+- Examples: 
+  
+  ![1 Character](img/tiles/small/1.jpg) ![2 Character](img/tiles/small/2.jpg) ![3 Character](img/tiles/small/3.jpg)
+
+#### Circles/Dots (筒)
+- Notation: 1-9 with 'D' suffix (e.g., 1D, 2D)
+- Examples:
+  
+  ![1 Dot](img/tiles/small/11.jpg) ![2 Dot](img/tiles/small/12.jpg) ![3 Dot](img/tiles/small/13.jpg)
+
+#### Bamboo (条)
+- Notation: 1-9 with 'B' suffix (e.g., 1B, 2B)
+- Examples:
+  
+  ![1 Bamboo](img/tiles/small/21.jpg) ![2 Bamboo](img/tiles/small/22.jpg) ![3 Bamboo](img/tiles/small/23.jpg)
+
+#### Honors
 - Winds: East (E), South (S), West (W), North (N)
+  
+  ![East](img/tiles/small/31.jpg) ![South](img/tiles/small/32.jpg) ![West](img/tiles/small/33.jpg) ![North](img/tiles/small/34.jpg)
+
 - Dragons: Red (R), Green (G), White (W)
+  
+  ![Red](img/tiles/small/35.jpg) ![Green](img/tiles/small/36.jpg) ![White](img/tiles/small/37.jpg)
