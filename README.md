@@ -77,7 +77,7 @@ Where:
 ### 3.2 AI Decision Flow (Detailed Decision Tree)
 
 ```mermaid
-graph TD
+flowchart TD
     A[Current Game State] --> B{Winning Hand?}
     B -->|Yes| C[Win Game]
     B -->|No| D{Ready Hand?}
