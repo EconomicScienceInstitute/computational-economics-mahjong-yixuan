@@ -120,6 +120,10 @@ flowchart LR
     E --> F[Update V(s)]
     F --> C
     F --> G[Choose max]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style G fill:#bfb,stroke:#333,stroke-width:2px
 ```
 
 ### 3.4 State Transition Example
