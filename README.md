@@ -118,7 +118,7 @@ flowchart LR
     C --> D[Simulate next state s']
     D --> E[Calculate V(s')]
     E --> F[Update V(s)]
-    F --> |Next action| C
+    F -->|Next action| C
     F --> G[Choose max value]
     
     style A fill:#f9f,stroke:#333,stroke-width:2px
