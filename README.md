@@ -113,13 +113,13 @@ flowchart TD
 
 ```mermaid
 graph LR
-    A[State s]-->B[Calculate F(s,a)]
-    B-->C[For each action a]
-    C-->D[Simulate next state s']
-    D-->E[Calculate V(s')]
-    E-->F[Update V(s)]
-    F-->|Next action|C
-    F-->G[Choose max value]
+A[State s] --> B[Calculate F(s,a)]
+B --> C[For each action]
+C --> D[Simulate s']
+D --> E[Calculate V(s')]
+E --> F[Update V(s)]
+F --> C
+F --> G[Choose max]
 ```
 
 ### 3.4 State Transition Example
