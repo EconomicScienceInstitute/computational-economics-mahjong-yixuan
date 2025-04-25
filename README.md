@@ -112,7 +112,7 @@ flowchart TD
 ### 3.3 State Value Calculation Flow
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[State] --> B[Calculate]
     B --> C[Action Loop]
     C --> D[Simulate]
