@@ -112,18 +112,14 @@ flowchart TD
 ### 3.3 State Value Calculation Flow
 
 ```mermaid
-flowchart LR
-    A[State s] --> B[Calculate F(s,a)]
-    B --> C{For each action a}
-    C --> D[Simulate next state s']
-    D --> E[Calculate V(s')]
-    E --> F[Update V(s)]
-    F -->|Next action| C
-    F --> G[Choose max value]
-    
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style B fill:#bbf,stroke:#333,stroke-width:2px
-    style G fill:#bfb,stroke:#333,stroke-width:2px
+graph LR
+    A[State s]-->B[Calculate F(s,a)]
+    B-->C[For each action a]
+    C-->D[Simulate next state s']
+    D-->E[Calculate V(s')]
+    E-->F[Update V(s)]
+    F-->|Next action|C
+    F-->G[Choose max value]
 ```
 
 ### 3.4 State Transition Example
@@ -141,4 +137,4 @@ Rewards:
 - Circles/Dots (筒): 1-9 with 'D' suffix (e.g., 1D, 2D)
 - Bamboo (条): 1-9 with 'B' suffix (e.g., 1B, 2B)
 - Winds: East (E), South (S), West (W), North (N)
-- Dragons: Red (R), Green (G), White (W) 
+- Dragons: Red (R), Green (G), White (W)
