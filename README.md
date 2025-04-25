@@ -112,7 +112,7 @@ graph TD
 ### 3.3 State Value Calculation Flow
 
 ```mermaid
-graph LR
+flowchart LR
     A[State s] --> B[Calculate F(s,a)]
     B --> C{For each action a}
     C --> D[Simulate next state s']
