@@ -113,14 +113,14 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[State s] --> B[Calculate F(s,a)]
-    B --> C[For each action]
-    C --> D[Simulate s']
-    D --> E[Calculate V(s')]
-    E --> F[Update V(s)]
+    A[State] --> B[Calculate]
+    B --> C[Action Loop]
+    C --> D[Simulate]
+    D --> E[Value]
+    E --> F[Update]
     F --> C
-    F --> G[Choose max]
-    
+    F --> G[Max Value]
+
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style B fill:#bbf,stroke:#333,stroke-width:2px
     style G fill:#bfb,stroke:#333,stroke-width:2px
