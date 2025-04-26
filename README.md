@@ -265,9 +265,6 @@ In Mahjong, there are three suits (Characters, Circles/Dots, and Bamboo) and two
   - Red Dragon (红中): ![Red Dragon](img/tiles/small/32.jpg)
   - Green Dragon (发财): ![Green Dragon](img/tiles/small/31.jpg)
 
-- **Blank Tile** (白板): Used as a wild card in some variants
-  ![Blank](img/tiles/small/blank.jpg)
-
 - **Concealed Tile** (暗牌): Represents a face-down tile
   ![Concealed](img/tiles/small/concealed.jpg)
 
