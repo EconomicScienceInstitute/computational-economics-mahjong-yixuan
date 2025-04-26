@@ -237,7 +237,7 @@ In Mahjong, there are three suits (Characters, Circles/Dots, and Bamboo) and two
 - Notation: 1-9 with 'D' suffix (e.g., 1D, 2D)
 - Complete set (1-9):
   
-  ![1 Dot](img/tiles/small/19.jpg) ![2 Dot](img/tiles/small/20.jpg) ![3 Dot](img/tiles/small/21.jpg) ![4 Dot](img/tiles/small/22.jpg) ![5 Dot](img/tiles/small/23.jpg) ![6 Dot](img/tiles/small/24.jpg) ![7 Dot](img/tiles/small/25.jpg) ![8 Dot](img/tiles/small/26.jpg) ![9 Dot](img/tiles/small/27.jpg)
+  ![1 Dot](img/tiles/small/18.jpg) ![2 Dot](img/tiles/small/19.jpg) ![3 Dot](img/tiles/small/20.jpg) ![4 Dot](img/tiles/small/21.jpg) ![5 Dot](img/tiles/small/22.jpg) ![6 Dot](img/tiles/small/23.jpg) ![7 Dot](img/tiles/small/24.jpg) ![8 Dot](img/tiles/small/25.jpg)
 
 #### Bamboo (条)
 - Notation: 1-9 with 'B' suffix (e.g., 1B, 2B)
