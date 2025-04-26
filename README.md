@@ -231,19 +231,19 @@ In Mahjong, there are three suits (Characters, Circles/Dots, and Bamboo) and two
 - Notation: 1-9 with 'C' suffix (e.g., 1C, 2C)
 - Complete set (1-9):
   
-  ![1 Character](img/tiles/small/0.jpg) ![2 Character](img/tiles/small/1.jpg) ![3 Character](img/tiles/small/2.jpg) ![4 Character](img/tiles/small/3.jpg) ![5 Character](img/tiles/small/4.jpg) ![6 Character](img/tiles/small/5.jpg) ![7 Character](img/tiles/small/6.jpg) ![8 Character](img/tiles/small/7.jpg) ![9 Character](img/tiles/small/8.jpg)
+  ![1 Character](img/tiles/small/10.jpg) ![2 Character](img/tiles/small/11.jpg) ![3 Character](img/tiles/small/12.jpg) ![4 Character](img/tiles/small/13.jpg) ![5 Character](img/tiles/small/14.jpg) ![6 Character](img/tiles/small/15.jpg) ![7 Character](img/tiles/small/16.jpg) ![8 Character](img/tiles/small/17.jpg) ![9 Character](img/tiles/small/18.jpg)
 
 #### Circles/Dots (筒)
 - Notation: 1-9 with 'D' suffix (e.g., 1D, 2D)
-- Complete set:
+- Complete set (1-9):
   
-  ![1 Dot](img/tiles/small/11.jpg) ![2 Dot](img/tiles/small/12.jpg) ![3 Dot](img/tiles/small/13.jpg) ![4 Dot](img/tiles/small/14.jpg) ![5 Dot](img/tiles/small/15.jpg) ![6 Dot](img/tiles/small/16.jpg) ![7 Dot](img/tiles/small/17.jpg) ![8 Dot](img/tiles/small/18.jpg) ![9 Dot](img/tiles/small/19.jpg)
+  ![1 Dot](img/tiles/small/19.jpg) ![2 Dot](img/tiles/small/20.jpg) ![3 Dot](img/tiles/small/21.jpg) ![4 Dot](img/tiles/small/22.jpg) ![5 Dot](img/tiles/small/23.jpg) ![6 Dot](img/tiles/small/24.jpg) ![7 Dot](img/tiles/small/25.jpg) ![8 Dot](img/tiles/small/26.jpg) ![9 Dot](img/tiles/small/27.jpg)
 
 #### Bamboo (条)
 - Notation: 1-9 with 'B' suffix (e.g., 1B, 2B)
-- Complete set:
+- Complete set (1-9):
   
-  ![1 Bamboo](img/tiles/small/21.jpg) ![2 Bamboo](img/tiles/small/22.jpg) ![3 Bamboo](img/tiles/small/23.jpg) ![4 Bamboo](img/tiles/small/24.jpg) ![5 Bamboo](img/tiles/small/25.jpg) ![6 Bamboo](img/tiles/small/26.jpg) ![7 Bamboo](img/tiles/small/27.jpg) ![8 Bamboo](img/tiles/small/28.jpg) ![9 Bamboo](img/tiles/small/29.jpg)
+  ![1 Bamboo](img/tiles/small/0.jpg) ![2 Bamboo](img/tiles/small/1.jpg) ![3 Bamboo](img/tiles/small/2.jpg) ![4 Bamboo](img/tiles/small/3.jpg) ![5 Bamboo](img/tiles/small/4.jpg) ![6 Bamboo](img/tiles/small/5.jpg) ![7 Bamboo](img/tiles/small/6.jpg) ![8 Bamboo](img/tiles/small/7.jpg) ![9 Bamboo](img/tiles/small/8.jpg)
 
 #### Honor Tiles
 - **Winds** (风牌): East (E), South (S), West (W), North (N)
