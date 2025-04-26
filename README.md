@@ -254,6 +254,7 @@ In Mahjong, there are three suits (Characters, Circles/Dots, and Bamboo) and two
 
 #### Flowers (花牌)
 - Complete set:
+  - Plum (梅): ![Plum](img/tiles/small/34.jpg)
   - Orchid (兰): ![Orchid](img/tiles/small/35.jpg)
   - Chrysanthemum (菊): ![Chrysanthemum](img/tiles/small/36.jpg)
   - Bamboo (竹): ![Bamboo](img/tiles/small/37.jpg)
