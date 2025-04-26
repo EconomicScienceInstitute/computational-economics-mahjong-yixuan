@@ -256,8 +256,8 @@ In Mahjong, there are three suits (Characters, Circles/Dots, and Bamboo) and two
 - Complete set:
   - Plum (梅): ![Plum](img/tiles/small/34.jpg)
   - Orchid (兰): ![Orchid](img/tiles/small/35.jpg)
-  - Chrysanthemum (菊): ![Chrysanthemum](img/tiles/small/36.jpg)
   - Bamboo (竹): ![Bamboo](img/tiles/small/37.jpg)
+  - Chrysanthemum (菊): ![Chrysanthemum](img/tiles/small/36.jpg)
 
 #### Special Tiles
 - **Blank Tile** (白板): Used as a wild card in some variants
