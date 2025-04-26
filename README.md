@@ -260,6 +260,11 @@ In Mahjong, there are three suits (Characters, Circles/Dots, and Bamboo) and two
   - Chrysanthemum (菊): ![Chrysanthemum](img/tiles/small/36.jpg)
 
 #### Special Tiles
+- Dragons (三元牌):
+  - White Dragon (白板): ![White Dragon](img/tiles/small/33.jpg)
+  - Red Dragon (红中): ![Red Dragon](img/tiles/small/32.jpg)
+  - Green Dragon (发财): ![Green Dragon](img/tiles/small/31.jpg)
+
 - **Blank Tile** (白板): Used as a wild card in some variants
   ![Blank](img/tiles/small/blank.jpg)
 
