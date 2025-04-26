@@ -252,11 +252,11 @@ In Mahjong, there are three suits (Characters, Circles/Dots, and Bamboo) and two
   - West (西): ![West Wind](img/tiles/small/29.jpg)
   - North (北): ![North Wind](img/tiles/small/30.jpg)
 
-- **Dragons** (三元牌): Red (R), Green (G), White (W)
-  * Notation: R, G, W
-  * Complete set:
-  
-  ![Red](img/tiles/small/35.jpg) ![Green](img/tiles/small/36.jpg) ![White](img/tiles/small/37.jpg)
+#### Flowers (花牌)
+- Complete set:
+  - Orchid (兰): ![Orchid](img/tiles/small/35.jpg)
+  - Chrysanthemum (菊): ![Chrysanthemum](img/tiles/small/36.jpg)
+  - Bamboo (竹): ![Bamboo](img/tiles/small/37.jpg)
 
 #### Special Tiles
 - **Blank Tile** (白板): Used as a wild card in some variants
