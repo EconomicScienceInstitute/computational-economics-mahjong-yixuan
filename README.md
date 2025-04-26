@@ -231,7 +231,7 @@ In Mahjong, there are three suits (Characters, Circles/Dots, and Bamboo) and two
 - Notation: 1-9 with 'C' suffix (e.g., 1C, 2C)
 - Complete set (1-9):
   
-  ![1 Character](img/tiles/small/10.jpg) ![2 Character](img/tiles/small/11.jpg) ![3 Character](img/tiles/small/12.jpg) ![4 Character](img/tiles/small/13.jpg) ![5 Character](img/tiles/small/14.jpg) ![6 Character](img/tiles/small/15.jpg) ![7 Character](img/tiles/small/16.jpg) ![8 Character](img/tiles/small/17.jpg) ![9 Character](img/tiles/small/18.jpg)
+  ![1 Character](img/tiles/small/9.jpg) ![2 Character](img/tiles/small/11.jpg) ![3 Character](img/tiles/small/12.jpg) ![4 Character](img/tiles/small/13.jpg) ![5 Character](img/tiles/small/14.jpg) ![6 Character](img/tiles/small/15.jpg) ![7 Character](img/tiles/small/16.jpg) ![8 Character](img/tiles/small/17.jpg)
 
 #### Circles/Dots (筒)
 - Notation: 1-9 with 'D' suffix (e.g., 1D, 2D)
