@@ -225,29 +225,52 @@ Rewards:
 
 ### 3.5 Tile Notation
 
+In Mahjong, there are three suits (Characters, Circles/Dots, and Bamboo) and two types of honor tiles (Winds and Dragons). Each tile has a unique notation for easy reference.
+
 #### Characters (万)
 - Notation: 1-9 with 'C' suffix (e.g., 1C, 2C)
-- Examples: 
+- Complete set:
   
-  ![1 Character](img/tiles/small/1.jpg) ![2 Character](img/tiles/small/2.jpg) ![3 Character](img/tiles/small/3.jpg)
+  ![1 Character](img/tiles/small/1.jpg) ![2 Character](img/tiles/small/2.jpg) ![3 Character](img/tiles/small/3.jpg) ![4 Character](img/tiles/small/4.jpg) ![5 Character](img/tiles/small/5.jpg) ![6 Character](img/tiles/small/6.jpg) ![7 Character](img/tiles/small/7.jpg) ![8 Character](img/tiles/small/8.jpg) ![9 Character](img/tiles/small/9.jpg)
 
 #### Circles/Dots (筒)
 - Notation: 1-9 with 'D' suffix (e.g., 1D, 2D)
-- Examples:
+- Complete set:
   
-  ![1 Dot](img/tiles/small/11.jpg) ![2 Dot](img/tiles/small/12.jpg) ![3 Dot](img/tiles/small/13.jpg)
+  ![1 Dot](img/tiles/small/11.jpg) ![2 Dot](img/tiles/small/12.jpg) ![3 Dot](img/tiles/small/13.jpg) ![4 Dot](img/tiles/small/14.jpg) ![5 Dot](img/tiles/small/15.jpg) ![6 Dot](img/tiles/small/16.jpg) ![7 Dot](img/tiles/small/17.jpg) ![8 Dot](img/tiles/small/18.jpg) ![9 Dot](img/tiles/small/19.jpg)
 
 #### Bamboo (条)
 - Notation: 1-9 with 'B' suffix (e.g., 1B, 2B)
-- Examples:
+- Complete set:
   
-  ![1 Bamboo](img/tiles/small/21.jpg) ![2 Bamboo](img/tiles/small/22.jpg) ![3 Bamboo](img/tiles/small/23.jpg)
+  ![1 Bamboo](img/tiles/small/21.jpg) ![2 Bamboo](img/tiles/small/22.jpg) ![3 Bamboo](img/tiles/small/23.jpg) ![4 Bamboo](img/tiles/small/24.jpg) ![5 Bamboo](img/tiles/small/25.jpg) ![6 Bamboo](img/tiles/small/26.jpg) ![7 Bamboo](img/tiles/small/27.jpg) ![8 Bamboo](img/tiles/small/28.jpg) ![9 Bamboo](img/tiles/small/29.jpg)
 
-#### Honors
-- Winds: East (E), South (S), West (W), North (N)
+#### Honor Tiles
+- **Winds** (风牌): East (E), South (S), West (W), North (N)
+  * Notation: E, S, W, N
+  * Complete set:
   
   ![East](img/tiles/small/31.jpg) ![South](img/tiles/small/32.jpg) ![West](img/tiles/small/33.jpg) ![North](img/tiles/small/34.jpg)
 
-- Dragons: Red (R), Green (G), White (W)
+- **Dragons** (三元牌): Red (R), Green (G), White (W)
+  * Notation: R, G, W
+  * Complete set:
   
   ![Red](img/tiles/small/35.jpg) ![Green](img/tiles/small/36.jpg) ![White](img/tiles/small/37.jpg)
+
+#### Special Tiles
+- **Blank Tile** (白板): Used as a wild card in some variants
+  ![Blank](img/tiles/small/blank.jpg)
+
+- **Concealed Tile** (暗牌): Represents a face-down tile
+  ![Concealed](img/tiles/small/concealed.jpg)
+
+#### Tile Combinations
+1. **Sequence** (顺子): Three consecutive tiles of the same suit
+   - Example: 1C-2C-3C, 4D-5D-6D, 7B-8B-9B
+
+2. **Triplet** (刻子): Three identical tiles
+   - Example: 1C-1C-1C, 5D-5D-5D, E-E-E
+
+3. **Pair** (对子): Two identical tiles
+   - Example: 2C-2C, 8D-8D, R-R
