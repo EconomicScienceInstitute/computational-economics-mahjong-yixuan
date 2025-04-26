@@ -270,10 +270,10 @@ In Mahjong, there are three suits (Characters, Circles/Dots, and Bamboo) and two
 
 #### Tile Combinations
 1. **Sequence** (顺子): Three consecutive tiles of the same suit
-   - Example: 1C-2C-3C, 4D-5D-6D, 7B-8B-9B
+   - Example: ![1 Character](img/tiles/small/9.jpg)![2 Character](img/tiles/small/10.jpg)![3 Character](img/tiles/small/11.jpg), ![4 Dot](img/tiles/small/21.jpg)![5 Dot](img/tiles/small/22.jpg)![6 Dot](img/tiles/small/23.jpg), ![7 Bamboo](img/tiles/small/6.jpg)![8 Bamboo](img/tiles/small/7.jpg)![9 Bamboo](img/tiles/small/8.jpg)
 
 2. **Triplet** (刻子): Three identical tiles
-   - Example: 1C-1C-1C, 5D-5D-5D, E-E-E
+   - Example: ![1 Character](img/tiles/small/9.jpg)![1 Character](img/tiles/small/9.jpg)![1 Character](img/tiles/small/9.jpg), ![5 Dot](img/tiles/small/22.jpg)![5 Dot](img/tiles/small/22.jpg)![5 Dot](img/tiles/small/22.jpg), ![East Wind](img/tiles/small/27.jpg)![East Wind](img/tiles/small/27.jpg)![East Wind](img/tiles/small/27.jpg)
 
 3. **Pair** (对子): Two identical tiles
-   - Example: 2C-2C, 8D-8D, R-R
+   - Example: ![2 Character](img/tiles/small/10.jpg)![2 Character](img/tiles/small/10.jpg), ![8 Dot](img/tiles/small/25.jpg)![8 Dot](img/tiles/small/25.jpg), ![Red Dragon](img/tiles/small/32.jpg)![Red Dragon](img/tiles/small/32.jpg)
