@@ -245,12 +245,12 @@ In Mahjong, there are three suits (Characters, Circles/Dots, and Bamboo) and two
   
   ![1 Bamboo](img/tiles/small/0.jpg) ![2 Bamboo](img/tiles/small/1.jpg) ![3 Bamboo](img/tiles/small/2.jpg) ![4 Bamboo](img/tiles/small/3.jpg) ![5 Bamboo](img/tiles/small/4.jpg) ![6 Bamboo](img/tiles/small/5.jpg) ![7 Bamboo](img/tiles/small/6.jpg) ![8 Bamboo](img/tiles/small/7.jpg) ![9 Bamboo](img/tiles/small/8.jpg)
 
-#### Honor Tiles
-- **Winds** (风牌): East (E), South (S), West (W), North (N)
-  * Notation: E, S, W, N
-  * Complete set:
-  
-  ![East](img/tiles/small/31.jpg) ![South](img/tiles/small/32.jpg) ![West](img/tiles/small/33.jpg) ![North](img/tiles/small/34.jpg)
+#### Honors
+- Winds:
+  - East (东): ![East Wind](img/tiles/small/27.jpg)
+  - South (南): ![South Wind](img/tiles/small/28.jpg)
+  - West (西): ![West Wind](img/tiles/small/29.jpg)
+  - North (北): ![North Wind](img/tiles/small/30.jpg)
 
 - **Dragons** (三元牌): Red (R), Green (G), White (W)
   * Notation: R, G, W
