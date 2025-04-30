@@ -252,7 +252,69 @@ The core challenge of Mahjong AI is to select optimal actions at each decision p
 ### A.3 Advanced Flow Diagrams
 
 #### A.3.1 State Value Calculation Flow
-[Previous content about State Value Calculation Flow]
+```mermaid
+flowchart TD
+    A[State] --> B[Calculate]
+    B --> C[Action Loop]
+    C --> D[Simulate]
+    D --> E[Value]
+    E --> F[Update]
+    F --> C
+    F --> G[Max Value]
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style G fill:#bfb,stroke:#333,stroke-width:2px
+```
 
 #### A.3.2 State Transition Example
-[Previous content about State Transition Example]
+```
+Current Hand    Action(Discard 8 Characters)    New State(After Draw)
+[1,1,1,8,8] -> [1,1,1,8]                    -> [1,1,1,8,?]
+Rewards:
+- Maintain sequence +1
+- Break pair -1
+- Ready hand opportunity +2
+```
+
+#### A.3.3 Value Iteration Process
+1. Initialize V0(s) = 0 for all states
+2. For each iteration k:
+   Vk+1(s) = max_a[R(s,a) + γ * Σ P(s'|s,a)Vk(s')]
+3. Continue until ||Vk+1 - Vk|| < ε
+
+#### A.3.4 Strategy Optimization Flow
+```mermaid
+flowchart TD
+    A[Current State] --> B{Evaluate Actions}
+    B --> C[Calculate Immediate Reward]
+    B --> D[Estimate Future Value]
+    
+    C --> E[Action Selection]
+    D --> E
+    
+    E --> F[Execute Best Action]
+    F --> G[Update State Values]
+    G --> A
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style E fill:#bbf,stroke:#333,stroke-width:2px
+    style G fill:#bfb,stroke:#333,stroke-width:2px
+```
+
+#### A.3.5 Balance Considerations
+1. **Exploration vs Exploitation**
+   - Try new strategies vs Use proven ones
+   - Adaptive exploration rate
+   - Temperature-based selection
+
+2. **Risk vs Reward**
+   - Safe play in leading position
+   - Aggressive play when behind
+   - Dynamic risk assessment
+
+3. **Offensive vs Defensive**
+   - Hand building speed
+   - Defensive tile selection
+   - Position-based strategy
