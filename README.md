@@ -3,10 +3,10 @@
 ## 1. Project Overview
 
 ### 1.1 Project Goals
-- Implement a Mahjong AI system based on Dynamic Programming
-- Model Mahjong decision-making using Markov Decision Process (MDP)
-- Optimize strategy selection using Bellman equation
-- Support human-AI gameplay (0-4 human players)
+- Implement a simplified two-player Mahjong AI system
+- Support open-hand gameplay (all tiles visible)
+- Optimize strategy selection using heuristic methods
+- Support human-AI gameplay
 
 ### 1.2 Technology Stack
 - Backend: Python
@@ -21,10 +21,10 @@
 1. **Basic Game System**
    - Tile representation and management
    - Game state tracking
-   - Rule validation (winning hands, ready hands)
+   - Rule validation (winning hands)
 
 2. **AI Decision System**
-   - State evaluation
+   - Hand evaluation
    - Action selection
    - Strategy optimization
 
@@ -33,9 +33,137 @@
    - Computation result caching
    - Vectorized operations
 
-## 2. Theoretical Foundation
+## 2. Game Rules
 
-### 2.1 MDP (Markov Decision Process)
+### 2.1 Simplified Rules
+1. **Basic Setup**
+   - Two players
+   - Open-hand gameplay (all tiles visible)
+   - Simplified tile set (only one suit + honors)
+   - 13 tiles per player
+
+2. **Game Flow**
+   - Players take turns drawing and discarding
+   - Pung (triplet) allowed
+   - No Chow (sequence) allowed
+   - Win by self-draw or discard
+
+3. **Winning Hands**
+   - Basic winning pattern:
+     * 4 sets (sequences/triplets) + 1 pair
+     * 7 pairs
+   - No complex scoring system
+
+### 2.2 Tile Notation
+
+#### Basic Suit (万)
+- Notation: 1-9 with 'C' suffix (e.g., 1C, 2C)
+- Complete set (1-9):
+  
+  ![1 Character](img/tiles/small/9.jpg) ![2 Character](img/tiles/small/10.jpg) ![3 Character](img/tiles/small/11.jpg) ![4 Character](img/tiles/small/12.jpg) ![5 Character](img/tiles/small/13.jpg) ![6 Character](img/tiles/small/14.jpg) ![7 Character](img/tiles/small/15.jpg) ![8 Character](img/tiles/small/16.jpg) ![9 Character](img/tiles/small/17.jpg)
+
+#### Honors
+- Winds:
+  - East (东): ![East Wind](img/tiles/small/27.jpg)
+  - South (南): ![South Wind](img/tiles/small/28.jpg)
+  - West (西): ![West Wind](img/tiles/small/29.jpg)
+  - North (北): ![North Wind](img/tiles/small/30.jpg)
+
+- Dragons:
+  - White Dragon (白板): ![White Dragon](img/tiles/small/33.jpg)
+  - Red Dragon (红中): ![Red Dragon](img/tiles/small/32.jpg)
+  - Green Dragon (发财): ![Green Dragon](img/tiles/small/31.jpg)
+
+## 3. AI Implementation
+
+### 3.1 Heuristic Approach
+1. **Hand Evaluation**
+   - Calculate distance to winning hand
+   - Count potential sets (sequences/triplets)
+   - Evaluate pair formation
+   - Consider tile safety
+
+2. **Decision Making**
+   - Evaluate discard options
+   - Consider opponent's potential moves
+   - Balance offense and defense
+   - Optimize for quick wins
+
+### 3.2 Monte Carlo Tree Search (MCTS)
+1. **Simulation Process**
+   - Simulate future tile draws
+   - Evaluate different discard strategies
+   - Calculate win probabilities
+   - Select optimal moves
+
+2. **Optimization**
+   - Parallel simulation
+   - Early termination
+   - State caching
+   - Adaptive search depth
+
+## 4. System Flow Diagrams
+
+### 4.1 Basic Game Flow
+```
+[Game Start] -> [Deal] -> [Turn Start] -> [AI/Player Action] -> [Discard] -> [Win Check] -> [Turn End]
+                                         ^                                                    |
+                                         |____________________________________________________|
+```
+
+### 4.2 AI Decision Flow
+```mermaid
+flowchart TD
+    A[Current Game State] --> B{Winning Hand?}
+    B -->|Yes| C[Win Game]
+    B -->|No| D{Evaluate Hand}
+    
+    D --> E[Calculate Hand Value]
+    D --> F[Simulate Future Moves]
+    
+    E --> G{Choose Action}
+    F --> G
+    
+    G --> H[Discard Tile]
+    G --> I[Pung]
+    G --> J[Win]
+    
+    H --> K[Execute Action]
+    I --> K
+    J --> K
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style D fill:#bbf,stroke:#333,stroke-width:2px
+    style G fill:#bbf,stroke:#333,stroke-width:2px
+    style K fill:#bfb,stroke:#333,stroke-width:2px
+```
+
+## 5. Future Steps
+
+### 5.1 Four-Player Mahjong
+- Implement full four-player gameplay
+- Add concealed tiles
+- Support all meld types (Chow, Pung, Kong)
+- Implement complex scoring system
+
+### 5.2 Advanced AI Features
+- Implement MDP-based decision making
+- Add learning capabilities
+- Support multiple AI difficulty levels
+- Add tournament mode
+
+### 5.3 Additional Features
+- Online multiplayer support
+- Tournament system
+- Statistics and analytics
+- Custom rule support
+
+## Appendix A: Full Mahjong Rules and Theory
+
+### A.1 Theoretical Foundation
+
+#### A.1.1 MDP (Markov Decision Process)
 The core challenge of Mahjong AI is to select optimal actions at each decision point based on the current state. MDP provides a mathematical framework to solve this sequential decision-making problem:
 
 1. **Markov Property**: The next state depends only on the current state and action, independent of history
@@ -47,7 +175,7 @@ The core challenge of Mahjong AI is to select optimal actions at each decision p
 3. **Immediate Rewards**: Each state transition has an associated reward value
    - Example: Forming a sequence yields positive reward, breaking a potential set yields negative reward
 
-#### State Space (S)
+#### A.1.2 State Space (S)
 - **Hand State**: [t1, t2, ..., tn] where ti represents each tile
 - **Visible Information**: 
   * Discarded tiles by all players
@@ -56,7 +184,7 @@ The core challenge of Mahjong AI is to select optimal actions at each decision p
   * Remaining tile count
   * Current round/wind
 
-#### Action Space (A)
+#### A.1.3 Action Space (A)
 - **Discard Actions**: Choose one tile to discard
 - **Meld Actions**:
   * Chi (Sequence formation)
@@ -65,215 +193,36 @@ The core challenge of Mahjong AI is to select optimal actions at each decision p
   * Declare win
   * Skip (Pass on opponent's discard)
 
-#### Transition Probability (P)
-P(s'|s,a) = P(draw) * P(opponents_actions)
-where:
-- P(draw): Probability of drawing each possible tile
-  * Based on visible tiles and remaining count
-- P(opponents_actions): Probability of opponent actions
-  * Estimated from visible discards and exposed melds
+#### A.1.4 Bellman Equation and Dynamic Programming
+[Previous content about Bellman Equation and Dynamic Programming methods]
 
-#### Reward Function (R)
-R(s,a,s') = Immediate_Value + Potential_Value
-where:
-- Immediate_Value:
-  * Complete set (sequence/triplet): +3
-  * Partial set progress: +1
-  * Breaking existing set: -2
-  * Ready hand formation: +5
-- Potential_Value:
-  * Tile efficiency (flexibility for future sets)
-  * Distance to ready hand
-  * Safety consideration (avoid dangerous discards)
+### A.2 Complete Tile Notation
 
-### 2.2 Bellman Equation and Dynamic Programming
+#### A.2.1 Characters (万)
+[Previous content about Characters]
 
-The Bellman equation is the core tool for solving MDP problems. It expresses a key idea: the value of a state under optimal policy can be calculated recursively.
+#### A.2.2 Circles/Dots (筒)
+[Previous content about Circles/Dots]
 
-1. **Core Concept**:
-   - State value = Immediate reward + Discounted sum of future values
-   - Using recursion to break down long-term decisions into a series of single-step decisions
+#### A.2.3 Bamboo (条)
+[Previous content about Bamboo]
 
-2. **Mathematical Expression**:
-   V(s) = max_a[R(s,a) + γ * Σ P(s'|s,a)V(s')]
-   - V(s): Value of state s
-   - R(s,a): Immediate reward for action a
-   - γ: Discount factor (0.8-0.95)
-   - P(s'|s,a): State transition probability
-   - V(s'): Value of next state
+#### A.2.4 Honors
+[Previous content about Honors]
 
-3. **Application in Mahjong**:
-   - Evaluate the value of each tile discard option
-   - Balance immediate gains (e.g., forming a sequence) vs long-term benefits (e.g., ready hand opportunity)
-   - Find optimal discard strategy through iterative calculation
+#### A.2.5 Flowers (花牌)
+[Previous content about Flowers]
 
-#### Implementation Details
-For each state s and action a:
-1. Calculate immediate reward R(s,a)
-2. Estimate transition probabilities P(s'|s,a)
-3. Update value function:
-   V(s) = max_a[R(s,a) + γ * Σ P(s'|s,a)V(s')]
+#### A.2.6 Special Tiles
+[Previous content about Special Tiles]
 
-#### Value Iteration Process
-1. Initialize V0(s) = 0 for all states
-2. For each iteration k:
-   Vk+1(s) = max_a[R(s,a) + γ * Σ P(s'|s,a)Vk(s')]
-3. Continue until ||Vk+1 - Vk|| < ε
+#### A.2.7 Tile Combinations
+[Previous content about Tile Combinations]
 
-### 2.3 Dynamic Programming Methods
+### A.3 Advanced Flow Diagrams
 
-#### State Value Calculation
-1. **Value Iteration**:
-   - Iteratively update state values
-   - Use Bellman equation for updates
-   - Stop when convergence reached
+#### A.3.1 State Value Calculation Flow
+[Previous content about State Value Calculation Flow]
 
-2. **Policy Iteration**:
-   - Alternate between policy evaluation and improvement
-   - More stable but slower than value iteration
-
-3. **Monte Carlo Simulation**:
-   - Sample-based approach
-   - Good for high-dimensional state spaces
-   - Used for initial value estimation
-
-#### Strategy Optimization
-1. **Value-based Selection**:
-   - Choose actions that maximize expected value
-   - Consider both immediate and future rewards
-
-2. **Balance Considerations**:
-   - Exploration vs exploitation
-   - Risk vs reward
-   - Offensive vs defensive play
-
-## 3. System Flow Diagrams
-
-**Flowchart Legend:**
-- Pink nodes (🟪): Initial states
-- Blue nodes (🟦): Processing steps and decision points
-- Green nodes (🟩): Final results/actions
-
-### 3.1 Basic Game Flow
-```
-[Game Start] -> [Deal] -> [Turn Start] -> [AI/Player Action] -> [Discard] -> [Win Check] -> [Turn End]
-                                         ^                                                    |
-                                         |____________________________________________________|
-```
-
-### 3.2 AI Decision Flow (Detailed Decision Tree)
-
-```mermaid
-flowchart TD
-    A[Current Game State] --> B{Winning Hand?}
-    B -->|Yes| C[Win Game]
-    B -->|No| D{Ready Hand?}
-    
-    D -->|Yes| E[Defensive Play]
-    D -->|No| F{Evaluate Hand}
-    
-    F --> G[Calculate Immediate Value]
-    F --> H[Estimate Future Value]
-    
-    G --> I{Choose Action}
-    H --> I
-    
-    I --> J[Form Sequence]
-    I --> K[Form Triplet]
-    I --> L[Prepare Ready Hand]
-    I --> M[Defensive Discard]
-    
-    J --> N[Execute Action]
-    K --> N
-    L --> N
-    M --> N
-    
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style B fill:#bbf,stroke:#333,stroke-width:2px
-    style D fill:#bbf,stroke:#333,stroke-width:2px
-    style F fill:#bbf,stroke:#333,stroke-width:2px
-    style I fill:#bbf,stroke:#333,stroke-width:2px
-    style N fill:#bfb,stroke:#333,stroke-width:2px
-```
-
-### 3.3 State Value Calculation Flow
-
-```mermaid
-flowchart TD
-    A[State] --> B[Calculate]
-    B --> C[Action Loop]
-    C --> D[Simulate]
-    D --> E[Value]
-    E --> F[Update]
-    F --> C
-    F --> G[Max Value]
-
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style B fill:#bbf,stroke:#333,stroke-width:2px
-    style G fill:#bfb,stroke:#333,stroke-width:2px
-```
-
-### 3.4 State Transition Example
-```
-Current Hand    Action(Discard 8 Characters)    New State(After Draw)
-[1,1,1,8,8] -> [1,1,1,8]                    -> [1,1,1,8,?]
-Rewards:
-- Maintain sequence +1
-- Break pair -1
-- Ready hand opportunity +2
-```
-
-### 3.5 Tile Notation
-
-In Mahjong, there are three suits (Characters, Circles/Dots, and Bamboo) and two types of honor tiles (Winds and Dragons). Each tile has a unique notation for easy reference.
-
-#### Characters (万)
-- Notation: 1-9 with 'C' suffix (e.g., 1C, 2C)
-- Complete set (1-9):
-  
-  ![1 Character](img/tiles/small/9.jpg) ![2 Character](img/tiles/small/10.jpg) ![3 Character](img/tiles/small/11.jpg) ![4 Character](img/tiles/small/12.jpg) ![5 Character](img/tiles/small/13.jpg) ![6 Character](img/tiles/small/14.jpg) ![7 Character](img/tiles/small/15.jpg) ![8 Character](img/tiles/small/16.jpg) ![9 Character](img/tiles/small/17.jpg)
-
-#### Circles/Dots (筒)
-- Notation: 1-9 with 'D' suffix (e.g., 1D, 2D)
-- Complete set (1-9):
-  
-  ![1 Dot](img/tiles/small/18.jpg) ![2 Dot](img/tiles/small/19.jpg) ![3 Dot](img/tiles/small/20.jpg) ![4 Dot](img/tiles/small/21.jpg) ![5 Dot](img/tiles/small/22.jpg) ![6 Dot](img/tiles/small/23.jpg) ![7 Dot](img/tiles/small/24.jpg) ![8 Dot](img/tiles/small/25.jpg) ![9 Dot](img/tiles/small/26.jpg)
-
-#### Bamboo (条)
-- Notation: 1-9 with 'B' suffix (e.g., 1B, 2B)
-- Complete set (1-9):
-  
-  ![1 Bamboo](img/tiles/small/0.jpg) ![2 Bamboo](img/tiles/small/1.jpg) ![3 Bamboo](img/tiles/small/2.jpg) ![4 Bamboo](img/tiles/small/3.jpg) ![5 Bamboo](img/tiles/small/4.jpg) ![6 Bamboo](img/tiles/small/5.jpg) ![7 Bamboo](img/tiles/small/6.jpg) ![8 Bamboo](img/tiles/small/7.jpg) ![9 Bamboo](img/tiles/small/8.jpg)
-
-#### Honors
-- Winds:
-  - East (东): ![East Wind](img/tiles/small/27.jpg)
-  - South (南): ![South Wind](img/tiles/small/28.jpg)
-  - West (西): ![West Wind](img/tiles/small/29.jpg)
-  - North (北): ![North Wind](img/tiles/small/30.jpg)
-
-#### Flowers (花牌)
-- Complete set:
-  - Plum (梅): ![Plum](img/tiles/small/34.jpg)
-  - Orchid (兰): ![Orchid](img/tiles/small/35.jpg)
-  - Bamboo (竹): ![Bamboo](img/tiles/small/37.jpg)
-  - Chrysanthemum (菊): ![Chrysanthemum](img/tiles/small/36.jpg)
-
-#### Special Tiles
-- Dragons (三元牌):
-  - White Dragon (白板): ![White Dragon](img/tiles/small/33.jpg)
-  - Red Dragon (红中): ![Red Dragon](img/tiles/small/32.jpg)
-  - Green Dragon (发财): ![Green Dragon](img/tiles/small/31.jpg)
-
-- **Concealed Tile** (暗牌): Represents a face-down tile
-  ![Concealed](img/tiles/small/concealed.jpg)
-
-#### Tile Combinations
-1. **Sequence** (顺子): Three consecutive tiles of the same suit
-   - Example: ![1 Character](img/tiles/small/9.jpg)![2 Character](img/tiles/small/10.jpg)![3 Character](img/tiles/small/11.jpg), ![4 Dot](img/tiles/small/21.jpg)![5 Dot](img/tiles/small/22.jpg)![6 Dot](img/tiles/small/23.jpg), ![7 Bamboo](img/tiles/small/6.jpg)![8 Bamboo](img/tiles/small/7.jpg)![9 Bamboo](img/tiles/small/8.jpg)
-
-2. **Triplet** (刻子): Three identical tiles
-   - Example: ![1 Character](img/tiles/small/9.jpg)![1 Character](img/tiles/small/9.jpg)![1 Character](img/tiles/small/9.jpg), ![5 Dot](img/tiles/small/22.jpg)![5 Dot](img/tiles/small/22.jpg)![5 Dot](img/tiles/small/22.jpg), ![East Wind](img/tiles/small/27.jpg)![East Wind](img/tiles/small/27.jpg)![East Wind](img/tiles/small/27.jpg)
-
-3. **Pair** (对子): Two identical tiles
-   - Example: ![2 Character](img/tiles/small/10.jpg)![2 Character](img/tiles/small/10.jpg), ![8 Dot](img/tiles/small/25.jpg)![8 Dot](img/tiles/small/25.jpg), ![Red Dragon](img/tiles/small/32.jpg)![Red Dragon](img/tiles/small/32.jpg)
+#### A.3.2 State Transition Example
+[Previous content about State Transition Example]
