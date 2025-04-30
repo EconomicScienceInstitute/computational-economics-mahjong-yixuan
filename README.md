@@ -194,7 +194,113 @@ The core challenge of Mahjong AI is to select optimal actions at each decision p
   * Skip (Pass on opponent's discard)
 
 #### A.1.4 Bellman Equation and Dynamic Programming
-[Previous content about Bellman Equation and Dynamic Programming methods]
+
+The Bellman equation is the core tool for solving MDP problems. It expresses a key idea: the value of a state under optimal policy can be calculated recursively.
+
+1. **Core Concept**:
+   - State value = Immediate reward + Discounted sum of future values
+   - Using recursion to break down long-term decisions into a series of single-step decisions
+
+2. **Mathematical Expression**:
+   V(s) = max_a[R(s,a) + γ * Σ P(s'|s,a)V(s')]
+   where:
+   - V(s): Value of state s
+   - R(s,a): Immediate reward for action a
+   - γ: Discount factor (0.8-0.95)
+   - P(s'|s,a): State transition probability
+   - V(s'): Value of next state
+
+3. **Application in Mahjong**:
+   - Evaluate the value of each tile discard option
+   - Balance immediate gains (e.g., forming a sequence) vs long-term benefits (e.g., ready hand opportunity)
+   - Find optimal discard strategy through iterative calculation
+
+#### A.1.5 Reward Function Details
+
+R(s,a,s') = Immediate_Value + Potential_Value
+where:
+- **Immediate_Value**:
+  * Complete set (sequence/triplet): +3
+  * Partial set progress: +1
+  * Breaking existing set: -2
+  * Ready hand formation: +5
+- **Potential_Value**:
+  * Tile efficiency (flexibility for future sets): 0-3
+  * Distance to ready hand: -5 to +5
+  * Safety consideration (avoid dangerous discards): -2 to +2
+
+#### A.1.6 State Transition Probability
+
+P(s'|s,a) = P(draw) * P(opponents_actions)
+where:
+- **P(draw)**: Probability of drawing each possible tile
+  * Based on visible tiles and remaining count
+  * Calculated as: (remaining_count_of_tile) / (total_remaining_tiles)
+
+- **P(opponents_actions)**: Probability of opponent actions
+  * Estimated from visible discards and exposed melds
+  * Factors considered:
+    - Exposed sets pattern
+    - Discard history
+    - Position in game
+
+#### A.1.7 Value Iteration Implementation
+
+1. **Initialization**:
+   ```python
+   V0(s) = 0 for all states
+   epsilon = 0.01  # convergence threshold
+   gamma = 0.9    # discount factor
+   ```
+
+2. **Iteration Process**:
+   ```python
+   while True:
+       delta = 0
+       for s in States:
+           v = V[s]
+           V[s] = max([sum([P(s_next|s,a) * 
+                           (R(s,a,s_next) + gamma * V[s_next]) 
+                           for s_next in next_states(s,a)])
+                      for a in actions(s)])
+           delta = max(delta, abs(v - V[s]))
+       if delta < epsilon:
+           break
+   ```
+
+3. **Policy Extraction**:
+   ```python
+   def optimal_policy(state):
+       return argmax([sum([P(s_next|state,a) * 
+                          (R(state,a,s_next) + gamma * V[s_next])
+                          for s_next in next_states(state,a)])
+                     for a in actions(state)])
+   ```
+
+#### A.1.8 Strategy Optimization Methods
+
+1. **Value-based Selection**:
+   - Choose actions that maximize expected value
+   - Consider both immediate and future rewards
+   - Update values based on actual outcomes
+
+2. **Balance Considerations**:
+   - Exploration vs exploitation
+     * Early game: Higher exploration rate
+     * Late game: Focus on exploitation
+   - Risk vs reward
+     * Leading: Conservative play
+     * Behind: Aggressive strategy
+   - Offensive vs defensive
+     * Hand building speed
+     * Defensive tile selection
+
+3. **Learning Parameters**:
+   - Initial exploration rate: 0.3
+   - Exploration decay: 0.995 per round
+   - Minimum exploration rate: 0.05
+   - Learning rate: 0.1
+   - Value update weight: 0.7
 
 ### A.2 Complete Tile Notation
 
