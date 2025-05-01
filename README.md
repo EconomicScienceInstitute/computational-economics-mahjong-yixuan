@@ -209,6 +209,23 @@ flowchart TD
 ### A.1 Theoretical Foundation
 
 #### A.1.1 MDP (Markov Decision Process)
+A Markov Decision Process is formally defined as a tuple (S, A, P, R, γ) where:
+- S: Set of states
+- A: Set of actions
+- P: S × A × S → [0,1] is the transition probability function
+  * P(s'|s,a) is probability of reaching state s' from state s taking action a
+- R: S × A × S → ℝ is the reward function
+  * R(s,a,s') is immediate reward for transition (s,a,s')
+- γ ∈ [0,1] is the discount factor
+
+The goal is to find a policy π: S → A that maximizes the expected discounted reward:
+
+V<sup>π</sup>(s) = E<sub>π</sub>[Σ<sub>t=0</sub><sup>∞</sup> γ<sup>t</sup>R(s<sub>t</sub>,π(s<sub>t</sub>),s<sub>t+1</sub>)]
+
+The optimal value function satisfies the Bellman optimality equation:
+
+V*(s) = max<sub>a∈A</sub>[R(s,a) + γΣ<sub>s'∈S</sub>P(s'|s,a)V*(s')]
+
 The core challenge of Mahjong AI is to select optimal actions at each decision point based on the current state. MDP provides a mathematical framework to solve this sequential decision-making problem:
 
 1. **Markov Property**: The next state depends only on the current state and action, independent of history
