@@ -54,7 +54,52 @@
      * 7 pairs
    - No complex scoring system
 
-### 2.2 Tile Notation
+### 2.2 Key MDP Components
+
+For the simplified two-player open-hand mahjong, we define the following key components:
+
+#### 2.2.1 Observation Space
+1. **Hand State** (Fully Observable)
+   - Player's 13 tiles (fixed size)
+   - Opponent's 13 tiles (visible in this variant)
+   - Last drawn tile (if any)
+
+2. **Game Progress**
+   - Remaining tile count in wall
+   - Discarded tiles from both players
+   - Current turn indicator
+
+3. **Meld Information**
+   - Exposed melds (Pung only in this variant)
+   - Number of melds per player
+
+#### 2.2.2 Action Space
+1. **Regular Actions**
+   - Discard: Choose 1 from hand (13-14 options)
+   - Pung: Form triplet from opponent's discard (binary choice)
+   - Win: Declare win (binary choice)
+
+2. **Action Constraints**
+   - Can only Pung when opponent discards
+   - Can only discard when hand has 14 tiles
+   - Can only win with valid winning hand
+
+#### 2.2.3 Transition Function
+1. **State Transitions**
+   - After Discard: s → s' = (hand - discarded_tile, opponent_draw)
+   - After Pung: s → s' = (hand + 3 identical_tiles - discard)
+   - Deterministic due to open information
+
+2. **Transition Probabilities**
+   - Wall draws: P(tile) = remaining_count / total_remaining
+   - Opponent actions: Deterministic in perfect information game
+
+This simplified formulation helps us:
+- Evaluate problem complexity
+- Design appropriate algorithms
+- Plan implementation stages
+
+### 2.3 Tile Notation
 
 #### Basic Suit (万)
 - Notation: 1-9 with 'C' suffix (e.g., 1C, 2C)
