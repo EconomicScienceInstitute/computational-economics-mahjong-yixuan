@@ -68,8 +68,6 @@
      * Win (if your hand is complete)
 
 4. **Winning Hands and Points System**
-   - Note: Sequences (Chow) only allowed for Characters (1-9)
-
    **Scoring System Overview:**
    - Base points: Basic score for completing a valid hand
    - Bonus points: Additional points for special patterns or conditions
@@ -91,7 +89,7 @@
    | Standard Hand | 20 | 4 sets + 1 pair | ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg) + pair |
    | Seven Pairs | 30 | 7 pairs of tiles | ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![2C](img/tiles/small/10.jpg) ... |
    | **Suit Bonus** |
-   | All Characters | 20 | All tiles are Characters | All Character tiles |
+   | All Characters | 20 | All tiles are Characters (any combination) | ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![9C](img/tiles/small/17.jpg)![9C](img/tiles/small/17.jpg) |
    | All Honors | 40 | All tiles are Winds/Dragons | All Winds + Dragons |
    | **Pattern Bonus** |
    | All Triplets | 30 | Four triplets + one pair | Four Pungs + pair |
