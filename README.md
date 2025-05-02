@@ -18,7 +18,8 @@ The relationship between these concepts is crucial:
 - While MDP defines the problem structure (states, actions, rewards), Bellman equations help find optimal solutions
 
 #### 1.2.1 MDP Framework
-A Markov Decision Process (MDP) is formally defined as a tuple (S, A, P, R, γ). A tuple in mathematics is an ordered collection of elements, similar to a list where the order matters. In this case, these five elements together form the complete mathematical description of a decision-making problem:
+A Markov Decision Process (MDP) is formally defined as a tuple (S, A, P, R, γ). 
+A tuple in mathematics is an ordered collection of elements, similar to a list where the order matters. In this case, these five elements together form the complete mathematical description of a decision-making problem:
 
 - S: Set of states
 - A: Set of actions
@@ -41,7 +42,7 @@ A Markov Decision Process (MDP) is formally defined as a tuple (S, A, P, R, γ).
 - **Hand State**: [t1, t2, ..., tn] where ti represents each tile
 - **Visible Information**: 
   * Discarded tiles by all players
-  * Exposed melds (Chi/Pon)
+  * Exposed melds (Chow/Pung)
 - **Game Progress**: 
   * Remaining tile count
   * Current round/wind
@@ -49,8 +50,8 @@ A Markov Decision Process (MDP) is formally defined as a tuple (S, A, P, R, γ).
 #### 1.2.3 Action Space (A)
 - **Discard Actions**: Choose one tile to discard
 - **Meld Actions**:
-  * Chi (Sequence formation)
-  * Pon (Triplet formation)
+  * Chow (吃): Form a sequence of three consecutive tiles
+  * Pung (碰): Form a triplet of identical tiles
 - **Special Actions**:
   * Declare win
   * Skip (Pass on opponent's discard)
@@ -239,14 +240,14 @@ where:
 
 3. **Game Flow**
    - Players take turns drawing a tile from the wall and discarding one tile.
-   - Both Pung (forming a triplet of identical tiles) and Chow (forming a sequence of three consecutive Characters) are allowed.
+   - Both Pung (碰, forming a triplet of identical tiles) and Chow (吃, forming a sequence of three consecutive Characters) are allowed.
    - A player can win either by self-draw (drawing the winning tile themselves) or by claiming a discard from the opponent (ron).
 
 4. **Winning Hands**
    - A standard winning hand consists of:
      * 4 sets (each set can be a triplet of identical tiles or a sequence of three consecutive Characters) and 1 pair.
      * Or 7 pairs (seven distinct pairs of identical tiles).
-   - Sequences (chows) are only allowed for Characters (1-9); Winds and Dragons can only form triplets or pairs.
+   - Sequences (Chow) are only allowed for Characters (1-9); Winds and Dragons can only form triplets (Pung) or pairs.
    - There is no scoring system; the first player to complete a valid winning hand wins the game.
 
 ### 2.3 Key MDP Components
@@ -265,17 +266,18 @@ For the simplified two-player open-hand mahjong, we define the following key com
    - Current turn indicator
 
 3. **Meld Information**
-   - Exposed melds (Pung only in this variant)
+   - Exposed melds (Chow and Pung)
    - Number of melds per player
 
 #### 2.3.2 Action Space
 1. **Regular Actions**
    - Discard: Choose 1 from hand (13-14 options)
    - Pung: Form triplet from opponent's discard (binary choice)
+   - Chow: Form sequence from opponent's discard (binary choice)
    - Win: Declare win (binary choice)
 
 2. **Action Constraints**
-   - Can only Pung when opponent discards
+   - Can only Pung or Chow when opponent discards
    - Can only discard when hand has 14 tiles
    - Can only win with valid winning hand
 
@@ -436,7 +438,7 @@ The core challenge of Mahjong AI is to select optimal actions at each decision p
 - **Hand State**: [t1, t2, ..., tn] where ti represents each tile
 - **Visible Information**: 
   * Discarded tiles by all players
-  * Exposed melds (Chi/Pon)
+  * Exposed melds (Chow/Pung)
 - **Game Progress**: 
   * Remaining tile count
   * Current round/wind
@@ -444,8 +446,8 @@ The core challenge of Mahjong AI is to select optimal actions at each decision p
 #### A.1.3 Action Space (A)
 - **Discard Actions**: Choose one tile to discard
 - **Meld Actions**:
-  * Chi (Sequence formation)
-  * Pon (Triplet formation)
+  * Chow (Sequence formation)
+  * Pung (Triplet formation)
 - **Special Actions**:
   * Declare win
   * Skip (Pass on opponent's discard)
