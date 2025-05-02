@@ -250,13 +250,21 @@ The Bellman equation is the core tool for solving MDP problems. It expresses a k
    This equation forms the basis for finding the optimal policy π*(s).
    
    Example optimal decision process:
-   1. Current hand: [1C,1C,1C,2C,3C,4C,5C]
+   1. Current hand: 
+      ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg)![5C](img/tiles/small/13.jpg)
+
    2. Possible actions:
-      - Keep sequence potential (2C,3C,4C): V₁ = 2 + 0.9 * (future value)
-      - Keep triplet (1C,1C,1C): V₂ = 3 + 0.9 * (future value)
-   3. Choose action with max V*(s)
-      - If V₁ > V₂: Discard 1C
-      - If V₂ > V₁: Discard 5C
+      - Keep sequence potential (2C,3C,4C): 
+        ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg)
+        V₁ = 5 (sequence progress) + 5 (All Characters progress) + 0.9 * (future value)
+      
+      - Keep triplet (1C,1C,1C): 
+        ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)
+        V₂ = 5 (triplet progress) + 5 (All Characters progress) + 0.9 * (future value)
+
+   3. Choose action with max V*(s):
+      - If V₁ > V₂: Discard ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg), keep ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg)![5C](img/tiles/small/13.jpg)
+      - If V₂ > V₁: Discard ![5C](img/tiles/small/13.jpg), keep ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg)
 
 4. **Practical Implementation**:
    - Initialize value estimates for all states
