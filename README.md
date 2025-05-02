@@ -62,7 +62,11 @@ The Bellman equation is the core tool for solving MDP problems. It expresses a k
    where:
    - V(s): Value of state s
    - R(s,a): Immediate reward for action a
-   - γ: Discount factor (0.8-0.95)
+   - γ: Discount factor (0 < γ < 1)
+     * Controls the balance between immediate and future rewards
+     * Lower γ (e.g., 0.6-0.7): Emphasizes immediate rewards, suitable for fast-paced games
+     * Higher γ (e.g., 0.8-0.9): Values future rewards more, better for strategic planning
+     * In Mahjong: Typically 0.85-0.9 to balance short-term gains (completing sets) with long-term strategy
    - P(s'|s,a): State transition probability
    - V(s'): Value of next state
    
@@ -453,7 +457,11 @@ The Bellman equation is the core tool for solving MDP problems. It expresses a k
    where:
    - V(s): Value of state s
    - R(s,a): Immediate reward for action a
-   - γ: Discount factor (0.8-0.95)
+   - γ: Discount factor (0 < γ < 1)
+     * Controls the balance between immediate and future rewards
+     * Lower γ (e.g., 0.6-0.7): Emphasizes immediate rewards, suitable for fast-paced games
+     * Higher γ (e.g., 0.8-0.9): Values future rewards more, better for strategic planning
+     * In Mahjong: Typically 0.85-0.9 to balance short-term gains (completing sets) with long-term strategy
    - P(s'|s,a): State transition probability
    - V(s'): Value of next state
 
