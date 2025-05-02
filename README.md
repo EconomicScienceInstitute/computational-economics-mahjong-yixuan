@@ -76,20 +76,20 @@
    - Standard winning hand (14 tiles):
      * 4 sets + 1 pair
      * Example: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![6C](img/tiles/small/14.jpg)![7C](img/tiles/small/15.jpg)![8C](img/tiles/small/16.jpg) ![9C](img/tiles/small/17.jpg)![9C](img/tiles/small/17.jpg)
-     * Points: Base points(20) + Concealed triplet(5) + Self-drawn(10) = 35 points
+     * Points: Standard Hand(20) + Concealed Triplet(5) + Self-drawn(10) = 35 points
    - Seven pairs (14 tiles):
      * Example: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![2C](img/tiles/small/10.jpg) ![3C](img/tiles/small/11.jpg)![3C](img/tiles/small/11.jpg) ![4C](img/tiles/small/12.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![6C](img/tiles/small/14.jpg)![6C](img/tiles/small/14.jpg) ![7C](img/tiles/small/15.jpg)![7C](img/tiles/small/15.jpg)
-     * Points: Seven pairs(30) + All Characters(20) + Concealed hand(10) = 60 points
+     * Points: Seven Pairs(30) + All Characters(20) + Concealed Hand(10) = 60 points
    - Note: Sequences (Chow) only allowed for Characters (1-9)
 
    **Points System:**
    | Type | Points | Description | Example |
    |------|--------|-------------|---------|
    | **Basic Winning Hands** |
-   | Standard Hand | 20 | 4 sets + 1 pair | ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg) + pair |
-   | Seven Pairs | 30 | 7 pairs of tiles | ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![2C](img/tiles/small/10.jpg) ... |
+   | Standard Hand | 20 | 4 sets + 1 pair | ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![6C](img/tiles/small/14.jpg)![7C](img/tiles/small/15.jpg)![8C](img/tiles/small/16.jpg) ![9C](img/tiles/small/17.jpg)![9C](img/tiles/small/17.jpg) |
+   | Seven Pairs | 30 | 7 pairs of tiles | ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![2C](img/tiles/small/10.jpg) ![3C](img/tiles/small/11.jpg)![3C](img/tiles/small/11.jpg) ![4C](img/tiles/small/12.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![6C](img/tiles/small/14.jpg)![6C](img/tiles/small/14.jpg) ![7C](img/tiles/small/15.jpg)![7C](img/tiles/small/15.jpg) |
    | **Suit Bonus** |
-   | All Characters | 20 | All tiles are Characters (any combination) | ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![9C](img/tiles/small/17.jpg)![9C](img/tiles/small/17.jpg) |
+   | All Characters | 20 | All tiles are Characters (any combination) | ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![9C](img/tiles/small/17.jpg)![9C](img/tiles/small/17.jpg) ... |
    | All Honors | 40 | All tiles are Winds/Dragons | All Winds + Dragons |
    | **Pattern Bonus** |
    | All Triplets | 30 | Four triplets + one pair | Four Pungs + pair |
@@ -153,22 +153,40 @@ In the context of Mahjong, these elements correspond to:
    - Opponent's potential responses
 
 3. **Reward**:
-   - Immediate rewards:
-     * Complete set (sequence/triplet): +3
-     * Partial set progress: +1
-     * Breaking existing set: -2
-     * Ready hand formation: +5
-   - Potential rewards:
-     * Tile efficiency (flexibility): 0-3
-     * Distance to ready hand: -5 to +5
-     * Safety consideration: -2 to +2
-   - Final rewards:
-     * Winning the game: +100
-     * Losing the game: -100
+   AI evaluates each move based on potential scoring opportunities:
+
+   1. **Immediate Rewards** (Based on Points System):
+      * Forming a triplet (刻子): +5 (partial progress towards Standard Hand 20 points)
+      * Forming a sequence (顺子): +5 (partial progress towards Standard Hand 20 points)
+      * Forming a pair (对子): +3 (needed for both Standard Hand and Seven Pairs)
+      * Breaking a potential set: -5 (to avoid losing progress)
+
+   2. **Pattern Progress Rewards**:
+      * Progress towards All Characters: +5 (keeping only Character tiles)
+      * Progress towards Seven Pairs: +5 (keeping potential pairs)
+      * Progress towards Pure Straight: +5 (keeping 123, 456, or 789 combinations)
+      * Progress towards All Triplets: +5 (prioritizing triplet formations)
+
+   3. **Final Rewards**:
+      * Winning hand: Points from scoring table (e.g., Standard Hand 20 + All Characters 20 + Self-drawn 10 = 50)
+      * Losing: -20
+
+   **Example Scenario**:
+   Starting hand: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)
+
+   AI Decision Process:
+   1. Keeps 1C triplet: +5 (triplet progress) +5 (All Characters progress)
+   2. Keeps 234C sequence: +5 (sequence progress) +5 (All Characters progress)
+   3. Draws 5C to keep: +5 (All Characters progress)
    
-   Key concept: **Reward Association**
-   - Each state transition has an associated reward value
-   - Example: Forming a sequence yields positive reward, breaking a potential set yields negative reward
+   If wins with a Standard Hand (all Characters):
+   * Final Score: Standard Hand (20) + All Characters (20) = 40 points
+   * The intermediate rewards guided AI towards this high-scoring hand
+
+   Key concept: **Reward-Score Alignment**
+   - Rewards during play reflect progress towards scoring hands
+   - Final scoring follows the Points System table exactly
+   - AI's decisions are guided towards achieving maximum final score
 
 4. **Step (State Transition)**:
    How actions change the game state:
