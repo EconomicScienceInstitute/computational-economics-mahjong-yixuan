@@ -239,16 +239,19 @@ where:
    - All hands are open (fully visible to both players)
 
 3. **Game Flow**
-   - Players take turns drawing a tile from the wall and discarding one tile.
-   - Both Pung (碰, forming a triplet of identical tiles) and Chow (吃, forming a sequence of three consecutive Characters) are allowed.
-   - A player can win either by self-draw (drawing the winning tile themselves) or by claiming a discard from the opponent (ron).
+   - Players take turns drawing and discarding tiles
+   - When an opponent discards, you can:
+     * Chow (吃): Form a sequence ![3 Character](img/tiles/small/11.jpg)![4 Character](img/tiles/small/12.jpg)![5 Character](img/tiles/small/13.jpg)
+     * Pung (碰): Form a triplet ![7 Character](img/tiles/small/15.jpg)![7 Character](img/tiles/small/15.jpg)![7 Character](img/tiles/small/15.jpg)
+     * Win (if your hand is complete)
 
 4. **Winning Hands**
-   - A standard winning hand consists of:
-     * 4 sets (each set can be a triplet of identical tiles or a sequence of three consecutive Characters) and 1 pair.
-     * Or 7 pairs (seven distinct pairs of identical tiles).
-   - Sequences (Chow) are only allowed for Characters (1-9); Winds and Dragons can only form triplets (Pung) or pairs.
-   - There is no scoring system; the first player to complete a valid winning hand wins the game.
+   - Standard winning hand (14 tiles):
+     * 4 sets + 1 pair
+     * Example: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![6C](img/tiles/small/14.jpg)![7C](img/tiles/small/15.jpg)![8C](img/tiles/small/16.jpg) ![9C](img/tiles/small/17.jpg)![9C](img/tiles/small/17.jpg)
+   - Or 7 pairs (14 tiles):
+     * Example: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![2C](img/tiles/small/10.jpg) ![3C](img/tiles/small/11.jpg)![3C](img/tiles/small/11.jpg) ![4C](img/tiles/small/12.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![6C](img/tiles/small/14.jpg)![6C](img/tiles/small/14.jpg) ![7C](img/tiles/small/15.jpg)![7C](img/tiles/small/15.jpg)
+   - Note: Sequences (Chow) only allowed for Characters (1-9)
 
 ### 2.3 Key MDP Components
 
