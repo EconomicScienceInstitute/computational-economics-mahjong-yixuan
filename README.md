@@ -66,7 +66,14 @@ The Bellman equation is the core tool for solving MDP problems. It expresses a k
    - P(s'|s,a): State transition probability
    - V(s'): Value of next state
 
-3. **Application in Mahjong**:
+3. **Optimal Value Function**:
+   The optimal value function V*(s) satisfies the Bellman optimality equation:
+   
+   V*(s) = max<sub>a∈A</sub>[R(s,a) + γΣ<sub>s'∈S</sub>P(s'|s,a)V*(s')]
+
+   This equation forms the basis for finding the optimal policy π*(s).
+
+4. **Application in Mahjong**:
    - Evaluate the value of each tile discard option
    - Balance immediate gains (e.g., forming a sequence) vs long-term benefits (e.g., ready hand opportunity)
    - Find optimal discard strategy through iterative calculation
