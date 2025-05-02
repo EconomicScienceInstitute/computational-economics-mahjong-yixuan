@@ -36,21 +36,27 @@
 ## 2. Game Rules
 
 ### 2.1 Simplified Rules
-1. **Basic Setup**
-   - Two players
-   - Open-hand gameplay (all tiles visible)
-   - Simplified tile set (only one suit + honors)
-   - 13 tiles per player
+1. **Tile Set**
+   - Characters (Manzu, 万): 1-9, 4 copies each (36 tiles)
+   - Winds: East, South, West, North, 4 copies each (16 tiles)
+   - Dragons: Red, Green, White, 4 copies each (12 tiles)
+   - **Total: 64 tiles**
 
-2. **Game Flow**
+2. **Initial Setup**
+   - Two players
+   - Each player is dealt 13 tiles (26 tiles in total)
+   - The remaining 38 tiles form the wall (draw pile)
+   - All hands are open (fully visible to both players)
+
+3. **Game Flow**
    - Players take turns drawing and discarding
    - Pung (triplet) allowed
    - No Chow (sequence) allowed
    - Win by self-draw or discard
 
-3. **Winning Hands**
-   - Basic winning pattern:
-     * 4 sets (sequences/triplets) + 1 pair
+4. **Winning Hands**
+   - Standard winning hand:
+     * 4 sets (sequences or triplets) + 1 pair
      * 7 pairs
    - No complex scoring system
 
@@ -101,7 +107,7 @@ This simplified formulation helps us:
 
 ### 2.3 Tile Notation
 
-#### Basic Suit (万)
+#### Characters (万)
 - Notation: 1-9 with 'C' suffix (e.g., 1C, 2C)
 - Complete set (1-9):
   
@@ -486,3 +492,7 @@ flowchart TD
    - Hand building speed
    - Defensive tile selection
    - Position-based strategy
+
+## Appendix B: Four-Player Mahjong (Legacy & Future Extension)
+
+### B.1 Four-Player Game Rules
