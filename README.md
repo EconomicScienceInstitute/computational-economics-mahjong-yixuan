@@ -35,7 +35,26 @@
 
 ## 2. Game Rules
 
-### 2.1 Simplified Rules
+### 2.1 Tile Notation
+
+#### Characters (Manzu, 万)
+- Notation: 1-9 with 'C' suffix (e.g., 1C, 2C)
+- Complete set (1-9):
+  
+  ![1 Character](img/tiles/small/9.jpg) ![2 Character](img/tiles/small/10.jpg) ![3 Character](img/tiles/small/11.jpg) ![4 Character](img/tiles/small/12.jpg) ![5 Character](img/tiles/small/13.jpg) ![6 Character](img/tiles/small/14.jpg) ![7 Character](img/tiles/small/15.jpg) ![8 Character](img/tiles/small/16.jpg) ![9 Character](img/tiles/small/17.jpg)
+
+#### Honors
+- Winds:
+  - East (东): ![East Wind](img/tiles/small/27.jpg)
+  - South (南): ![South Wind](img/tiles/small/28.jpg)
+  - West (西): ![West Wind](img/tiles/small/29.jpg)
+  - North (北): ![North Wind](img/tiles/small/30.jpg)
+- Dragons:
+  - White Dragon (白板): ![White Dragon](img/tiles/small/33.jpg)
+  - Red Dragon (红中): ![Red Dragon](img/tiles/small/32.jpg)
+  - Green Dragon (发财): ![Green Dragon](img/tiles/small/31.jpg)
+
+### 2.2 Simplified Rules
 1. **Tile Set**
    - Characters (Manzu, 万): 1-9, 4 copies each (36 tiles)
    - Winds: East, South, West, North, 4 copies each (16 tiles)
@@ -45,26 +64,26 @@
 2. **Initial Setup**
    - Two players
    - Each player is dealt 13 tiles (26 tiles in total)
-   - The remaining 38 tiles form the wall (draw pile)
+   - The remaining 38 tiles form the wall (draw pile). All tiles in the wall are face-down (hidden) until drawn.
    - All hands are open (fully visible to both players)
 
 3. **Game Flow**
-   - Players take turns drawing and discarding
-   - Pung (triplet) allowed
-   - No Chow (sequence) allowed
-   - Win by self-draw or discard
+   - Players take turns drawing a tile from the wall and discarding one tile.
+   - Both Pung (forming a triplet of identical tiles) and Chow (forming a sequence of three consecutive Characters) are allowed.
+   - A player can win either by self-draw (drawing the winning tile themselves) or by claiming a discard from the opponent (ron).
 
 4. **Winning Hands**
-   - Standard winning hand:
-     * 4 sets (sequences or triplets) + 1 pair
-     * 7 pairs
-   - No complex scoring system
+   - A standard winning hand consists of:
+     * 4 sets (each set can be a triplet of identical tiles or a sequence of three consecutive Characters) and 1 pair.
+     * Or 7 pairs (seven distinct pairs of identical tiles).
+   - Sequences (chows) are only allowed for Characters (1-9); Winds and Dragons can only form triplets or pairs.
+   - There is no scoring system; the first player to complete a valid winning hand wins the game.
 
-### 2.2 Key MDP Components
+### 2.3 Key MDP Components
 
 For the simplified two-player open-hand mahjong, we define the following key components:
 
-#### 2.2.1 Observation Space
+#### 2.3.1 Observation Space
 1. **Hand State** (Fully Observable)
    - Player's 13 tiles (fixed size)
    - Opponent's 13 tiles (visible in this variant)
@@ -79,7 +98,7 @@ For the simplified two-player open-hand mahjong, we define the following key com
    - Exposed melds (Pung only in this variant)
    - Number of melds per player
 
-#### 2.2.2 Action Space
+#### 2.3.2 Action Space
 1. **Regular Actions**
    - Discard: Choose 1 from hand (13-14 options)
    - Pung: Form triplet from opponent's discard (binary choice)
@@ -90,7 +109,7 @@ For the simplified two-player open-hand mahjong, we define the following key com
    - Can only discard when hand has 14 tiles
    - Can only win with valid winning hand
 
-#### 2.2.3 Transition Function
+#### 2.3.3 Transition Function
 1. **State Transitions**
    - After Discard: s → s' = (hand - discarded_tile, opponent_draw)
    - After Pung: s → s' = (hand + 3 identical_tiles - discard)
@@ -105,25 +124,23 @@ This simplified formulation helps us:
 - Design appropriate algorithms
 - Plan implementation stages
 
-### 2.3 Tile Notation
+### 2.2 Tile Combinations
 
-#### Characters (万)
-- Notation: 1-9 with 'C' suffix (e.g., 1C, 2C)
-- Complete set (1-9):
+- **Pair:** Consists of 2 identical tiles, for example:
   
-  ![1 Character](img/tiles/small/9.jpg) ![2 Character](img/tiles/small/10.jpg) ![3 Character](img/tiles/small/11.jpg) ![4 Character](img/tiles/small/12.jpg) ![5 Character](img/tiles/small/13.jpg) ![6 Character](img/tiles/small/14.jpg) ![7 Character](img/tiles/small/15.jpg) ![8 Character](img/tiles/small/16.jpg) ![9 Character](img/tiles/small/17.jpg)
+  ![2 Character](img/tiles/small/10.jpg) ![2 Character](img/tiles/small/10.jpg)
 
-#### Honors
-- Winds:
-  - East (东): ![East Wind](img/tiles/small/27.jpg)
-  - South (南): ![South Wind](img/tiles/small/28.jpg)
-  - West (西): ![West Wind](img/tiles/small/29.jpg)
-  - North (北): ![North Wind](img/tiles/small/30.jpg)
+- **Sequence (Chow):** Consists of 3 consecutive numbered tiles (Characters only), for example:
+  
+  ![3 Character](img/tiles/small/11.jpg) ![4 Character](img/tiles/small/12.jpg) ![5 Character](img/tiles/small/13.jpg)
 
-- Dragons:
-  - White Dragon (白板): ![White Dragon](img/tiles/small/33.jpg)
-  - Red Dragon (红中): ![Red Dragon](img/tiles/small/32.jpg)
-  - Green Dragon (发财): ![Green Dragon](img/tiles/small/31.jpg)
+- **Triplet (Pung):** Consists of 3 identical tiles, for example:
+  
+  ![7 Character](img/tiles/small/15.jpg) ![7 Character](img/tiles/small/15.jpg) ![7 Character](img/tiles/small/15.jpg)
+
+- **Kong:** Consists of 4 identical tiles, for example:
+  
+  ![East Wind](img/tiles/small/27.jpg) ![East Wind](img/tiles/small/27.jpg) ![East Wind](img/tiles/small/27.jpg) ![East Wind](img/tiles/small/27.jpg)
 
 ## 3. AI Implementation
 
@@ -192,6 +209,9 @@ flowchart TD
 
 ## 5. Future Steps
 
+<details>
+<summary><strong>5. Future Steps</strong></summary>
+
 ### 5.1 Four-Player Mahjong
 - Implement full four-player gameplay
 - Add concealed tiles
@@ -209,6 +229,8 @@ flowchart TD
 - Tournament system
 - Statistics and analytics
 - Custom rule support
+
+</details>
 
 ## Appendix A: Full Mahjong Rules and Theory
 
@@ -492,7 +514,3 @@ flowchart TD
    - Hand building speed
    - Defensive tile selection
    - Position-based strategy
-
-## Appendix B: Four-Player Mahjong (Legacy & Future Extension)
-
-### B.1 Four-Player Game Rules
