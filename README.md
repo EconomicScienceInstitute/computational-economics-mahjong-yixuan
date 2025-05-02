@@ -171,23 +171,6 @@ In the context of Mahjong, these elements correspond to:
       * Winning hand: Points from scoring table (e.g., Standard Hand 20 + All Characters 20 + Self-drawn 10 = 50)
       * Losing: -20
 
-   **Example Scenario**:
-   Starting hand: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)
-
-   AI Decision Process:
-   1. Keeps 1C triplet: +5 (triplet progress) +5 (All Characters progress)
-   2. Keeps 234C sequence: +5 (sequence progress) +5 (All Characters progress)
-   3. Draws 5C to keep: +5 (All Characters progress)
-   
-   If wins with a Standard Hand (all Characters):
-   * Final Score: Standard Hand (20) + All Characters (20) = 40 points
-   * The intermediate rewards guided AI towards this high-scoring hand
-
-   Key concept: **Reward-Score Alignment**
-   - Rewards during play reflect progress towards scoring hands
-   - Final scoring follows the Points System table exactly
-   - AI's decisions are guided towards achieving maximum final score
-
 4. **Step (State Transition)**:
    How actions change the game state:
    - After Discard: s → s' = (hand - discarded_tile, opponent_draw)
