@@ -10,10 +10,15 @@
 
 ### 1.2 Methodology: MDP and Bellman Equation
 
-The core challenge of Mahjong AI is to select optimal actions at each decision point based on the current state. MDP provides a mathematical framework to solve this sequential decision-making problem:
+The core challenge of Mahjong AI is to select optimal actions at each decision point based on the current state. This section introduces two fundamental concepts in reinforcement learning: Markov Decision Process (MDP) and Bellman equations.
+
+The relationship between these concepts is crucial:
+- MDP provides the mathematical framework for modeling sequential decision-making problems
+- Bellman equations offer the mathematical tools for solving MDPs
+- While MDP defines the problem structure (states, actions, rewards), Bellman equations help find optimal solutions
 
 #### 1.2.1 MDP Framework
-A Markov Decision Process is formally defined as a tuple (S, A, P, R, γ) where:
+A Markov Decision Process (MDP) is formally defined as a tuple (S, A, P, R, γ) where:
 - S: Set of states
 - A: Set of actions
 - P: S × A × S → [0,1] is the transition probability function
