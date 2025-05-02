@@ -18,7 +18,8 @@ The relationship between these concepts is crucial:
 - While MDP defines the problem structure (states, actions, rewards), Bellman equations help find optimal solutions
 
 #### 1.2.1 MDP Framework
-A Markov Decision Process (MDP) is formally defined as a tuple (S, A, P, R, γ) where:
+A Markov Decision Process (MDP) is formally defined as a tuple (S, A, P, R, γ). A tuple in mathematics is an ordered collection of elements, similar to a list where the order matters. In this case, these five elements together form the complete mathematical description of a decision-making problem:
+
 - S: Set of states
 - A: Set of actions
 - P: S × A × S → [0,1] is the transition probability function
