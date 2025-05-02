@@ -207,8 +207,6 @@ flowchart TD
     style K fill:#bfb,stroke:#333,stroke-width:2px
 ```
 
-## 5. Future Steps
-
 <details>
 <summary><strong>5. Future Steps</strong></summary>
 
@@ -230,7 +228,6 @@ flowchart TD
 - Statistics and analytics
 - Custom rule support
 
-</details>
 
 ## Appendix A: Full Mahjong Rules and Theory
 
@@ -514,3 +511,5 @@ flowchart TD
    - Hand building speed
    - Defensive tile selection
    - Position-based strategy
+
+</details>
