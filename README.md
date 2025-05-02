@@ -250,21 +250,36 @@ The Bellman equation is the core tool for solving MDP problems. It expresses a k
    This equation forms the basis for finding the optimal policy π*(s).
    
    Example optimal decision process:
-   1. Current hand: 
-      ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg)![5C](img/tiles/small/13.jpg)
+   1. Current hand: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg)![5C](img/tiles/small/13.jpg)
+   2. Possible actions and their values:
+      - Keep sequence potential (![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg)):
+        * Sequence progress: +5
+        * All Characters progress: +5
+        * Future potential (γ=0.9): +4.5
+        * V₁ = 14.5
 
-   2. Possible actions:
-      - Keep sequence potential (2C,3C,4C): 
-        ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg)
-        V₁ = 5 (sequence progress) + 5 (All Characters progress) + 0.9 * (future value)
-      
-      - Keep triplet (1C,1C,1C): 
-        ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)
-        V₂ = 5 (triplet progress) + 5 (All Characters progress) + 0.9 * (future value)
+      - Keep triplet (![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)):
+        * Triplet progress: +5
+        * All Characters progress: +5
+        * Future potential (γ=0.9): +4.5
+        * V₂ = 14.5
 
-   3. Choose action with max V*(s):
-      - If V₁ > V₂: Discard ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg), keep ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg)![5C](img/tiles/small/13.jpg)
-      - If V₂ > V₁: Discard ![5C](img/tiles/small/13.jpg), keep ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg)
+   3. In this case V₁ = V₂, so both actions are equally optimal
+      - Option 1: Discard ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg), targeting potential Pure Straight (20 points)
+      - Option 2: Discard ![5C](img/tiles/small/13.jpg), targeting All Triplets (30 points)
+
+   4. Final scoring potential:
+      - Pure Straight path:
+        * Standard Hand: 20
+        * Pure Straight: 20
+        * All Characters: 20
+        * Total potential: 60 points
+
+      - All Triplets path:
+        * Standard Hand: 20
+        * All Triplets: 30
+        * All Characters: 20
+        * Total potential: 70 points
 
 4. **Practical Implementation**:
    - Initialize value estimates for all states
