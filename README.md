@@ -171,24 +171,24 @@ In the context of Mahjong, these elements correspond to:
       * Winning hand: Points from scoring table (e.g., Standard Hand 20 + All Characters 20 + Self-drawn 10 = 50)
       * Losing: -20
 
-4. **Step (State Transition)**:
-   How actions change the game state:
-   - After Discard: s → s' = (hand - discarded_tile, opponent_draw)
-   - After Pung: s → s' = (hand + 3 identical_tiles - discard)
-   - After Chow: s → s' = (hand + 3 consecutive_tiles - discard)
+   4. **Step (State Transition)**:
+      How actions change the game state:
+      - After Discard: s → s' = (hand - discarded_tile, opponent_draw)
+      - After Pung: s → s' = (hand + 3 identical_tiles - discard)
+      - After Chow: s → s' = (hand + 3 consecutive_tiles - discard)
    
-   Key concept: **State Transition Properties**
-   - Each action leads to state transitions with certain probabilities
-   - Example: After discarding a tile, the next drawn tile is random
-   - Transition probability P(s'|s,a):
-     * Based on visible tiles and remaining count
-     * Considers opponent's possible actions
-     * Deterministic in this open-hand variant
+      Key concept: **State Transition Properties**
+      - Each action leads to state transitions with certain probabilities
+      - Example: After discarding a tile, the next drawn tile is random
+      - Transition probability P(s'|s,a):
+        * Based on visible tiles and remaining count
+        * Considers opponent's possible actions
+        * Deterministic in this open-hand variant
    
-   Each step results in:
-   - New observations becoming available
-   - Rewards being received
-   - Game state moving forward based on chosen actions
+      Each step results in:
+      - New observations becoming available
+      - Rewards being received
+      - Game state moving forward based on chosen actions
 
 #### 3.1.2 State Value Calculation
 
@@ -296,74 +296,6 @@ The Bellman equation is the core tool for solving MDP problems. It expresses a k
    - Position-based adjustments:
      * Leading: Conservative value estimates
      * Behind: Aggressive value estimates
-
-#### 3.1.3 Reward Function Details
-
-R(s,a,s') = Immediate_Value + Potential_Value
-where:
-- **Immediate_Value**:
-  * Complete set (sequence/triplet): +3
-  * Partial set progress: +1
-  * Breaking existing set: -2
-  * Ready hand formation: +5
-- **Potential_Value**:
-  * Tile efficiency (flexibility for future sets): 0-3
-  * Distance to ready hand: -5 to +5
-  * Safety consideration (avoid dangerous discards): -2 to +2
-
-#### 3.1.4 Strategy Optimization Methods
-
-1. **Value-based Selection**:
-   - Choose actions that maximize expected value
-   - Consider both immediate and future rewards
-   - Update values based on actual outcomes
-
-2. **Balance Considerations**:
-   - Exploration vs exploitation
-     * Early game: Higher exploration rate
-     * Late game: Focus on exploitation
-   - Risk vs reward
-     * Leading: Conservative play
-     * Behind: Aggressive strategy
-   - Offensive vs defensive
-     * Hand building speed
-     * Defensive tile selection
-
-3. **Learning Parameters**:
-   - Initial exploration rate: 0.3
-   - Exploration decay: 0.995 per round
-   - Minimum exploration rate: 0.05
-   - Learning rate: 0.1
-   - Value update weight: 0.7
-
-### 3.2 Implementation Details
-
-#### 3.2.1 Observation Space
-- **Hand State**: [t1, t2, ..., tn] where ti represents each tile
-- **Visible Information**: 
-  * Discarded tiles by all players
-  * Exposed melds (Chow/Pung)
-- **Game Progress**: 
-  * Remaining tile count
-  * Current round/wind
-
-#### 3.2.2 Action Space
-- **Discard Actions**: Choose one tile to discard
-- **Meld Actions**:
-  * Chow (吃): Form a sequence of three consecutive tiles
-  * Pung (碰): Form a triplet of identical tiles
-- **Special Actions**:
-  * Declare win
-  * Skip (Pass on opponent's discard)
-
-#### 3.2.3 Transition Function
-
-The relationship between these concepts is crucial:
-- MDP provides the mathematical framework for modeling sequential decision-making problems
-- Bellman equations offer the mathematical tools for solving MDPs
-- While MDP defines the problem structure (states, actions, rewards)
-- Transition probabilities describe how actions lead to new states
-- Bellman equation helps find the optimal value function and policy
 
 ## 4. System Flow Diagrams
 
