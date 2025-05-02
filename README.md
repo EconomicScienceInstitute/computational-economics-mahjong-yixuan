@@ -1,26 +1,101 @@
-# Mahjong AI System Design Document
+# Two-Player Mahjong Decision System Design Document
 
 ## 1. Project Overview
 
 ### 1.1 Project Goals
-- Implement a simplified two-player Mahjong AI system
-- Support open-hand gameplay (all tiles visible)
-- Optimize strategy selection using heuristic methods
-- Support human-AI gameplay
+- Implement a simplified two-player Mahjong decision system based on MDP (Markov Decision Process)
+- Support open-hand gameplay (both players' hands are visible)
+- Optimize tile selection and action decisions using state value estimation
+- Support human vs computer gameplay
 
-### 1.2 Methodology: MDP and Bellman Equation
+## 2. Game Rules
 
-The core challenge of Mahjong AI is to select optimal actions at each decision point based on the current state. This section introduces two fundamental concepts in reinforcement learning: Markov Decision Process (MDP) and Bellman equations.
+### 2.1 Tile Notation
+
+#### Characters (Manzu, 万)
+- Notation: 1-9 with 'C' suffix (e.g., 1C, 2C)
+- Complete set (1-9):
+  
+  ![1 Character](img/tiles/small/9.jpg) ![2 Character](img/tiles/small/10.jpg) ![3 Character](img/tiles/small/11.jpg) ![4 Character](img/tiles/small/12.jpg) ![5 Character](img/tiles/small/13.jpg) ![6 Character](img/tiles/small/14.jpg) ![7 Character](img/tiles/small/15.jpg) ![8 Character](img/tiles/small/16.jpg) ![9 Character](img/tiles/small/17.jpg)
+
+#### Honors
+- Winds:
+  - East (东): ![East Wind](img/tiles/small/27.jpg)
+  - South (南): ![South Wind](img/tiles/small/28.jpg)
+  - West (西): ![West Wind](img/tiles/small/29.jpg)
+  - North (北): ![North Wind](img/tiles/small/30.jpg)
+- Dragons:
+  - White Dragon (白板): ![White Dragon](img/tiles/small/33.jpg)
+  - Red Dragon (红中): ![Red Dragon](img/tiles/small/32.jpg)
+  - Green Dragon (发财): ![Green Dragon](img/tiles/small/31.jpg)
+
+### 2.2 Tile Combinations
+
+- **Pair:** Consists of 2 identical tiles, for example:
+  
+  ![2 Character](img/tiles/small/10.jpg) ![2 Character](img/tiles/small/10.jpg)
+
+- **Sequence (Chow):** Consists of 3 consecutive numbered tiles (Characters only), for example:
+  
+  ![3 Character](img/tiles/small/11.jpg) ![4 Character](img/tiles/small/12.jpg) ![5 Character](img/tiles/small/13.jpg)
+
+- **Triplet (Pung):** Consists of 3 identical tiles, for example:
+  
+  ![7 Character](img/tiles/small/15.jpg) ![7 Character](img/tiles/small/15.jpg) ![7 Character](img/tiles/small/15.jpg)
+
+- **Kong:** Consists of 4 identical tiles, for example:
+  
+  ![East Wind](img/tiles/small/27.jpg) ![East Wind](img/tiles/small/27.jpg) ![East Wind](img/tiles/small/27.jpg) ![East Wind](img/tiles/small/27.jpg)
+
+### 2.3 Simplified Rules
+1. **Tile Set**
+   - Characters (Manzu, 万): 1-9, 4 copies each (36 tiles)
+   - Winds: East, South, West, North, 4 copies each (16 tiles)
+   - Dragons: Red, Green, White, 4 copies each (12 tiles)
+   - **Total: 64 tiles**
+
+2. **Initial Setup**
+   - Two players
+   - Each player is dealt 13 tiles (26 tiles in total)
+   - The remaining 38 tiles form the wall (draw pile). All tiles in the wall are face-down (hidden) until drawn.
+   - All hands are open (fully visible to both players)
+
+3. **Game Flow**
+   - Players take turns drawing and discarding tiles
+   - When an opponent discards, you can:
+     * Chow (吃): Form a sequence ![3 Character](img/tiles/small/11.jpg)![4 Character](img/tiles/small/12.jpg)![5 Character](img/tiles/small/13.jpg)
+     * Pung (碰): Form a triplet ![7 Character](img/tiles/small/15.jpg)![7 Character](img/tiles/small/15.jpg)![7 Character](img/tiles/small/15.jpg)
+     * Win (if your hand is complete)
+
+4. **Winning Hands**
+   - Standard winning hand (14 tiles):
+     * 4 sets + 1 pair
+     * Example: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![6C](img/tiles/small/14.jpg)![7C](img/tiles/small/15.jpg)![8C](img/tiles/small/16.jpg) ![9C](img/tiles/small/17.jpg)![9C](img/tiles/small/17.jpg)
+   - Or 7 pairs (14 tiles):
+     * Example: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![2C](img/tiles/small/10.jpg) ![3C](img/tiles/small/11.jpg)![3C](img/tiles/small/11.jpg) ![4C](img/tiles/small/12.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![6C](img/tiles/small/14.jpg)![6C](img/tiles/small/14.jpg) ![7C](img/tiles/small/15.jpg)![7C](img/tiles/small/15.jpg)
+   - Note: Sequences (Chow) only allowed for Characters (1-9)
+
+## 3. Decision System Design
+
+### 3.1 Methodology: MDP and Bellman Equation
+
+The core challenge of two-player Mahjong decisions is to select optimal actions at each decision point based on the current state. This section introduces the Markov Decision Process (MDP) framework, which includes:
+- Problem formulation: States (S), Actions (A), Transition probabilities (P), Rewards (R), Discount factor (γ)
+- Bellman optimality equation for finding optimal solutions
+- Optimal policy derivation based on value functions
 
 The relationship between these concepts is crucial:
 - MDP provides the mathematical framework for modeling sequential decision-making problems
 - Bellman equations offer the mathematical tools for solving MDPs
-- While MDP defines the problem structure (states, actions, rewards), Bellman equations help find optimal solutions
+- While MDP defines the problem structure (states, actions, rewards)
+- Transition probabilities describe how actions lead to new states
+- Bellman equation helps find the optimal value function and policy
 
-#### 1.2.1 MDP Framework
+#### 3.1.1 MDP Framework
 A Markov Decision Process (MDP) is formally defined as a tuple (S, A, P, R, γ). 
-A tuple in mathematics is an ordered collection of elements, similar to a list where the order matters. In this case, these five elements together form the complete mathematical description of a decision-making problem:
+A tuple in mathematics is an ordered collection of elements, similar to a list where the order matters. 
 
+In this case, these five elements together form the complete mathematical description of a decision-making problem:
 - S: Set of states
 - A: Set of actions
 - P: S × A × S → [0,1] is the transition probability function
@@ -29,34 +104,65 @@ A tuple in mathematics is an ordered collection of elements, similar to a list w
   * R(s,a,s') is immediate reward for transition (s,a,s')
 - γ ∈ [0,1] is the discount factor
 
-1. **Markov Property**: The next state depends only on the current state and action, independent of history
+In the context of Mahjong, these elements correspond to:
+1. **Observation (State)**:
+   - Current hand tiles [t1, t2, ..., tn]
+   - Visible discards and exposed melds
+   - Opponent's hand (in this open-hand variant)
+   - Game progress (remaining tiles, wall count)
+   
+   Key concept: **Markov Property**
+   - Next state depends only on current state and action, independent of history
    - Example: Current hand + visible tiles contain all information needed for decision making
    
-2. **State Transition**: Each action leads to state transitions with certain probabilities
-   - Example: After discarding a tile, the next drawn tile is random
+2. **Action**:
+   - Discard: Choose 1 tile from hand (13-14 options)
+   - Meld: Form Chow (sequence) or Pung (triplet)
+   - Win: Declare win with valid hand
    
-3. **Immediate Rewards**: Each state transition has an associated reward value
+   Each action is evaluated based on:
+   - Immediate effect on hand composition
+   - Future possibilities it creates/destroys
+   - Opponent's potential responses
+
+3. **Reward**:
+   - Immediate rewards:
+     * Complete set (sequence/triplet): +3
+     * Partial set progress: +1
+     * Breaking existing set: -2
+     * Ready hand formation: +5
+   - Potential rewards:
+     * Tile efficiency (flexibility): 0-3
+     * Distance to ready hand: -5 to +5
+     * Safety consideration: -2 to +2
+   - Final rewards:
+     * Winning the game: +100
+     * Losing the game: -100
+   
+   Key concept: **Reward Association**
+   - Each state transition has an associated reward value
    - Example: Forming a sequence yields positive reward, breaking a potential set yields negative reward
 
-#### 1.2.2 State Space (S)
-- **Hand State**: [t1, t2, ..., tn] where ti represents each tile
-- **Visible Information**: 
-  * Discarded tiles by all players
-  * Exposed melds (Chow/Pung)
-- **Game Progress**: 
-  * Remaining tile count
-  * Current round/wind
+4. **Step (State Transition)**:
+   How actions change the game state:
+   - After Discard: s → s' = (hand - discarded_tile, opponent_draw)
+   - After Pung: s → s' = (hand + 3 identical_tiles - discard)
+   - After Chow: s → s' = (hand + 3 consecutive_tiles - discard)
+   
+   Key concept: **State Transition Properties**
+   - Each action leads to state transitions with certain probabilities
+   - Example: After discarding a tile, the next drawn tile is random
+   - Transition probability P(s'|s,a):
+     * Based on visible tiles and remaining count
+     * Considers opponent's possible actions
+     * Deterministic in this open-hand variant
+   
+   Each step results in:
+   - New observations becoming available
+   - Rewards being received
+   - Game state moving forward based on chosen actions
 
-#### 1.2.3 Action Space (A)
-- **Discard Actions**: Choose one tile to discard
-- **Meld Actions**:
-  * Chow (吃): Form a sequence of three consecutive tiles
-  * Pung (碰): Form a triplet of identical tiles
-- **Special Actions**:
-  * Declare win
-  * Skip (Pass on opponent's discard)
-
-#### 1.2.4 Bellman Equation and Dynamic Programming
+#### 3.1.2 State Value Calculation
 
 The Bellman equation is the core tool for solving MDP problems. It expresses a key idea: the value of a state under optimal policy can be calculated recursively.
 
@@ -140,7 +246,7 @@ The Bellman equation is the core tool for solving MDP problems. It expresses a k
      * Leading: Conservative value estimates
      * Behind: Aggressive value estimates
 
-#### 1.2.5 Reward Function Details
+#### 3.1.3 Reward Function Details
 
 R(s,a,s') = Immediate_Value + Potential_Value
 where:
@@ -154,7 +260,7 @@ where:
   * Distance to ready hand: -5 to +5
   * Safety consideration (avoid dangerous discards): -2 to +2
 
-#### 1.2.6 Strategy Optimization Methods
+#### 3.1.4 Strategy Optimization Methods
 
 1. **Value-based Selection**:
    - Choose actions that maximize expected value
@@ -179,171 +285,34 @@ where:
    - Learning rate: 0.1
    - Value update weight: 0.7
 
-### 1.3 Technology Stack
-- Backend: Python
-  * FastAPI (Web Framework)
-  * NumPy (Vectorized Computation)
-  * WebSocket (Real-time Communication)
-- Performance Analysis:
-  * line_profiler (Code Performance Analysis)
-  * memory_profiler (Memory Usage Analysis)
+### 3.2 Implementation Details
 
-### 1.4 Core Features
-1. **Basic Game System**
-   - Tile representation and management
-   - Game state tracking
-   - Rule validation (winning hands)
+#### 3.2.1 Observation Space
+- **Hand State**: [t1, t2, ..., tn] where ti represents each tile
+- **Visible Information**: 
+  * Discarded tiles by all players
+  * Exposed melds (Chow/Pung)
+- **Game Progress**: 
+  * Remaining tile count
+  * Current round/wind
 
-2. **AI Decision System**
-   - Hand evaluation
-   - Action selection
-   - Strategy optimization
+#### 3.2.2 Action Space
+- **Discard Actions**: Choose one tile to discard
+- **Meld Actions**:
+  * Chow (吃): Form a sequence of three consecutive tiles
+  * Pung (碰): Form a triplet of identical tiles
+- **Special Actions**:
+  * Declare win
+  * Skip (Pass on opponent's discard)
 
-3. **Performance Optimization**
-   - State space compression
-   - Computation result caching
-   - Vectorized operations
+#### 3.2.3 Transition Function
 
-## 2. Game Rules
-
-### 2.1 Tile Notation
-
-#### Characters (Manzu, 万)
-- Notation: 1-9 with 'C' suffix (e.g., 1C, 2C)
-- Complete set (1-9):
-  
-  ![1 Character](img/tiles/small/9.jpg) ![2 Character](img/tiles/small/10.jpg) ![3 Character](img/tiles/small/11.jpg) ![4 Character](img/tiles/small/12.jpg) ![5 Character](img/tiles/small/13.jpg) ![6 Character](img/tiles/small/14.jpg) ![7 Character](img/tiles/small/15.jpg) ![8 Character](img/tiles/small/16.jpg) ![9 Character](img/tiles/small/17.jpg)
-
-#### Honors
-- Winds:
-  - East (东): ![East Wind](img/tiles/small/27.jpg)
-  - South (南): ![South Wind](img/tiles/small/28.jpg)
-  - West (西): ![West Wind](img/tiles/small/29.jpg)
-  - North (北): ![North Wind](img/tiles/small/30.jpg)
-- Dragons:
-  - White Dragon (白板): ![White Dragon](img/tiles/small/33.jpg)
-  - Red Dragon (红中): ![Red Dragon](img/tiles/small/32.jpg)
-  - Green Dragon (发财): ![Green Dragon](img/tiles/small/31.jpg)
-
-### 2.2 Simplified Rules
-1. **Tile Set**
-   - Characters (Manzu, 万): 1-9, 4 copies each (36 tiles)
-   - Winds: East, South, West, North, 4 copies each (16 tiles)
-   - Dragons: Red, Green, White, 4 copies each (12 tiles)
-   - **Total: 64 tiles**
-
-2. **Initial Setup**
-   - Two players
-   - Each player is dealt 13 tiles (26 tiles in total)
-   - The remaining 38 tiles form the wall (draw pile). All tiles in the wall are face-down (hidden) until drawn.
-   - All hands are open (fully visible to both players)
-
-3. **Game Flow**
-   - Players take turns drawing and discarding tiles
-   - When an opponent discards, you can:
-     * Chow (吃): Form a sequence ![3 Character](img/tiles/small/11.jpg)![4 Character](img/tiles/small/12.jpg)![5 Character](img/tiles/small/13.jpg)
-     * Pung (碰): Form a triplet ![7 Character](img/tiles/small/15.jpg)![7 Character](img/tiles/small/15.jpg)![7 Character](img/tiles/small/15.jpg)
-     * Win (if your hand is complete)
-
-4. **Winning Hands**
-   - Standard winning hand (14 tiles):
-     * 4 sets + 1 pair
-     * Example: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![6C](img/tiles/small/14.jpg)![7C](img/tiles/small/15.jpg)![8C](img/tiles/small/16.jpg) ![9C](img/tiles/small/17.jpg)![9C](img/tiles/small/17.jpg)
-   - Or 7 pairs (14 tiles):
-     * Example: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![2C](img/tiles/small/10.jpg) ![3C](img/tiles/small/11.jpg)![3C](img/tiles/small/11.jpg) ![4C](img/tiles/small/12.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![6C](img/tiles/small/14.jpg)![6C](img/tiles/small/14.jpg) ![7C](img/tiles/small/15.jpg)![7C](img/tiles/small/15.jpg)
-   - Note: Sequences (Chow) only allowed for Characters (1-9)
-
-### 2.3 Key MDP Components
-
-For the simplified two-player open-hand mahjong, we define the following key components:
-
-#### 2.3.1 Observation Space
-1. **Hand State** (Fully Observable)
-   - Player's 13 tiles (fixed size)
-   - Opponent's 13 tiles (visible in this variant)
-   - Last drawn tile (if any)
-
-2. **Game Progress**
-   - Remaining tile count in wall
-   - Discarded tiles from both players
-   - Current turn indicator
-
-3. **Meld Information**
-   - Exposed melds (Chow and Pung)
-   - Number of melds per player
-
-#### 2.3.2 Action Space
-1. **Regular Actions**
-   - Discard: Choose 1 from hand (13-14 options)
-   - Pung: Form triplet from opponent's discard (binary choice)
-   - Chow: Form sequence from opponent's discard (binary choice)
-   - Win: Declare win (binary choice)
-
-2. **Action Constraints**
-   - Can only Pung or Chow when opponent discards
-   - Can only discard when hand has 14 tiles
-   - Can only win with valid winning hand
-
-#### 2.3.3 Transition Function
-1. **State Transitions**
-   - After Discard: s → s' = (hand - discarded_tile, opponent_draw)
-   - After Pung: s → s' = (hand + 3 identical_tiles - discard)
-   - Deterministic due to open information
-
-2. **Transition Probabilities**
-   - Wall draws: P(tile) = remaining_count / total_remaining
-   - Opponent actions: Deterministic in perfect information game
-
-This simplified formulation helps us:
-- Evaluate problem complexity
-- Design appropriate algorithms
-- Plan implementation stages
-
-### 2.2 Tile Combinations
-
-- **Pair:** Consists of 2 identical tiles, for example:
-  
-  ![2 Character](img/tiles/small/10.jpg) ![2 Character](img/tiles/small/10.jpg)
-
-- **Sequence (Chow):** Consists of 3 consecutive numbered tiles (Characters only), for example:
-  
-  ![3 Character](img/tiles/small/11.jpg) ![4 Character](img/tiles/small/12.jpg) ![5 Character](img/tiles/small/13.jpg)
-
-- **Triplet (Pung):** Consists of 3 identical tiles, for example:
-  
-  ![7 Character](img/tiles/small/15.jpg) ![7 Character](img/tiles/small/15.jpg) ![7 Character](img/tiles/small/15.jpg)
-
-- **Kong:** Consists of 4 identical tiles, for example:
-  
-  ![East Wind](img/tiles/small/27.jpg) ![East Wind](img/tiles/small/27.jpg) ![East Wind](img/tiles/small/27.jpg) ![East Wind](img/tiles/small/27.jpg)
-
-## 3. AI Implementation
-
-### 3.1 Heuristic Approach
-1. **Hand Evaluation**
-   - Calculate distance to winning hand
-   - Count potential sets (sequences/triplets)
-   - Evaluate pair formation
-   - Consider tile safety
-
-2. **Decision Making**
-   - Evaluate discard options
-   - Consider opponent's potential moves
-   - Balance offense and defense
-   - Optimize for quick wins
-
-### 3.2 Monte Carlo Tree Search (MCTS)
-1. **Simulation Process**
-   - Simulate future tile draws
-   - Evaluate different discard strategies
-   - Calculate win probabilities
-   - Select optimal moves
-
-2. **Optimization**
-   - Parallel simulation
-   - Early termination
-   - State caching
-   - Adaptive search depth
+The relationship between these concepts is crucial:
+- MDP provides the mathematical framework for modeling sequential decision-making problems
+- Bellman equations offer the mathematical tools for solving MDPs
+- While MDP defines the problem structure (states, actions, rewards)
+- Transition probabilities describe how actions lead to new states
+- Bellman equation helps find the optimal value function and policy
 
 ## 4. System Flow Diagrams
 
@@ -402,7 +371,6 @@ flowchart TD
 - Tournament system
 - Statistics and analytics
 - Custom rule support
-
 
 ## Appendix A: Full Mahjong Rules and Theory
 
@@ -690,5 +658,5 @@ flowchart TD
    - Hand building speed
    - Defensive tile selection
    - Position-based strategy
-
 </details>
+
