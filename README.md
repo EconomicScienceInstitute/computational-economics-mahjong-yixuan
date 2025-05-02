@@ -8,7 +8,7 @@
 - Optimize tile selection and action decisions using state value estimation
 - Support human vs computer gameplay
 
-## 2. Game Rules
+## 2. Two-Player Mahjong Game Rules
 
 ### 2.1 Tile Notation
 
