@@ -67,13 +67,39 @@
      * Pung (碰): Form a triplet ![7 Character](img/tiles/small/15.jpg)![7 Character](img/tiles/small/15.jpg)![7 Character](img/tiles/small/15.jpg)
      * Win (if your hand is complete)
 
-4. **Winning Hands**
+4. **Winning Hands and Scoring**
    - Standard winning hand (14 tiles):
      * 4 sets + 1 pair
      * Example: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![6C](img/tiles/small/14.jpg)![7C](img/tiles/small/15.jpg)![8C](img/tiles/small/16.jpg) ![9C](img/tiles/small/17.jpg)![9C](img/tiles/small/17.jpg)
-   - Or 7 pairs (14 tiles):
+   - Seven pairs (14 tiles):
      * Example: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![2C](img/tiles/small/10.jpg) ![3C](img/tiles/small/11.jpg)![3C](img/tiles/small/11.jpg) ![4C](img/tiles/small/12.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![6C](img/tiles/small/14.jpg)![6C](img/tiles/small/14.jpg) ![7C](img/tiles/small/15.jpg)![7C](img/tiles/small/15.jpg)
    - Note: Sequences (Chow) only allowed for Characters (1-9)
+
+   **Points System:**
+   | Type | Points | Description | Example |
+   |------|--------|-------------|---------|
+   | **Basic Winning Hands** |
+   | Standard Hand | 20 | 4 sets + 1 pair | ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg) + pair |
+   | Seven Pairs | 30 | 7 pairs of tiles | ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![2C](img/tiles/small/10.jpg) ... |
+   | **Suit Bonus** |
+   | All Characters | +20 | All tiles are Characters | All Character tiles |
+   | All Honors | +40 | All tiles are Winds/Dragons | All Winds + Dragons |
+   | **Pattern Bonus** |
+   | All Triplets | +30 | Four triplets + one pair | Four Pungs + pair |
+   | Pure Straight | +20 | 123-456-789 | ![1C](img/tiles/small/9.jpg)![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg) ![4C](img/tiles/small/12.jpg)![5C](img/tiles/small/13.jpg)![6C](img/tiles/small/14.jpg) ![7C](img/tiles/small/15.jpg)![8C](img/tiles/small/16.jpg)![9C](img/tiles/small/17.jpg) |
+   | Terminal Sets | +10 | 123-789 same suit | ![1C](img/tiles/small/9.jpg)![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg) ![7C](img/tiles/small/15.jpg)![8C](img/tiles/small/16.jpg)![9C](img/tiles/small/17.jpg) |
+   | **Additional Bonus** |
+   | Concealed Hand | +10 | No melded sets | All self-drawn tiles |
+   | Self-drawn Win | +10 | Win by self-draw | - |
+   | Concealed Triplet | +5 each | Non-melded triplet | Three identical tiles drawn |
+   | Dragon Triplet | +10 each | White/Red/Green Dragon triplet | ![White Dragon](img/tiles/small/33.jpg)![White Dragon](img/tiles/small/33.jpg)![White Dragon](img/tiles/small/33.jpg) |
+   | Wind Triplet | +5 each | ESWN Wind triplet | ![East Wind](img/tiles/small/27.jpg)![East Wind](img/tiles/small/27.jpg)![East Wind](img/tiles/small/27.jpg) |
+
+   **Example Scoring:**
+   1. Basic winning hand:
+      - Base points(20) + Concealed triplet(5) + Self-drawn(10) = 35 points
+   2. All Characters seven pairs:
+      - Seven pairs(30) + All Characters(20) + Concealed hand(10) = 60 points
 
 ## 3. Decision System Design
 
