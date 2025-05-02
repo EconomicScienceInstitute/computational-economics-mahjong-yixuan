@@ -65,6 +65,20 @@ The Bellman equation is the core tool for solving MDP problems. It expresses a k
    - γ: Discount factor (0.8-0.95)
    - P(s'|s,a): State transition probability
    - V(s'): Value of next state
+   
+   In Mahjong context:
+   - State s: Current hand [1C,1C,1C,2C,3C,4C,5C]
+   - Action a: Discard 5C
+   - R(s,a): Immediate reward
+     * +3 for keeping the 1C triplet
+     * +2 for the potential 2C,3C,4C sequence
+     * -1 for breaking connection with 5C
+   - P(s'|s,a): Probability of next states
+     * Based on remaining tiles in wall
+     * Considers opponent's possible actions
+   - γ: Discount factor (e.g., 0.9)
+     * Earlier completed sets worth more
+     * Balances immediate vs future gains
 
 3. **Optimal Value Function**:
    The optimal value function V*(s) satisfies the Bellman optimality equation:
@@ -72,11 +86,48 @@ The Bellman equation is the core tool for solving MDP problems. It expresses a k
    V*(s) = max<sub>a∈A</sub>[R(s,a) + γΣ<sub>s'∈S</sub>P(s'|s,a)V*(s')]
 
    This equation forms the basis for finding the optimal policy π*(s).
+   
+   Example optimal decision process:
+   1. Current hand: [1C,1C,1C,2C,3C,4C,5C]
+   2. Possible actions:
+      - Keep sequence potential (2C,3C,4C): V₁ = 2 + 0.9 * (future value)
+      - Keep triplet (1C,1C,1C): V₂ = 3 + 0.9 * (future value)
+   3. Choose action with max V*(s)
+      - If V₁ > V₂: Discard 1C
+      - If V₂ > V₁: Discard 5C
 
-4. **Application in Mahjong**:
+4. **Practical Implementation**:
+   - Initialize value estimates for all states
+   - Iteratively update values using Bellman equation
+   - Example iteration:
+     ```python
+     # Value iteration for a specific hand state
+     def update_value(hand_state):
+         max_value = float('-inf')
+         for action in possible_actions(hand_state):
+             immediate_reward = calculate_reward(hand_state, action)
+             future_value = sum(
+                 prob * stored_values[next_state]
+                 for next_state, prob in get_next_states(hand_state, action)
+             )
+             value = immediate_reward + GAMMA * future_value
+             max_value = max(max_value, value)
+         return max_value
+     ```
+
+5. **Application in Mahjong Strategy**:
    - Evaluate the value of each tile discard option
    - Balance immediate gains (e.g., forming a sequence) vs long-term benefits (e.g., ready hand opportunity)
    - Find optimal discard strategy through iterative calculation
+   - Short-term vs Long-term trade-offs:
+     * Keeping a triplet (immediate guaranteed value)
+     * Building towards a sequence (potential future value)
+   - Risk consideration:
+     * Safe discards vs Offensive plays
+     * Probability of completing sets
+   - Position-based adjustments:
+     * Leading: Conservative value estimates
+     * Behind: Aggressive value estimates
 
 #### 1.2.5 Reward Function Details
 
