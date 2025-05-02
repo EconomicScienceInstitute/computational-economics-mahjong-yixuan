@@ -68,6 +68,13 @@
      * Win (if your hand is complete)
 
 4. **Winning Hands and Points System**
+   - Note: Sequences (Chow) only allowed for Characters (1-9)
+
+   **Scoring System Overview:**
+   - Base points: Basic score for completing a valid hand
+   - Bonus points: Additional points for special patterns or conditions
+   - Total points: Sum of base points and all applicable bonuses
+
    - Standard winning hand (14 tiles):
      * 4 sets + 1 pair
      * Example: ![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg)![1C](img/tiles/small/9.jpg) ![2C](img/tiles/small/10.jpg)![3C](img/tiles/small/11.jpg)![4C](img/tiles/small/12.jpg) ![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg)![5C](img/tiles/small/13.jpg) ![6C](img/tiles/small/14.jpg)![7C](img/tiles/small/15.jpg)![8C](img/tiles/small/16.jpg) ![9C](img/tiles/small/17.jpg)![9C](img/tiles/small/17.jpg)
