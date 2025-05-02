@@ -8,7 +8,109 @@
 - Optimize strategy selection using heuristic methods
 - Support human-AI gameplay
 
-### 1.2 Technology Stack
+### 1.2 Methodology: MDP and Bellman Equation
+
+The core challenge of Mahjong AI is to select optimal actions at each decision point based on the current state. MDP provides a mathematical framework to solve this sequential decision-making problem:
+
+#### 1.2.1 MDP Framework
+A Markov Decision Process is formally defined as a tuple (S, A, P, R, γ) where:
+- S: Set of states
+- A: Set of actions
+- P: S × A × S → [0,1] is the transition probability function
+  * P(s'|s,a) is probability of reaching state s' from state s taking action a
+- R: S × A × S → ℝ is the reward function
+  * R(s,a,s') is immediate reward for transition (s,a,s')
+- γ ∈ [0,1] is the discount factor
+
+1. **Markov Property**: The next state depends only on the current state and action, independent of history
+   - Example: Current hand + visible tiles contain all information needed for decision making
+   
+2. **State Transition**: Each action leads to state transitions with certain probabilities
+   - Example: After discarding a tile, the next drawn tile is random
+   
+3. **Immediate Rewards**: Each state transition has an associated reward value
+   - Example: Forming a sequence yields positive reward, breaking a potential set yields negative reward
+
+#### 1.2.2 State Space (S)
+- **Hand State**: [t1, t2, ..., tn] where ti represents each tile
+- **Visible Information**: 
+  * Discarded tiles by all players
+  * Exposed melds (Chi/Pon)
+- **Game Progress**: 
+  * Remaining tile count
+  * Current round/wind
+
+#### 1.2.3 Action Space (A)
+- **Discard Actions**: Choose one tile to discard
+- **Meld Actions**:
+  * Chi (Sequence formation)
+  * Pon (Triplet formation)
+- **Special Actions**:
+  * Declare win
+  * Skip (Pass on opponent's discard)
+
+#### 1.2.4 Bellman Equation and Dynamic Programming
+
+The Bellman equation is the core tool for solving MDP problems. It expresses a key idea: the value of a state under optimal policy can be calculated recursively.
+
+1. **Core Concept**:
+   - State value = Immediate reward + Discounted sum of future values
+   - Using recursion to break down long-term decisions into a series of single-step decisions
+
+2. **Mathematical Expression**:
+   V(s) = max_a[R(s,a) + γ * Σ P(s'|s,a)V(s')]
+   where:
+   - V(s): Value of state s
+   - R(s,a): Immediate reward for action a
+   - γ: Discount factor (0.8-0.95)
+   - P(s'|s,a): State transition probability
+   - V(s'): Value of next state
+
+3. **Application in Mahjong**:
+   - Evaluate the value of each tile discard option
+   - Balance immediate gains (e.g., forming a sequence) vs long-term benefits (e.g., ready hand opportunity)
+   - Find optimal discard strategy through iterative calculation
+
+#### 1.2.5 Reward Function Details
+
+R(s,a,s') = Immediate_Value + Potential_Value
+where:
+- **Immediate_Value**:
+  * Complete set (sequence/triplet): +3
+  * Partial set progress: +1
+  * Breaking existing set: -2
+  * Ready hand formation: +5
+- **Potential_Value**:
+  * Tile efficiency (flexibility for future sets): 0-3
+  * Distance to ready hand: -5 to +5
+  * Safety consideration (avoid dangerous discards): -2 to +2
+
+#### 1.2.6 Strategy Optimization Methods
+
+1. **Value-based Selection**:
+   - Choose actions that maximize expected value
+   - Consider both immediate and future rewards
+   - Update values based on actual outcomes
+
+2. **Balance Considerations**:
+   - Exploration vs exploitation
+     * Early game: Higher exploration rate
+     * Late game: Focus on exploitation
+   - Risk vs reward
+     * Leading: Conservative play
+     * Behind: Aggressive strategy
+   - Offensive vs defensive
+     * Hand building speed
+     * Defensive tile selection
+
+3. **Learning Parameters**:
+   - Initial exploration rate: 0.3
+   - Exploration decay: 0.995 per round
+   - Minimum exploration rate: 0.05
+   - Learning rate: 0.1
+   - Value update weight: 0.7
+
+### 1.3 Technology Stack
 - Backend: Python
   * FastAPI (Web Framework)
   * NumPy (Vectorized Computation)
@@ -17,7 +119,7 @@
   * line_profiler (Code Performance Analysis)
   * memory_profiler (Memory Usage Analysis)
 
-### 1.3 Core Features
+### 1.4 Core Features
 1. **Basic Game System**
    - Tile representation and management
    - Game state tracking
