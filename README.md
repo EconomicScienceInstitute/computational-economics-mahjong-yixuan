@@ -208,7 +208,7 @@ flowchart TD
 ```
 
 <details>
-<summary><strong>5. Future Steps</strong></summary>
+<summary style="font-size: 1.5em"><strong>5. Future Steps</strong></summary>
 
 ### 5.1 Four-Player Mahjong
 - Implement full four-player gameplay
