@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Two-Player Mahjong</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        .game-board {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .player {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+        }
+        .player.current {
+            background-color: #c8e6c9;
+            border: 2px solid #4caf50;
+        }
+        .tiles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .tile {
+            width: 40px;
+            height: 60px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-board">
+        <h1>Two-Player Mahjong</h1>
+        {% for i in range(2) %}
+        <div class="player {% if i == current_player %}current{% endif %}">
+            <h2>Player {{ i + 1 }}</h2>
+            <div class="tiles">
+                {% for tile in player_hands[i] %}
+                <div class="tile" style="background-image: url('/static/tiles/{{ tile }}.png')"></div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html> 
