@@ -5,3 +5,20 @@ docs/*.log
 docs/*.synctex.gz
 docs/*.pdf
 run.bat
+
+# macOS system files
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE
+.idea/
+.vscode/
+
+# Environment
+venv/
+env/
+.env
