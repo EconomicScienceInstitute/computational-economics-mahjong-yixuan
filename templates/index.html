@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Single Player Mahjong</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        
+        .game-board {
+            background-color: #2a5e23;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .hand {
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+            margin: 10px 0;
+            padding: 20px;
+            min-height: 80px;
+        }
+        
+        .wall {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 5px;
+            min-height: 100px;
+        }
+        
+        .wall-tile {
+            width: 30px;
+            height: 40px;
+            background-color: #d4d4d4;
+            border: 1px solid #999;
+            border-radius: 3px;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            margin: 2px;
+            overflow: hidden;
+        }
+        
+        .wall-tile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .discarded {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+        
+        .discarded-tile {
+            width: 30px;
+            height: 40px;
+            overflow: hidden;
+        }
+        
+        .discarded-tile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+        }
+        
+        .tile {
+            width: 45px;
+            height: 60px;
+            background-color: white;
+            border: 1px solid #999;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            overflow: hidden;
+            margin: 0 2px;
+        }
+        
+        .tile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .tile:hover {
+            transform: translateY(-10px);
+            box-shadow: 2px 8px 8px rgba(0,0,0,0.3);
+        }
+        
+        .tile.latest {
+            border-bottom: 3px solid #ff4444;
+        }
+        
+        .message {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .stats {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 18px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Single Player Mahjong</h1>
+    
+    <div class="controls">
+        <button onclick="newGame()">New Game</button>
+    </div>
+    
+    <div class="message" id="message">
+        Welcome! Click "New Game" to start.
+    </div>
+    
+    <div class="game-board">
+        <div class="stats" id="stats">
+            Steps: 0 | Tiles in wall: 0
+        </div>
+        
+        <div class="hand" id="hand">
+            <!-- Tiles will be added here -->
+        </div>
+        
+        <div class="wall" id="wall">
+            <!-- Wall tiles will be added here -->
+        </div>
+        
+        <div class="discarded" id="discarded">
+            <!-- Discarded tiles will be added here -->
+        </div>
+    </div>
+    
+    <script>
+        let gameState = null;
+        
+        function updateUI() {
+            const handDiv = document.getElementById('hand');
+            const wallDiv = document.getElementById('wall');
+            const messageDiv = document.getElementById('message');
+            const statsDiv = document.getElementById('stats');
+            const discardedDiv = document.getElementById('discarded');
+            
+            if (!gameState) return;
+            
+            // Clear all display areas first
+            handDiv.innerHTML = '';
+            wallDiv.innerHTML = '';
+            discardedDiv.innerHTML = '';
+            
+            // Update hand
+            gameState.hand.forEach(tile => {
+                const tileDiv = document.createElement('div');
+                tileDiv.className = 'tile';
+                tileDiv.onclick = () => discardTile(tile.number);
+                
+                const img = document.createElement('img');
+                img.src = tile.image;
+                img.alt = `Tile ${tile.number}`;
+                
+                tileDiv.appendChild(img);
+                handDiv.appendChild(tileDiv);
+            });
+            
+            // Update wall
+            gameState.wall.forEach(tile => {
+                const tileDiv = document.createElement('div');
+                tileDiv.className = 'wall-tile';
+                
+                const img = document.createElement('img');
+                img.src = tile.image;  // Show actual tile image
+                img.alt = `Wall Tile ${tile.number}`;
+                
+                tileDiv.appendChild(img);
+                wallDiv.appendChild(tileDiv);
+            });
+            
+            // Update discarded tiles (display only)
+            gameState.discarded.forEach(tile => {
+                const tileDiv = document.createElement('div');
+                tileDiv.className = 'discarded-tile';
+                
+                const img = document.createElement('img');
+                img.src = tile.image;
+                img.alt = `Discarded Tile ${tile.number}`;
+                
+                tileDiv.appendChild(img);
+                discardedDiv.appendChild(tileDiv);
+            });
+            
+            // Update message and stats
+            messageDiv.textContent = gameState.message;
+            statsDiv.innerHTML = `
+                <div>Steps: ${gameState.steps}</div>
+                <div>Hand: ${gameState.hand.length}</div>
+                <div>Wall: ${gameState.wall.length}</div>
+                <div>Discarded: ${gameState.discarded.length}</div>
+                <div>Total: ${gameState.total_tiles}</div>
+            `;
+        }
+        
+        async function discardTile(tile) {
+            if (!gameState || gameState.game_over) {
+                alert('Please start a new game first.');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/discard/${tile}`, {
+                    method: 'POST'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                gameState = await response.json();
+                updateUI();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to discard tile. Please try again.');
+            }
+        }
+        
+        async function newGame() {
+            try {
+                const response = await fetch('/api/new_game', {
+                    method: 'POST'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                gameState = await response.json();
+                updateUI();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to start new game. Please try again.');
+            }
+        }
+        
+        // Start a new game when page loads
+        window.onload = newGame;
+    </script>
+</body>
+</html> 
