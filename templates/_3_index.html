@@ -163,6 +163,11 @@
         <button onclick="newGame()">New Game</button>
     </div>
     
+    <div style="text-align:center; margin-bottom: 20px;">
+        <button id="ai-suggest-btn" style="padding: 8px 20px; font-size: 16px;">AI Suggestion</button>
+    </div>
+    <div id="ai-suggest-message" style="text-align:center; font-size:18px; color:#2b7a0b; margin-bottom: 10px;"></div>
+    
     <div class="message" id="message">
         Welcome! Click "New Game" to start.
     </div>
@@ -270,6 +275,7 @@
                 
                 gameState = await response.json();
                 updateUI();
+                clearAISuggestion();
             } catch (error) {
                 console.error('Error:', error);
                 alert('Failed to discard tile. Please try again.');
@@ -296,6 +302,53 @@
         
         // Start a new game when page loads
         window.onload = newGame;
+
+        // AI Suggestion button handler
+        const aiSuggestBtn = document.getElementById('ai-suggest-btn');
+        const aiSuggestMsg = document.getElementById('ai-suggest-message');
+        aiSuggestBtn.addEventListener('click', function() {
+            aiSuggestBtn.disabled = true;
+            aiSuggestMsg.textContent = 'Calculating AI suggestion...';
+            fetch('/api/ai_suggest', {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    if (data.suggested_discard !== undefined && data.suggested_discard !== null) {
+                        const tileName = tileNumberToName(data.suggested_discard);
+                        aiSuggestMsg.textContent = `AI suggests discarding ${tileName} (expected ${data.avg_steps.toFixed(1)} steps to win)`;
+                    } else if (data.message) {
+                        aiSuggestMsg.textContent = data.message;
+                    } else {
+                        aiSuggestMsg.textContent = 'No suggestion available.';
+                    }
+                })
+                .catch(() => {
+                    aiSuggestMsg.textContent = 'Error getting AI suggestion.';
+                })
+                .finally(() => {
+                    aiSuggestBtn.disabled = false;
+                });
+        });
+
+        // Clear AI suggestion (if needed, can be called after discarding)
+        function clearAISuggestion() {
+            aiSuggestMsg.textContent = '';
+        }
+
+        // Mapping from tile number to English name
+        function tileNumberToName(num) {
+            // Manzu (Characters): 9-17 => C1-C9
+            if (num >= 9 && num <= 17) return `C${num-8}`;
+            // Winds: 27-30
+            if (num === 27) return 'East';
+            if (num === 28) return 'South';
+            if (num === 29) return 'West';
+            if (num === 30) return 'North';
+            // Dragons: 31-33
+            if (num === 31) return 'Green Dragon';
+            if (num === 32) return 'Red Dragon';
+            if (num === 33) return 'White Dragon';
+            return num;
+        }
     </script>
 </body>
 </html> 
