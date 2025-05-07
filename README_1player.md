@@ -2,29 +2,29 @@
 
 A simplified single-player version of Mahjong implemented in Python with a web interface.
 
-## Features
+## 1. Features
 - 32-tile simplified Mahjong set
 - Web-based interface
 - Monte Carlo Tree Search AI for move suggestions
 - Real-time game state updates
 - Winning hand detection
 
-## Files
-- `single_player_mahjong.py`: Core game logic and AI
-- `app.py`: Flask web server and API endpoints
-- `templates/index.html`: Web interface
-- `img/tiles/`: Mahjong tile images
-- `requirements.txt`: Project dependencies
+## 2. Files
+- `_1_single_player_mahjong.py`: Core game logic and AI
+- `_2_app.py`: Flask web server and API endpoints
+- `templates/_3_index.html`: Web interface
+- `img/tiles/`: Mahjong tile images (will be renamed to _4_tiles)
+- `_5_requirements.txt`: Project dependencies
 
-## Setup
+## 3. Setup
 1. Install dependencies:
 ```bash
-pip install -r requirements.txt
+pip install -r _5_requirements.txt
 ```
 
 2. Run the server:
 ```bash
-python app.py
+python _2_app.py
 ```
 
 3. Open browser and navigate to:
@@ -32,7 +32,7 @@ python app.py
 http://localhost:8080
 ```
 
-## Game Rules
+## 4. Game Rules
 - Start with 7 tiles
 - Draw and discard one tile each turn
 - Win by forming specific patterns:
@@ -40,7 +40,7 @@ http://localhost:8080
   - 222 + 333 + pair
   - Four of a kind (4444)
 
-## API Endpoints
+## 5. API Endpoints
 - `/`: Main game interface
 - `/api/new_game`: Start a new game
 - `/api/discard/<tile>`: Discard a tile and draw a new one

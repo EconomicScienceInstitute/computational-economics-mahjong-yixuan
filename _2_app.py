@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request, session
-from single_player_mahjong import init_tiles, is_win, mcts_decision, TOTAL_TILES
+from _1_single_player_mahjong import init_tiles, is_win, mcts_decision, TOTAL_TILES
 from flask_session import Session
 import os
 from PIL import Image
@@ -26,7 +26,7 @@ def get_tile_image(tile_number):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('_3_index.html')
 
 @app.route('/api/new_game', methods=['POST'])
 def new_game():
