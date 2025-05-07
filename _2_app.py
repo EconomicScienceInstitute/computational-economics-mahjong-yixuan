@@ -58,7 +58,7 @@ def new_game():
         'total_tiles': TOTAL_TILES,  # Add total tiles count
         'steps': 0,
         'game_over': False,
-        'message': 'Game started! Choose a tile to discard.'
+        'message': 'Game started! Choose a tile to discard (you need 8 tiles to win).'
     }
     session['game_state'] = game_state
     return jsonify(game_state)
@@ -67,21 +67,17 @@ def new_game():
 def discard_tile(tile):
     if 'game_state' not in session:
         return jsonify({'error': 'No game in progress. Please start a new game.'})
-    
     game_state = session['game_state']
     if game_state['game_over']:
         return jsonify({'error': 'Game is over. Start a new game.'})
-    
-    # Check hand size
-    if len(game_state['hand']) != 7:
-        return jsonify({'error': 'Invalid hand size. Should be 7 tiles.'})
-    
+    # Check hand size (allow 8, to be robust)
+    if len(game_state['hand']) != 8:
+        return jsonify({'error': 'Invalid hand size. Should be 8 tiles before discard.'})
     # Find tile in hand and remove it
     tile_found = False
     discarded_tile = None
     new_hand = []
     removed = False
-    
     for t in game_state['hand']:
         if t['number'] == tile and not removed:
             discarded_tile = t
@@ -89,55 +85,61 @@ def discard_tile(tile):
             tile_found = True
             continue
         new_hand.append(t)
-    
     if not tile_found:
         return jsonify({'error': 'Invalid tile.'})
-    
     # Update hand and add to discarded list
     game_state['hand'] = new_hand
     game_state['discarded'].append(discarded_tile)
-    
-    # Sort all tile arrays by number
     game_state['hand'].sort(key=lambda x: x['number'])
     game_state['wall'].sort(key=lambda x: x['number'])
     game_state['discarded'].sort(key=lambda x: x['number'])
-    
-    # Draw a new tile if possible
-    if game_state['wall']:
-        # Randomly select a tile from wall
+    # Draw a new tile if possible (always try to keep 8 tiles after discard, unless wall is empty or game over)
+    if not game_state['game_over'] and game_state['wall']:
         new_tile_idx = random.randrange(len(game_state['wall']))
         new_tile = game_state['wall'].pop(new_tile_idx)
         game_state['hand'].append(new_tile)
-        
-        # Verify hand size after drawing
-        if len(game_state['hand']) != 7:
-            print(f"Warning: Hand size is {len(game_state['hand'])} after draw")
-        
-        # Sort again after drawing new tile
         game_state['hand'].sort(key=lambda x: x['number'])
         game_state['wall'].sort(key=lambda x: x['number'])
-        
         game_state['steps'] += 1
-        
-        # Check for win
+        # Check for win ONLY when hand has 8 tiles
         current_tiles = [t['number'] for t in game_state['hand']]
         if len(current_tiles) == 8 and is_win(current_tiles):
             game_state['game_over'] = True
             game_state['message'] = f"Congratulations! You've won in {game_state['steps']} steps!"
         else:
-            # Get AI suggestion
-            wall_numbers = [t['number'] for t in game_state['wall']]
-            suggested_discard, avg_steps = mcts_decision(current_tiles, wall_numbers, n_sim=1000)
-            if suggested_discard is not None:
-                game_state['message'] = f"AI suggests discarding {suggested_discard} (expected {avg_steps:.1f} steps to win)"
-            else:
-                game_state['message'] = "No clear winning path found. Try your best!"
+            game_state['message'] = "Choose a tile to discard."
     else:
-        game_state['game_over'] = True
-        game_state['message'] = "Game Over: No more tiles in the wall."
-    
+        # No more tiles to draw, just update message
+        if not game_state['wall']:
+            game_state['game_over'] = True
+            game_state['message'] = "Game Over: No more tiles in the wall."
     session['game_state'] = game_state
     return jsonify(game_state)
+
+@app.route('/api/ai_suggest', methods=['POST'])
+def ai_suggest():
+    if 'game_state' not in session:
+        return jsonify({'error': 'No game in progress. Please start a new game.'})
+    game_state = session['game_state']
+    if game_state['game_over']:
+        return jsonify({'error': 'Game is over. Start a new game.'})
+    current_tiles = [t['number'] for t in game_state['hand']]
+    wall_numbers = [t['number'] for t in game_state['wall']]
+    suggested_discard, avg_steps, stats = mcts_decision(current_tiles, wall_numbers, n_sim=10000)
+    if suggested_discard is not None:
+        return jsonify({
+            'suggested_discard': suggested_discard, 
+            'avg_steps': avg_steps,
+            'min_steps': stats['min_steps'],
+            'max_steps': stats['max_steps'],
+            'win_rate': stats['win_rate']
+        })
+    else:
+        return jsonify({
+            'suggested_discard': None, 
+            'avg_steps': None, 
+            'message': 'No clear winning path found.'
+        })
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080, host='0.0.0.0') 
