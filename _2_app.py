@@ -105,7 +105,9 @@ def discard_tile(tile):
         current_tiles = [t['number'] for t in game_state['hand']]
         if len(current_tiles) == 8 and is_win(current_tiles):
             game_state['game_over'] = True
-            game_state['message'] = f"Congratulations! You've won in {game_state['steps']} steps!"
+            score = calc_score(game_state['hand'], game_state['steps'])
+            game_state['score'] = score
+            game_state['message'] = f"Congratulations! You've won in {game_state['steps']} steps! Score: {score}"
         else:
             game_state['message'] = "Choose a tile to discard."
     else:
@@ -140,6 +142,13 @@ def ai_suggest():
             'avg_steps': None, 
             'message': 'No clear winning path found.'
         })
+
+def calc_score(hand, steps):
+    score = 100 - steps
+    # All manzu (characters): tile numbers 9-17
+    if all(9 <= t['number'] <= 17 for t in hand):
+        score += 10
+    return max(score, 0)
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080, host='0.0.0.0') 
