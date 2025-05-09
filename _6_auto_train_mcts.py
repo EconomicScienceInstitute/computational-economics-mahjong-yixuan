@@ -1,26 +1,15 @@
 import random
-from _1_single_player_mahjong import init_tiles, is_win, mcts_decision
+from _1_single_player_mahjong import init_tiles, is_win, mcts_decision, calc_score
 import csv
-from functools import lru_cache
+from functools import lru_cache  # Decorator for memoization, caches function results to avoid redundant calculations
 
-TOTAL_GAMES = 1000  # Number of games to simulate
-SIMS_PER_MOVE = 10  # Number of MCTS simulations per move
+TOTAL_GAMES = 20  # Number of complete games to simulate for testing AI's overall performance
+SIMS_PER_MOVE = 1000  # Number of MCTS simulations per move to evaluate each possible discard choice
 
-win_count = 0
-step_list = []
-score_list = []
-
-dp_calls = 0  # Global counter for DP calls
-
-# Scoring function: steps + all-manzu bonus
-def calc_score(hand, steps):
-    score = 100 - steps
-    # Support both dict and int tile representations
-    def tile_num(t):
-        return t['number'] if isinstance(t, dict) else t
-    if all(9 <= tile_num(t) <= 17 for t in hand):
-        score += 10
-    return max(score, 0)
+win_count = 0      # Counter for total number of winning hands across all games
+step_list = []     # List to store number of steps taken in each winning game
+score_list = []    # List to store final score of each game (0 for non-winning games)
+dp_calls = 0       # Counter for DP function calls, used to monitor computational complexity
 
 # --- Dynamic Programming for a specific situation ---
 # State: (current hand tuple, remaining wall tuple)
@@ -33,7 +22,7 @@ def calc_score(hand, steps):
 def dp(hand_tuple, wall_tuple):
     global dp_calls
     dp_calls += 1
-    if dp_calls % 10000 == 0:
+    if dp_calls % 5000 == 0:
         print(f"DP calls: {dp_calls}")
     # Base case: already a winning hand
     if is_win(list(hand_tuple)):
@@ -70,9 +59,13 @@ result = dp(tuple(sorted(specific_hand)), tuple(sorted(specific_wall)))
 print(f"Minimal expected steps to win from this specific state: {result}")
 print("DP analysis done. Starting simulation...")
 
+# Save DP result to CSV as the first row
 with open("steps_per_win.csv", "w", newline="") as csvfile:
     writer = csv.writer(csvfile)
-    writer.writerow(["Game", "Steps", "Score", "Win"])
+    writer.writerow(["DP_hand", "DP_wall", "DP_min_steps"])
+    writer.writerow([specific_hand, specific_wall, result])
+    writer.writerow([])  # Empty row for separation
+    writer.writerow(["Game", "TotalScore", "Steps", "BaseScore", "ComboBonus", "Details", "Win"])
     for game in range(TOTAL_GAMES):
         hand, wall = init_tiles()
         steps = 0
@@ -82,57 +75,31 @@ with open("steps_per_win.csv", "w", newline="") as csvfile:
             if len(hand) == 8 and is_win([t if isinstance(t, int) else t['number'] for t in hand]):
                 win_count += 1
                 game_won = True
-                score = calc_score(hand, steps)
+                total_score, base_score, combo_bonus, details = calc_score(hand, steps)
                 step_list.append(steps)
-                score_list.append(score)
-                writer.writerow([game + 1, steps, score, 1])  # Write after each win
+                score_list.append(total_score)
+                writer.writerow([game + 1, total_score, steps, base_score, combo_bonus, "; ".join(details), 1])
                 break
             # If the wall is empty, the game is over (no win)
             if not wall:
-                score = 0
-                score_list.append(score)
-                writer.writerow([game + 1, steps, score, 0])
+                # With DP, this should not be reached; theoretically, every game should be winnable
+                total_score = 0
+                base_score = 0
+                combo_bonus = 0
+                details = ""
+                score_list.append(total_score)
+                writer.writerow([game + 1, total_score, steps, base_score, combo_bonus, details, 0])
                 break
-            # For each possible discard, simulate and select by priority
+            # Use DP optimal strategy to select the discard
+            min_steps = float('inf')
             best_discard = None
-            best_tuple = (float('inf'), float('-inf'), float('-inf'))  # (steps, score, win_rate)
             for discard in set([t if isinstance(t, int) else t['number'] for t in hand]):
-                sim_hand = [t if isinstance(t, int) else t['number'] for t in hand]
-                sim_hand.remove(discard)
-                sim_wall = wall.copy()
-                random.shuffle(sim_wall)
-                sim_steps = 0
-                temp_hand = sim_hand.copy()
-                temp_wall = sim_wall.copy()
-                win = False
-                # Simulate until win or wall is empty
-                while temp_wall and sim_steps < 30:
-                    draw = temp_wall.pop(0)
-                    temp_hand.append(draw)
-                    sim_steps += 1
-                    for possible_discard in temp_hand:
-                        test_hand = temp_hand.copy()
-                        test_hand.remove(possible_discard)
-                        if is_win(test_hand):
-                            win = True
-                            break
-                    if win:
-                        break
-                    if len(temp_hand) > 8:
-                        temp_hand.remove(random.choice(temp_hand))
-                sim_score = calc_score(temp_hand, sim_steps) if win else 0
-                win_rate = 1 if win else 0
-                # Priority: minimal steps, then highest score, then win
-                candidate = (sim_steps if win else float('inf'), sim_score, win_rate)
-                if candidate < best_tuple:
-                    best_tuple = candidate
+                new_hand = [t if isinstance(t, int) else t['number'] for t in hand]
+                new_hand.remove(discard)
+                steps_needed = 1 + dp(tuple(sorted(new_hand)), tuple(sorted(wall)))
+                if steps_needed < min_steps:
+                    min_steps = steps_needed
                     best_discard = discard
-            if best_discard is None:
-                # No valid move, break
-                score = 0
-                score_list.append(score)
-                writer.writerow([game + 1, steps, score, 0])
-                break
             # Remove the selected discard
             for idx, t in enumerate(hand):
                 tnum = t if isinstance(t, int) else t['number']
@@ -157,4 +124,170 @@ if win_count > 0:
 else:
     print("No wins in the simulation.")
 
-print(f"Total score: {sum(score_list)}") 
+print(f"Total score: {sum(score_list)}")
+
+def generate_typical_hands():
+    """Generate typical hands for 8-tile single player mahjong"""
+    hands = []
+    
+    # 1. Different pair types and positions
+    # Man tiles pairs (9-17)
+    for pair in range(9, 18):  # All man tiles
+        # Pair at front
+        hands.append({
+            'name': f'Man-Pair-{pair}-Front',
+            'hand': [pair, pair, 10, 11, 12, 13, 14, 15],
+            'wall': [16, 17, 28, 29, 30, 32, 33],
+            'description': f'Hand with man tile pair {pair} at front and two chows'
+        })
+        # Pair in middle
+        hands.append({
+            'name': f'Man-Pair-{pair}-Middle',
+            'hand': [10, 11, 12, pair, pair, 13, 14, 15],
+            'wall': [16, 17, 28, 29, 30, 32, 33],
+            'description': f'Hand with man tile pair {pair} in middle and two chows'
+        })
+        # Pair at back
+        hands.append({
+            'name': f'Man-Pair-{pair}-Back',
+            'hand': [10, 11, 12, 13, 14, 15, pair, pair],
+            'wall': [16, 17, 28, 29, 30, 32, 33],
+            'description': f'Hand with man tile pair {pair} at back and two chows'
+        })
+    
+    # Wind tiles pairs (27-30)
+    for pair in range(27, 31):  # All wind tiles
+        # Pair at front
+        hands.append({
+            'name': f'Wind-Pair-{pair}-Front',
+            'hand': [pair, pair, 10, 11, 12, 13, 14, 15],
+            'wall': [16, 17, 28, 29, 30, 32, 33],
+            'description': f'Hand with wind tile pair {pair} at front and two chows'
+        })
+        # Pair in middle
+        hands.append({
+            'name': f'Wind-Pair-{pair}-Middle',
+            'hand': [10, 11, 12, pair, pair, 13, 14, 15],
+            'wall': [16, 17, 28, 29, 30, 32, 33],
+            'description': f'Hand with wind tile pair {pair} in middle and two chows'
+        })
+        # Pair at back
+        hands.append({
+            'name': f'Wind-Pair-{pair}-Back',
+            'hand': [10, 11, 12, 13, 14, 15, pair, pair],
+            'wall': [16, 17, 28, 29, 30, 32, 33],
+            'description': f'Hand with wind tile pair {pair} at back and two chows'
+        })
+    
+    # Dragon tiles pairs (31-33)
+    for pair in range(31, 34):  # All dragon tiles
+        # Pair at front
+        hands.append({
+            'name': f'Dragon-Pair-{pair}-Front',
+            'hand': [pair, pair, 10, 11, 12, 13, 14, 15],
+            'wall': [16, 17, 28, 29, 30, 32, 33],
+            'description': f'Hand with dragon tile pair {pair} at front and two chows'
+        })
+        # Pair in middle
+        hands.append({
+            'name': f'Dragon-Pair-{pair}-Middle',
+            'hand': [10, 11, 12, pair, pair, 13, 14, 15],
+            'wall': [16, 17, 28, 29, 30, 32, 33],
+            'description': f'Hand with dragon tile pair {pair} in middle and two chows'
+        })
+        # Pair at back
+        hands.append({
+            'name': f'Dragon-Pair-{pair}-Back',
+            'hand': [10, 11, 12, 13, 14, 15, pair, pair],
+            'wall': [16, 17, 28, 29, 30, 32, 33],
+            'description': f'Hand with dragon tile pair {pair} at back and two chows'
+        })
+    
+    # 2. Different chow combinations
+    # Consecutive chows
+    hands.append({
+        'name': 'Consecutive-Chows',
+        'hand': [9, 10, 11, 10, 11, 12, 27, 27],
+        'wall': [13, 14, 15, 16, 17, 28, 29, 30, 31],
+        'description': 'Hand with consecutive chows and a pair'
+    })
+    
+    # Separated chows
+    hands.append({
+        'name': 'Separated-Chows',
+        'hand': [9, 10, 11, 15, 16, 17, 27, 27],
+        'wall': [12, 13, 14, 28, 29, 30, 31, 32, 33],
+        'description': 'Hand with separated chows and a pair'
+    })
+    
+    # 3. Different waiting tiles
+    # Multiple waiting tiles
+    hands.append({
+        'name': 'Multiple-Waiting',
+        'hand': [9, 10, 11, 12, 13, 14, 15, 16],
+        'wall': [17, 17, 27, 27, 28, 28, 29, 29, 30, 30],
+        'description': 'Hand that can win with multiple tiles'
+    })
+    
+    # Near winning hand
+    hands.append({
+        'name': 'Near-Winning',
+        'hand': [9, 10, 11, 12, 13, 14, 27, 27],
+        'wall': [15],
+        'description': 'Hand that needs only one tile to win'
+    })
+    
+    return hands
+
+def analyze_typical_hands():
+    """Analyze multiple typical mahjong hands"""
+    print("\nStarting analysis of typical hands...")
+    results = []
+    typical_hands = generate_typical_hands()
+    
+    # Create CSV file and write header
+    with open("dp_analysis_results.csv", "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["Hand Type", "Hand", "Wall", "Min Steps", "Description"])
+    
+    for hand_info in typical_hands:
+        print(f"\nAnalyzing {hand_info['name']}...")
+        print(f"Description: {hand_info['description']}")
+        print(f"Hand: {hand_info['hand']}")
+        print(f"Wall: {hand_info['wall']}")
+        
+        # Run DP analysis
+        result = dp(tuple(sorted(hand_info['hand'])), tuple(sorted(hand_info['wall'])))
+        print(f"Minimum steps: {result}")
+        
+        # Save results
+        results.append({
+            'name': hand_info['name'],
+            'hand': hand_info['hand'],
+            'wall': hand_info['wall'],
+            'min_steps': result,
+            'description': hand_info['description']
+        })
+        
+        # Write to CSV
+        with open("dp_analysis_results.csv", "a", newline="") as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow([
+                hand_info['name'],
+                hand_info['hand'],
+                hand_info['wall'],
+                result,
+                hand_info['description']
+            ])
+    
+    print("\nAll hand analysis completed! Results saved to dp_analysis_results.csv")
+    return results
+
+# Modify main flow
+if __name__ == "__main__":
+    # First analyze multiple typical hands
+    dp_results = analyze_typical_hands()
+    
+    # Then run MCTS simulation
+    print("\nStarting MCTS simulation...")
+    # ... existing MCTS simulation code ... 
