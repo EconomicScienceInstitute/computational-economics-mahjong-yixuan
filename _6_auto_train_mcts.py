@@ -2,9 +2,11 @@ import random
 from _1_single_player_mahjong import init_tiles, is_win, mcts_decision, calc_score
 import csv
 from functools import lru_cache  # Decorator for memoization, caches function results to avoid redundant calculations
+import time
 
-TOTAL_GAMES = 20  # Number of complete games to simulate for testing AI's overall performance
-SIMS_PER_MOVE = 1000  # Number of MCTS simulations per move to evaluate each possible discard choice
+# Configuration
+TOTAL_GAMES = 1  # Just test one game
+N_SIMULATIONS = 100  # Reduced MCTS simulations
 
 win_count = 0      # Counter for total number of winning hands across all games
 step_list = []     # List to store number of steps taken in each winning game
@@ -290,4 +292,41 @@ if __name__ == "__main__":
     
     # Then run MCTS simulation
     print("\nStarting MCTS simulation...")
+    # Run games and collect statistics
+    total_steps = 0
+    for game in range(TOTAL_GAMES):
+        print(f"\nGame {game + 1}/{TOTAL_GAMES}")
+        hand, wall = init_tiles()
+        steps = 0
+        
+        while len(hand) == 8 and not is_win(hand):
+            suggested_discard, avg_steps, stats = mcts_decision(hand, wall, n_sim=N_SIMULATIONS)
+            if suggested_discard is None:
+                print("No winning path found")
+                break
+            
+            # Process the suggested move
+            hand.remove(suggested_discard)
+            if wall:
+                new_tile = wall.pop(random.randrange(len(wall)))
+                hand.append(new_tile)
+                steps += 1
+                print(f"Step {steps}: Discarded {suggested_discard}, Drew {new_tile}")
+                print(f"Current hand: {sorted(hand)}")
+            else:
+                print("No more tiles in wall")
+                break
+        
+        if is_win(hand):
+            win_count += 1
+            print(f"Won in {steps} steps!")
+            total_steps += steps
+        else:
+            print("Did not win")
+        
+    print(f"\nResults after {TOTAL_GAMES} games:")
+    print(f"Wins: {win_count}/{TOTAL_GAMES} ({win_count/TOTAL_GAMES*100:.1f}%)")
+    if win_count > 0:
+        print(f"Average steps to win: {total_steps/win_count:.1f}")
+
     # ... existing MCTS simulation code ... 

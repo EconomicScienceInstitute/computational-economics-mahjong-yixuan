@@ -14,7 +14,7 @@ from io import BytesIO
 import random
 
 # Initialize Flask application
-app = Flask(__name__)
+app = Flask(__name__, template_folder='.')
 
 # Flask session configuration
 # Uses filesystem to store session data
