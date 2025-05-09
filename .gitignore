@@ -1,86 +1,27 @@
-play-log-*.log
-!logs
-docs/*.aux
-docs/*.log
-docs/*.synctex.gz
-docs/*.pdf
-run.bat
-
-# macOS system files
-.DS_Store
-
 # Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+*.pyc
 
-# Virtual Environment
-venv/
-ENV/
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# OS
+# macOS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
 
-# Project specific
+# Flask
 flask_session/
-backup_*/
-*_filelist.txt
-all_files.txt
-not_in_github.txt
-static/
+
+# Backup files
+backup*/
+*.bak
+
+# Logs and temp files
 *.log
-
-# Node.js
-node_modules/
-package-lock.json
-
-# Background process
 nohup.out
 
-# Additional temp files
-tracked_files.txt
-*.tmp
-*.temp
-.env
+# Analysis results
+*.csv
 
-# Additional macOS files
-.DS_Store
-**/.DS_Store
-.AppleDouble
-.LSOverride
-Icon
-.DocumentRevisions-V100
-.fseventsd
-.TemporaryItems
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
+# Other
+not_in_github.txt
+all_files.txt
+tracked_files.txt
+root_filelist.txt
+backup_filelist.txt 
