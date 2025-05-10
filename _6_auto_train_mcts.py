@@ -145,13 +145,10 @@ def analyze_typical_hands():
         writer.writerow(["HandType", "Hand", "Wall", "MinSteps", "Description"])
     for hand_info in typical_hands:
         print(f"\nAnalyzing {hand_info['name']}...")
-        print(f"Description: {hand_info['description']}")
-        print(f"Hand: {hand_info['hand']}")
-        print(f"Wall: {hand_info['wall']}")
-        # Run DP analysis
+        print(f"DP calls before: {dp_calls}")
         wall_counter_tuple = tuple(sorted(Counter(hand_info['wall']).items()))
         result = dp(tuple(sorted(hand_info['hand'])), wall_counter_tuple)
-        print(f"Minimum steps: {result}")
+        print(f"DP calls after: {dp_calls}")
         # Save results
         results.append({
             'name': hand_info['name'],
@@ -284,7 +281,7 @@ def generate_typical_hands():
         'description': 'Hand that needs only one tile to win'
     })
     
-    return hands
+    return hands[:10]  # For small-scale testing, only analyze the first 10 hands
 
 # =====================
 # Monte Carlo Tree Search (MCTS) Section
