@@ -88,6 +88,12 @@ The AI strategy is based on:
 - **Value function:** Minimal expected steps to win from current state
 - **Memoization:** Use lru_cache to avoid redundant computation
 
+## Project Structure
+- `_1_single_player_mahjong.py`: Core game logic and AI
+- `_2_app.py`: Web server and API
+- `_3_index.html`: Web interface
+- `_6_auto_train_mcts.py`: Training script
+
 ## Setup and Run
 1. Dependencies:
 ```bash
@@ -111,12 +117,6 @@ python3 _2_app.py
   * `/`: Main game interface
   * `/api/new_game`: Start a new game
   * `/api/discard/<tile>`: Process tile discard
-
-## Project Structure
-- `_1_single_player_mahjong.py`: Core game logic and AI
-- `_2_app.py`: Web server and API
-- `templates/_3_index.html`: Web interface
-- `_6_auto_train_mcts.py`: Training script
 
 ## AI Implementation
 ### Monte Carlo Tree Search (MCTS)
