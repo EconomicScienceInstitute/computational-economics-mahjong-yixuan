@@ -178,10 +178,18 @@ def generate_typical_hands():
     # Man tiles pairs (9-17)
     for pair in range(9, 18):  # All man tiles
         # Pair at front
+        # hands.append({
+        #     'name': f'Man-Pair-{pair}-Front',
+        #     'hand': [pair, pair, 10, 11, 12, 13, 14, 15],
+        #     'wall': [16, 17, 28, 29, 30, 32, 33],  # Full wall for full analysis
+        #     'description': f'Hand with man tile pair {pair} at front and two chows'
+        # })
         hands.append({
             'name': f'Man-Pair-{pair}-Front',
             'hand': [pair, pair, 10, 11, 12, 13, 14, 15],
-            'wall': [16, 17, 28, 29, 30, 32, 33],
+            # 'wall': [16, 17, 28, 29, 30, 32, 33],  # Full wall for full analysis
+            # 'wall': [16, 17],  # For 2-tile wall
+            'wall': [16],        # For 1-tile wall, minimal DP test
             'description': f'Hand with man tile pair {pair} at front and two chows'
         })
         # Pair in middle
@@ -281,7 +289,9 @@ def generate_typical_hands():
         'description': 'Hand that needs only one tile to win'
     })
     
-    return hands[:10]  # For small-scale testing, only analyze the first 10 hands
+    # return hands  # Uncomment this line to restore full analysis
+    # return hands[:10]  # For small-scale testing
+    return hands[:1]  # For minimal DP testing, only analyze the first hand
 
 # =====================
 # Monte Carlo Tree Search (MCTS) Section
