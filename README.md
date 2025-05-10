@@ -81,6 +81,13 @@ The AI strategy is based on:
 - **Dynamic Programming (DP)**: Solves Bellman equation recursively for optimal value function
 - Implementation: Uses **Monte Carlo Tree Search (MCTS)** to approximate solutions through simulation
 
+### Dynamic Programming Implementation Details
+- **State:** (current hand tuple, remaining wall tuple)
+- **Action:** Discard one tile from hand
+- **Transition:** Discard a tile, draw a new tile from the wall, enter new state
+- **Value function:** Minimal expected steps to win from current state
+- **Memoization:** Use lru_cache to avoid redundant computation
+
 ## Setup and Run
 1. Dependencies:
 ```bash
