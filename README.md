@@ -94,6 +94,27 @@ The AI strategy is based on:
 - `_3_index.html`: Web interface
 - `_6_auto_train_mcts.py`: Training script
 
+
+## AI Implementation
+### Monte Carlo Tree Search (MCTS)
+- Real-time move suggestions through game simulation
+- Win probability estimation
+- Expected steps to win calculation
+- Configurable simulation depth and parameters
+
+### Dynamic Programming (DP)
+- Optimal strategy analysis for game states
+- Minimal steps calculation using Bellman equation
+- Full state space analysis capability
+- Progress tracking for long computations
+
+### Training and Analysis
+The `_6_auto_train_mcts.py` script provides:
+- Automated game simulations
+- Performance metrics collection
+- Strategy effectiveness analysis
+- CSV export for detailed analysis 
+
 ## Setup and Run
 1. Dependencies:
 ```bash
@@ -117,23 +138,3 @@ python3 _2_app.py
   * `/`: Main game interface
   * `/api/new_game`: Start a new game
   * `/api/discard/<tile>`: Process tile discard
-
-## AI Implementation
-### Monte Carlo Tree Search (MCTS)
-- Real-time move suggestions through game simulation
-- Win probability estimation
-- Expected steps to win calculation
-- Configurable simulation depth and parameters
-
-### Dynamic Programming (DP)
-- Optimal strategy analysis for game states
-- Minimal steps calculation using Bellman equation
-- Full state space analysis capability
-- Progress tracking for long computations
-
-### Training and Analysis
-The `_6_auto_train_mcts.py` script provides:
-- Automated game simulations
-- Performance metrics collection
-- Strategy effectiveness analysis
-- CSV export for detailed analysis 
