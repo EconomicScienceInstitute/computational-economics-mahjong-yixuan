@@ -5,7 +5,7 @@ Integrates with AI decision making using MCTS algorithm.
 """
 
 from flask import Flask, render_template, jsonify, request, session
-from _1_single_player_mahjong import init_tiles, is_win, mcts_decision, TOTAL_TILES
+from single_player_mahjong import init_tiles, is_win, mcts_decision, TOTAL_TILES
 from flask_session import Session
 import os
 from PIL import Image

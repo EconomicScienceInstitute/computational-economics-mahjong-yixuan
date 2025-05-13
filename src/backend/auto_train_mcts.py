@@ -1,5 +1,5 @@
 import random
-from _1_single_player_mahjong import init_tiles, is_win, mcts_decision, calc_score
+from single_player_mahjong import init_tiles, is_win, mcts_decision, calc_score
 import csv
 from functools import lru_cache
 from collections import Counter
