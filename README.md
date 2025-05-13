@@ -97,7 +97,7 @@ The AI strategy is based on:
 - `single_player_mahjong.py`: Core game logic and AI
 - `app.py`: Web server and API
 - `_3_index.html`: Web interface
-- `_6_auto_train_mcts.py`: Training script
+- `auto_train_mcts.py`: Training script
 
 
 ## AI Implementation
@@ -114,7 +114,7 @@ The AI strategy is based on:
 - Progress tracking for long computations
 
 ### Training and Analysis
-The `_6_auto_train_mcts.py` script provides:
+The `auto_train_mcts.py` script provides:
 - Automated game simulations
 - Performance metrics collection
 - Strategy effectiveness analysis
@@ -124,7 +124,7 @@ The `_6_auto_train_mcts.py` script provides:
 1. Dependencies:
 ```bash
 # Install required packages
-pip3 install -r _5_requirements.txt
+pip3 install -r requirements.txt
 ```
 Required packages:
 - Flask: Web server framework
