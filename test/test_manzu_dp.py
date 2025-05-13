@@ -1,7 +1,7 @@
 from sys import path
 from os.path import abspath, dirname, join
 path.append(abspath(join(dirname(__file__), '../src/backend')))
-from _6_auto_train_mcts import dp, dp_calls
+from auto_train_mcts import dp, dp_calls
 from collections import Counter
 
 # 8 tiles in hand, all Manzu (Characters), wall has 1 Manzu tile
