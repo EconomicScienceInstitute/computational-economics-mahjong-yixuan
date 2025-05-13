@@ -95,7 +95,7 @@ The AI strategy is based on:
 
 ## Project Structure
 - `single_player_mahjong.py`: Core game logic and AI
-- `_2_app.py`: Web server and API
+- `app.py`: Web server and API
 - `_3_index.html`: Web interface
 - `_6_auto_train_mcts.py`: Training script
 
@@ -134,7 +134,7 @@ Required packages:
 
 2. Start Server:
 ```bash
-python3 _2_app.py
+python3 app.py
 ```
 
 3. Access Game:
