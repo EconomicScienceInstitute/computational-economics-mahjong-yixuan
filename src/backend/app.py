@@ -50,7 +50,7 @@ def get_tile_image(tile_number):
 @app.route('/')
 def index():
     """Serve the main game page"""
-    return render_template('_3_index.html')
+    return render_template('index.html')
 
 @app.route('/api/new_game', methods=['POST'])
 def new_game():
