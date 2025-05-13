@@ -94,7 +94,7 @@ The AI strategy is based on:
 - **Memoization:** Use lru_cache to avoid redundant computation
 
 ## Project Structure
-- `_1_single_player_mahjong.py`: Core game logic and AI
+- `single_player_mahjong.py`: Core game logic and AI
 - `_2_app.py`: Web server and API
 - `_3_index.html`: Web interface
 - `_6_auto_train_mcts.py`: Training script
