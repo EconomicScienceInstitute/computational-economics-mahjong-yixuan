@@ -14,7 +14,7 @@ from io import BytesIO
 import random
 
 # Initialize Flask application
-app = Flask(__name__, template_folder='.')
+app = Flask(__name__, template_folder='../frontend')
 
 # Flask session configuration
 # Uses filesystem to store session data
@@ -38,7 +38,7 @@ def get_tile_image(tile_number):
         str: Base64 encoded image data with data URI scheme
         None: If image file not found
     """
-    img_path = os.path.join(os.path.dirname(__file__), "img", "tiles", "small", f"{tile_number}.jpg")
+    img_path = os.path.join(os.path.dirname(__file__), "..", "..", "img", "tiles", "small", f"{tile_number}.jpg")
     if os.path.exists(img_path):
         img = Image.open(img_path)
         buffered = BytesIO()
