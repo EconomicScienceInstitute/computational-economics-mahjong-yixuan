@@ -298,10 +298,74 @@ def generate_typical_hands():
 # =====================
 
 if __name__ == "__main__":
-    # First analyze multiple typical hands
+    # --- DP analysis for a specific hand and wall ---
+    specific_hand = [9, 10, 11, 12, 13, 14, 27, 27]  # Example: C1-C6, East, East
+    specific_wall = [9, 10, 11, 12, 13, 14, 27, 28, 29, 30, 31, 32, 33, 15, 16, 17, 28, 29, 30, 31, 32, 33, 15, 16]
+    print("Running DP analysis for a specific hand and wall...")
+    wall_counter_tuple = tuple(sorted(Counter(specific_wall).items()))
+    result = dp(tuple(sorted(specific_hand)), wall_counter_tuple)
+    print(f"Minimal expected steps to win from this specific state: {result}")
+    print("DP analysis done. Starting simulation...")
+
+    # Save DP result to CSV as the first row
+    with open("steps_per_win.csv", "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        # DP analysis result header
+        writer.writerow(["DP_Hand", "DP_Wall", "DP_MinSteps"])
+        writer.writerow([specific_hand, specific_wall, result])
+        writer.writerow([])  # Empty row for separation
+        # Game simulation result header
+        writer.writerow(["Game", "TotalScore", "Steps", "BaseScore", "ComboBonus", "Details", "Win"])
+        win_count = 0
+        step_list = []
+        score_list = []
+        for game in range(TOTAL_GAMES):
+            hand, wall = init_tiles()
+            steps = 0
+            game_won = False
+            while True:
+                # Check if the hand is a winning hand
+                if len(hand) == 8 and is_win([t if isinstance(t, int) else t['number'] for t in hand]):
+                    win_count += 1
+                    game_won = True
+                    total_score, base_score, combo_bonus, details = calc_score(hand, steps)
+                    step_list.append(steps)
+                    score_list.append(total_score)
+                    writer.writerow([game + 1, total_score, steps, base_score, combo_bonus, "; ".join(details), 1])
+                    break
+                # If the wall is empty, the game is over (no win)
+                if not wall:
+                    total_score = 0
+                    base_score = 0
+                    combo_bonus = 0
+                    details = ""
+                    score_list.append(total_score)
+                    writer.writerow([game + 1, total_score, steps, base_score, combo_bonus, details, 0])
+                    break
+                # Use DP optimal strategy to select the discard
+                min_steps = float('inf')
+                best_discard = None
+                for discard in set([t if isinstance(t, int) else t['number'] for t in hand]):
+                    new_hand = [t if isinstance(t, int) else t['number'] for t in hand]
+                    new_hand.remove(discard)
+                    wall_counter_tuple = tuple(sorted(Counter(wall).items()))
+                    steps_needed = 1 + dp(tuple(sorted(new_hand)), wall_counter_tuple)
+                    if steps_needed < min_steps:
+                        min_steps = steps_needed
+                        best_discard = discard
+                # Remove the selected discard
+                for idx, t in enumerate(hand):
+                    tnum = t if isinstance(t, int) else t['number']
+                    if tnum == best_discard:
+                        hand.pop(idx)
+                        break
+                # Draw a new tile from the wall
+                draw = wall.pop(0)
+
+    # --- DP analysis for multiple typical hands ---
     dp_results = analyze_typical_hands()
     
-    # Then run MCTS simulation
+    # --- MCTS simulation ---
     print("\nStarting MCTS simulation...")
     # Run games and collect statistics
     total_steps = 0
@@ -309,13 +373,11 @@ if __name__ == "__main__":
         print(f"\nGame {game + 1}/{TOTAL_GAMES}")
         hand, wall = init_tiles()
         steps = 0
-        
         while len(hand) == 8 and not is_win(hand):
             suggested_discard, avg_steps, stats = mcts_decision(hand, wall, n_sim=N_SIMULATIONS)
             if suggested_discard is None:
                 print("No winning path found")
                 break
-            
             # Process the suggested move
             hand.remove(suggested_discard)
             if wall:
@@ -327,14 +389,12 @@ if __name__ == "__main__":
             else:
                 print("No more tiles in wall")
                 break
-        
         if is_win(hand):
             win_count += 1
             print(f"Won in {steps} steps!")
             total_steps += steps
         else:
             print("Did not win")
-        
     print(f"\nResults after {TOTAL_GAMES} games:")
     print(f"Wins: {win_count}/{TOTAL_GAMES} ({win_count/TOTAL_GAMES*100:.1f}%)")
     if win_count > 0:
