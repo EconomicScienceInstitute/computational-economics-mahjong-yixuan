@@ -80,8 +80,8 @@ Bonus: +20 points if all tiles are Characters
 The AI strategy is based on:
 - **Markov Decision Process (MDP)**: Models the game as states (current hand) and actions (discards)
 - **Bellman Equation (BE):**
-  - V(s) = min over all discards a of (expected value over next state s' of [1 + V(s')])
-  - Or, in math notation: $V(s) = \min_{a} E_{s'}[1 + V(s')]$
+  - $V(s) = \min_a E_{s'}[1 + V(s')]$
+  - Or, in math notation: $V(s) = \min_a E_{s'}[1 + V(s')]$
   - V(s): Expected steps to win from state s
   - a: Possible discard actions
   - s': Next state after drawing a tile
