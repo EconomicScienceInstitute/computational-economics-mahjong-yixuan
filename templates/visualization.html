@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MCTS Results Visualization</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.05);
+        }
+        .controls {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .chart-title {
+            color: #34495e;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MCTS Simulation Results Analysis</h1>
+        
+        <div class="controls">
+            <h3>Controls</h3>
+            <div>
+                <label for="simulationRange">Simulation Range:</label>
+                <input type="range" id="simulationRange" min="1000" max="50000" step="1000" value="10000">
+                <span id="simulationValue">10000</span>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3 class="chart-title">Win Rate by Hand Type</h3>
+            <div id="winrate_chart" style="width:100%; height:400px;"></div>
+        </div>
+
+        <div class="chart-container">
+            <h3 class="chart-title">Average Steps to Win</h3>
+            <div id="steps_chart" style="width:100%; height:400px;"></div>
+        </div>
+
+        <div class="chart-container">
+            <h3 class="chart-title">Win Rate vs Simulation Count</h3>
+            <div id="simulation_chart" style="width:100%; height:400px;"></div>
+        </div>
+    </div>
+
+    <script>
+        let simulationData = null;
+
+        // Fetch and process data
+        fetch('/api/mcts_results')
+            .then(response => response.json())
+            .then(data => {
+                simulationData = data.raw_data;
+                updateCharts(simulationData);
+            });
+
+        // Update simulation range display
+        document.getElementById('simulationRange').addEventListener('input', function(e) {
+            document.getElementById('simulationValue').textContent = e.target.value;
+            if (simulationData) {
+                updateCharts(simulationData, e.target.value);
+            }
+        });
+
+        function updateCharts(data, maxSimulations = 10000) {
+            // 不再过滤 Simulations 字段，直接用全部数据
+            const filteredData = data;
+            
+            // Process data for different charts
+            const handTypes = [...new Set(filteredData.map(d => d.HandName))];
+            
+            // Win Rate Chart
+            const winRates = handTypes.map(hand => {
+                const handData = filteredData.filter(d => d.HandName === hand);
+                return {
+                    hand: hand,
+                    winRate: handData.reduce((acc, d) => acc + Number(d.Win), 0) / handData.length * 100
+                };
+            });
+
+            const winRateTrace = {
+                x: winRates.map(d => d.hand),
+                y: winRates.map(d => d.winRate),
+                type: 'bar',
+                name: 'Win Rate',
+                marker: {
+                    color: 'rgb(55, 83, 109)'
+                }
+            };
+
+            const winRateLayout = {
+                title: 'Win Rate by Hand Type',
+                xaxis: { title: 'Hand Type' },
+                yaxis: { title: 'Win Rate (%)' },
+                showlegend: false
+            };
+
+            Plotly.newPlot('winrate_chart', [winRateTrace], winRateLayout);
+
+            // Steps Chart
+            const stepsData = handTypes.map(hand => {
+                const handData = filteredData.filter(d => d.HandName === hand && d.Win === 1);
+                return {
+                    hand: hand,
+                    avgSteps: handData.length > 0 ? 
+                        handData.reduce((acc, d) => acc + Number(d.Steps), 0) / handData.length : 0
+                };
+            });
+
+            const stepsTrace = {
+                x: stepsData.map(d => d.hand),
+                y: stepsData.map(d => d.avgSteps),
+                type: 'bar',
+                name: 'Average Steps',
+                marker: {
+                    color: 'rgb(26, 118, 255)'
+                }
+            };
+
+            const stepsLayout = {
+                title: 'Average Steps to Win by Hand Type',
+                xaxis: { title: 'Hand Type' },
+                yaxis: { title: 'Average Steps' },
+                showlegend: false
+            };
+
+            Plotly.newPlot('steps_chart', [stepsTrace], stepsLayout);
+
+            // Simulation Progress Chart
+            const simulationProgress = filteredData.reduce((acc, d) => {
+                if (!acc[d.Simulations]) {
+                    acc[d.Simulations] = { wins: 0, total: 0 };
+                }
+                acc[d.Simulations].total++;
+                if (d.Win === 1) acc[d.Simulations].wins++;
+                return acc;
+            }, {});
+
+            const simulationTrace = {
+                x: Object.keys(simulationProgress),
+                y: Object.values(simulationProgress).map(d => (d.wins / d.total) * 100),
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Win Rate',
+                line: {
+                    color: 'rgb(75, 192, 192)',
+                    width: 2
+                }
+            };
+
+            const simulationLayout = {
+                title: 'Win Rate vs Simulation Count',
+                xaxis: { title: 'Number of Simulations' },
+                yaxis: { title: 'Win Rate (%)' },
+                showlegend: false
+            };
+
+            Plotly.newPlot('simulation_chart', [simulationTrace], simulationLayout);
+        }
+    </script>
+</body>
+</html> 
