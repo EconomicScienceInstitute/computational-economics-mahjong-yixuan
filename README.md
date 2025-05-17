@@ -81,10 +81,9 @@ The AI strategy is based on:
 - **Markov Decision Process (MDP)**: Models the game as states (current hand) and actions (discards)
 - **Bellman Equation (BE):**
   - $V(s) = \min_a E_{s'}[1 + V(s')]$
-  - Or, in math notation: $V(s) = \min_a E_{s'}[1 + V(s')]$
-  - V(s): Expected steps to win from state s
-  - a: Possible discard actions
-  - s': Next state after drawing a tile
+  - $V(s)$: Expected steps to win from state $s$
+  - $a$: Possible discard actions
+  - $s'$: Next state after drawing a tile
 - **Dynamic Programming (DP)**: Solves Bellman equation recursively for optimal value function
 - Implementation: Uses **Monte Carlo Tree Search (MCTS)** to approximate solutions through simulation
 
