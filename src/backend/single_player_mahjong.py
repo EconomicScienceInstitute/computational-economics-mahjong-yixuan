@@ -61,65 +61,54 @@ def is_win(hand):
     Check if the hand (8 tiles) is a winning hand.
     Winning pattern requires:
     - Exactly 8 tiles
-    - Two sequences (chows: three consecutive man tiles each)
-    - One pair (two identical tiles)
-    
-    Args:
-        hand (list): List of 8 tiles to check
-        
-    Returns:
-        bool: True if hand is winning, False otherwise
+    - One pair (exactly two identical tiles, only one allowed)
+    - Two sequences (chows: three consecutive man tiles each, only in Characters 9-17)
+    - No tile is used more than once
     """
-    # Validate hand size
     if len(hand) != 8:
         return False
 
-    # Count occurrences of each tile
-    c = Counter(hand)
-    tiles = sorted(hand)
-    
-    # Try each possible pair from the hand
-    for pair in set(tiles):
-        # Skip if we don't have at least 2 of this tile
-        if c[pair] < 2:
-            continue
-        # Remove the pair from consideration
-        temp = tiles.copy()
-        temp.remove(pair)
-        temp.remove(pair)
-        
-        # Get remaining man (number) tiles for sequences
-        # Only man tiles (9-17) can form sequences
-        man_tiles = [t for t in temp if 9 <= t <= 17]
-        
-        # Check if we have exactly 6 man tiles (for two sequences)
-        if len(man_tiles) == 6:
-            man_tiles_sorted = sorted(man_tiles)
-            # Try to find first sequence (123, 234, etc.)
-            for i in range(9, 16):  # 9~15
-                if (man_tiles_sorted.count(i) >= 1 and 
-                    man_tiles_sorted.count(i+1) >= 1 and 
-                    man_tiles_sorted.count(i+2) >= 1):
-                    # Found first sequence, remove it
-                    t2 = man_tiles_sorted.copy()
-                    t2.remove(i)
-                    t2.remove(i+1)
-                    t2.remove(i+2)
-                    # Try to find second sequence
-                    for j in range(9, 16):
-                        if (t2.count(j) >= 1 and 
-                            t2.count(j+1) >= 1 and 
-                            t2.count(j+2) >= 1):
-                            # Found second sequence
-                            t3 = t2.copy()
-                            t3.remove(j)
-                            t3.remove(j+1)
-                            t3.remove(j+2)
-                            # If all tiles used, we have a winning hand
-                            if not t3:
-                                return True
-    # No winning combination found
-    return False
+    tile_count = Counter(hand)
+    # There must be exactly one pair (no more, no less)
+    pairs = [t for t in tile_count if tile_count[t] == 2]
+    if len(pairs) != 1:
+        return False
+
+    pair_tile = pairs[0]
+    # Remove the pair from the hand
+    temp_count = tile_count.copy()
+    temp_count[pair_tile] -= 2
+
+    # The remaining 6 tiles must all be man tiles (Characters 9-17)
+    remaining_tiles = list(temp_count.elements())
+    if any(t < 9 or t > 17 for t in remaining_tiles):
+        return False
+    # There must be no other pair or triplet in the remaining tiles
+    if any(temp_count[t] > 1 for t in temp_count if 9 <= t <= 17):
+        return False
+
+    # Try to form two chows (sequences of three consecutive man tiles)
+    def can_form_chows(counter, chows_left):
+        if chows_left == 0:
+            return sum(counter.values()) == 0
+        # Find the smallest tile with at least one left
+        for t in range(9, 16):
+            if counter[t] >= 1 and counter[t+1] >= 1 and counter[t+2] >= 1:
+                counter[t] -= 1
+                counter[t+1] -= 1
+                counter[t+2] -= 1
+                if can_form_chows(counter, chows_left - 1):
+                    return True
+                # backtrack
+                counter[t] += 1
+                counter[t+1] += 1
+                counter[t+2] += 1
+        return False
+
+    c = Counter()
+    for t in range(9, 18):
+        c[t] = temp_count[t]
+    return can_form_chows(c, 2)
 
 
 def mcts_decision(hand, wall, n_sim=10000):

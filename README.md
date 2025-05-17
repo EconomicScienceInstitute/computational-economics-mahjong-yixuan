@@ -79,10 +79,15 @@ Bonus: +20 points if all tiles are Characters
 ## Mathematical Foundations: MDP, BE, DP & MCTS
 The AI strategy is based on:
 - **Markov Decision Process (MDP)**: Models the game as states (current hand) and actions (discards)
-- **Bellman Equation (BE)**: \[ V(s) = \min_{a} \mathbb{E}_{s'}[1 + V(s')] \]
-  * V(s): Expected steps to win from state s
-  * a: Possible discard actions
-  * s': Next state after drawing a tile
+- **Bellman Equation (BE):**
+  - V(s) = min over all discards a of (expected value over next state s' of [1 + V(s')])
+  - Or, in math notation:
+    $$
+    V(s) = \min_{a} \mathbb{E}_{s'}[1 + V(s')]
+    $$
+  - V(s): Expected steps to win from state s
+  - a: Possible discard actions
+  - s': Next state after drawing a tile
 - **Dynamic Programming (DP)**: Solves Bellman equation recursively for optimal value function
 - Implementation: Uses **Monte Carlo Tree Search (MCTS)** to approximate solutions through simulation
 
@@ -143,3 +148,34 @@ python3 app.py
   * `/`: Main game interface
   * `/api/new_game`: Start a new game
   * `/api/discard/<tile>`: Process tile discard
+
+## Testing
+
+### Unit Test (A)
+Test the hand-winning logic (`is_win`) with a variety of hands:
+```bash
+python3 test/test_is_win.py
+```
+All test cases should show `PASS`.
+
+### Integration Test (B)
+Simulate a full single-player mahjong game with random tiles, AI decision, and scoring:
+```bash
+python3 test/test_integration_game.py
+```
+You will see the full game process and final result.
+
+### Regression Test (C)
+(Optional) Run all tests at once:
+```bash
+python3 test/run_all_tests.py
+```
+This will automatically run all test scripts.
+
+### Adding New Tests
+- To add new hand patterns for `is_win`, edit `test/test_is_win.py`.
+- To test specific game flows, modify or extend `test/test_integration_game.py`.
+
+### Notes
+- All tests are self-contained and require only Python 3 and the dependencies in `requirements.txt`.
+- Each time you change core logic, please rerun all tests to ensure correctness.
