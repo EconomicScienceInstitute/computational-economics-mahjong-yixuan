@@ -7,7 +7,7 @@ import sys
 
 def main():
     # Experiment parameters
-    N_GAMES = 100  # Number of test games for each method (per hand type, changed from 20 to 100)
+    N_GAMES = 20  # Number of test games for each method (per hand type, changed from 100 to 20)
     N_SIM = 200   # Number of MCTS simulations per decision (keep small for speed)
 
     # Parse hand type from command line
