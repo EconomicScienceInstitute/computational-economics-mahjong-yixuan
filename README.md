@@ -9,13 +9,14 @@
 
 ## Project Overview
 
-A Python-based Mahjong AI training platform featuring:
+A Python-based Single Player Mahjong:
 
-- Monte Carlo Tree Search for real-time move suggestions
-- Dynamic Programming optimization for minimal winning steps
-- Web interface with interactive gameplay and move hints
 - Simplified 32-tile ruleset optimized for AI learning
-- Automatic game simulation and performance analysis
+- Monte Carlo Tree Search (MCTS) and Q-learning for automated strategy optimization
+- Dynamic Programming for minimal winning steps analysis
+- Web interface for interactive single-player Mahjong gameplay
+- Automatic game simulation, result saving, and performance analysis
+- This is a **must-win game**: every deal is theoretically winnable with optimal play
 
 ## Game Rules
 1. **Basic Rules**
@@ -74,7 +75,7 @@ Bonus: +20 points if all tiles are Characters
 
 
 - **Markov Decision Process (MDP)**: 
-- **State:** The current state is defined by the player’s hand, the remaining tiles in the wall, and, if needed, the game history for more advanced analysis.
+- **State:** The current state is defined by the player's hand, the remaining tiles in the wall, and, if needed, the game history for more advanced analysis.
 - **Action:** At each step, the player chooses which tile to discard from their hand.
 - **Transition (STEP):** After discarding a tile, the player draws a new tile from the wall, resulting in a new state.
 - **Value function (Reward):** The objective is to win in the fewest possible steps and achieve the highest possible score.
