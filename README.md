@@ -70,6 +70,46 @@ Example:
 
 Bonus: +20 points if all tiles are Characters
 
+## Mathematical Foundations: MDP, BE, DP & MCTS
+
+
+- **Markov Decision Process (MDP)**: 
+- **State:** The current state is defined by the player’s hand, the remaining tiles in the wall, and, if needed, the game history for more advanced analysis.
+- **Action:** At each step, the player chooses which tile to discard from their hand.
+- **Transition (STEP):** After discarding a tile, the player draws a new tile from the wall, resulting in a new state.
+- **Value function (Reward):** The objective is to win in the fewest possible steps and achieve the highest possible score.
+No points are awarded during intermediate steps; only the final hand is scored.
+When a winning hand is achieved, the score is calculated as 100 minus the number of steps taken, plus a 20-point bonus for a straight (all Character tiles). If the player cannot win or the wall is empty, the score is zero.
+
+**Score Calculation Matrix**
+| Steps Taken | Base Score (100 - Steps) | All Character Tiles Bonus | Final Score (if all Characters) |
+|:-----------:|:-----------------------:|:------------------------:|:-------------------------------:|
+|      0      |          100            |           +20            |             120                 |
+|      1      |           99            |           +20            |             119                 |
+|      2      |           98            |           +20            |             118                 |
+|      5      |           95            |           +20            |             115                 |
+|     10      |           90            |           +20            |             110                 |
+|     20      |           80            |           +20            |             100                 |
+|     50      |           50            |           +20            |              70                 |
+|    100      |            0            |           +20            |              20                 |
+
+
+- **Bellman Equation (BE):**
+  - $V(s) = \min_a E_{s'}[1 + V(s')]$
+  - $V(s)$: Expected steps to win from state $s$
+  - $a$: Possible discard actions
+  - $s'$: Next state after drawing a tile
+- Implementation: Uses **Monte Carlo Tree Search (MCTS)** to approximate solutions through simulation
+- **Dynamic Programming (DP)**: Solves Bellman equation recursively for optimal value function
+- **Memoization:** Use lru_cache to avoid redundant computation
+
+
+## Project Structure
+- `single_player_mahjong.py`: Core game logic and AI
+- `app.py`: Web server and API
+- `index.html`: Web interface
+- `auto_train_mcts.py`: Training script
+
 ## Core Implementation
 1. **Key Functions**
    - `init_tiles()`: Initialize game with 8 random tiles
@@ -85,44 +125,6 @@ Bonus: +20 points if all tiles are Characters
      * Records win rate and average steps to win
    - Suggests the move with highest chance of quick win
    - Shows expected steps needed and win probability
-
-## Mathematical Foundations: MDP, BE, DP & MCTS
-The AI strategy is based on:
-- **Markov Decision Process (MDP)**: Models the game as states (current hand) and actions (discards)
-- **Bellman Equation (BE):**
-  - $V(s) = \min_a E_{s'}[1 + V(s')]$
-  - $V(s)$: Expected steps to win from state $s$
-  - $a$: Possible discard actions
-  - $s'$: Next state after drawing a tile
-- **Dynamic Programming (DP)**: Solves Bellman equation recursively for optimal value function
-- Implementation: Uses **Monte Carlo Tree Search (MCTS)** to approximate solutions through simulation
-
-### Dynamic Programming Implementation Details
-- **State:** (current hand tuple, remaining wall tuple)
-- **Action:** Discard one tile from hand
-- **Transition:** Discard a tile, draw a new tile from the wall, enter new state
-- **Value function:** Minimal expected steps to win from current state
-- **Memoization:** Use lru_cache to avoid redundant computation
-
-**Score Calculation Matrix**
-
-| Steps Taken | Base Score (100 - Steps) | All Character Tiles Bonus | Final Score (if all Characters) |
-|:-----------:|:-----------------------:|:------------------------:|:-------------------------------:|
-|      0      |          100            |           +20            |             120                 |
-|      1      |           99            |           +20            |             119                 |
-|      2      |           98            |           +20            |             118                 |
-|      5      |           95            |           +20            |             115                 |
-|     10      |           90            |           +20            |             110                 |
-|     20      |           80            |           +20            |             100                 |
-|     50      |           50            |           +20            |              70                 |
-|    100      |            0            |           +20            |              20                 |
-
-## Project Structure
-- `single_player_mahjong.py`: Core game logic and AI
-- `app.py`: Web server and API
-- `index.html`: Web interface
-- `auto_train_mcts.py`: Training script
-
 
 ## AI Implementation
 ### Monte Carlo Tree Search (MCTS)
