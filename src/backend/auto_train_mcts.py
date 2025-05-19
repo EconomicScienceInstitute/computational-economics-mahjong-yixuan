@@ -300,6 +300,27 @@ def generate_typical_hands():
 # Monte Carlo Tree Search (MCTS) Section
 # =====================
 
+def dp_qingyise_single_case():
+    """
+    Run DP analysis for the same 'qingyise' (all manzu) tenpai hand as used in Q-learning/MCTS experiments.
+    Prints minimal steps and optimal score for direct comparison.
+    """
+    # Hand: 1-8 manzu (9-16), wall: remaining manzu tiles (9-17, each 2 copies, minus hand)
+    hand = [9, 10, 11, 12, 13, 14, 15, 16]  # 1-8 manzu
+    wall = [i for i in range(9, 18)] * 2  # 1-9 manzu, 2 copies each
+    for t in hand:
+        wall.remove(t)
+    from collections import Counter
+    hand_tuple = tuple(sorted(hand))
+    wall_counter_tuple = tuple(sorted(Counter(wall).items()))
+    min_steps = dp(hand_tuple, wall_counter_tuple)
+    score, base_score, combo_bonus, details = calc_score(hand, min_steps)
+    print("\n=== DP Analysis for Qingyise Tenpai (same as Q-learning/MCTS) ===")
+    print(f"Hand: {hand}")
+    print(f"Wall: {wall}")
+    print(f"Minimal steps to win (DP): {min_steps}")
+    print(f"Optimal score (DP): {score} (Base: {base_score}, Bonus: {combo_bonus}, Details: {details})")
+
 if __name__ == "__main__":
     # --- DP analysis for a specific hand and wall ---
     specific_hand = [9, 10, 11, 12, 13, 14, 27, 27]  # Example: C1-C6, East, East
@@ -405,4 +426,6 @@ if __name__ == "__main__":
     print(f"Wins: {win_count}/{TOTAL_GAMES} ({win_count/TOTAL_GAMES*100:.1f}%)")
     if win_count > 0:
         print(f"Average steps to win: {total_steps/win_count:.1f}")
+
+    dp_qingyise_single_case()
 

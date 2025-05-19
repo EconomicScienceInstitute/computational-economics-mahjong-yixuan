@@ -7,7 +7,7 @@ import sys
 
 def main():
     # Experiment parameters
-    N_GAMES = 20  # Number of test games for each method (per hand type)
+    N_GAMES = 100  # Number of test games for each method (per hand type, changed from 20 to 100)
     N_SIM = 200   # Number of MCTS simulations per decision (keep small for speed)
 
     # Parse hand type from command line
@@ -16,15 +16,22 @@ def main():
         "MAN_WIND": get_man_wind_tingpai,
         "MAN_DRAGON": get_man_dragon_tingpai
     }
+    batch_types = ["MAN_WIND", "MAN_DRAGON"]
     if len(sys.argv) > 1:
         hand_label = sys.argv[1].upper()
-        if hand_label not in hand_types:
-            print(f"Unknown hand type: {hand_label}. Choose from: {list(hand_types.keys())}")
+        if hand_label == "BOTH":
+            for label in batch_types:
+                run_experiment(label, hand_types[label], N_GAMES, N_SIM)
+            return
+        elif hand_label not in hand_types:
+            print(f"Unknown hand type: {hand_label}. Choose from: {list(hand_types.keys())} or BOTH")
             return
     else:
         hand_label = "QINGYISE"
     hand_func = hand_types[hand_label]
+    run_experiment(hand_label, hand_func, N_GAMES, N_SIM)
 
+def run_experiment(hand_label, hand_func, N_GAMES, N_SIM):
     print(f"\n===== Testing Hand Type: {hand_label} =====")
 
     # Prepare Q-learning agent (assume already trained or train here)
@@ -99,6 +106,19 @@ def main():
             hand.append(draw)
             steps += 1
 
+    # Calculate and append averages for each method
+    results_df = pd.DataFrame(results, columns=['Method', 'Game', 'Hand', 'Steps', 'Base Score', 'Bonus', 'Total Score', 'Details', 'Win'])
+    avg_rows = []
+    for method in [f'MCTS_{hand_label}', f'MCTS+Q_{hand_label}']:
+        method_df = results_df[results_df['Method'] == method]
+        avg_steps = method_df['Steps'].mean()
+        avg_score = method_df['Total Score'].mean()
+        avg_rows.append([
+            f'{method}_AVG', 'AVG', '', avg_steps, '', '', avg_score, f'Average Steps: {avg_steps:.2f}, Average Score: {avg_score:.2f}', 1
+        ])
+    # Append average rows to results
+    for row in avg_rows:
+        results.append(row)
     # Save results to CSV in append mode (do not overwrite previous results)
     if not os.path.exists(results_path):
         results_df = pd.DataFrame(results, columns=['Method', 'Game', 'Hand', 'Steps', 'Base Score', 'Bonus', 'Total Score', 'Details', 'Win'])
@@ -115,9 +135,12 @@ def main():
         print("-" * 30)
         method_df = results_df[results_df['Method'] == method]
         for _, row in method_df.iterrows():
-            print(f"Game {int(row['Game'])}: Steps = {int(row['Steps'])}, Total Score = {int(row['Total Score'])}")
-            if row['Bonus'] > 0:
-                print(f"  Bonus: {row['Details']}")
+            if row['Game'] == 'AVG':
+                print(f"AVG: Average Steps = {row['Steps']:.2f}, Average Total Score = {row['Total Score']:.2f}")
+            else:
+                print(f"Game {int(row['Game'])}: Steps = {int(row['Steps'])}, Total Score = {int(row['Total Score'])}")
+                if row['Bonus'] > 0:
+                    print(f"  Bonus: {row['Details']}")
         avg_steps = method_df['Steps'].mean()
         avg_score = method_df['Total Score'].mean()
         print(f"\n{method} Averages:")

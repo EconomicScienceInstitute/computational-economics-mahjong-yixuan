@@ -316,25 +316,42 @@ def calc_score(hand, steps):
 
 
 def get_man_wind_tingpai():
-    """生成万+风的听牌（6张万+2张风）"""
-    hand = [9, 10, 11, 12, 13, 27, 28, 29]  # 1-5万+东南西
+    """
+    Generate a 'tenpai' (one-away from win) hand: wind pair + 6 manzu tiles forming two chows, but missing one tile to win.
+    Example: [27, 27, 9, 10, 11, 12, 13, 15] (East East + 1-5,7 manzu), needs 14 (6 manzu) to win.
+    """
+    hand = [27, 27, 9, 10, 11, 12, 13, 15]  # East East + 1-5,7 manzu
     wall = []
     for v in MAN_VALUES + WIND_VALUES + DRAGON_VALUES:
         wall.extend([v] * TILE_COPIES)
     for t in hand:
         wall.remove(t)
+    # Ensure the winning tile (14, 6 manzu) is in the wall
+    if 14 in wall:
+        pass
+    else:
+        # If not, replace a random tile in wall with 14
+        wall[random.randrange(len(wall))] = 14
     random.shuffle(wall)
     return hand.copy(), wall
 
 
 def get_man_dragon_tingpai():
-    """生成万+三元的听牌（6张万+2张三元）"""
-    hand = [9, 10, 11, 12, 31, 32, 33, 13]  # 1-4万+中发白+5万
+    """
+    Generate a 'tenpai' (one-away from win) hand: dragon pair + 6 manzu tiles forming two chows, but missing one tile to win.
+    Example: [31, 31, 9, 10, 11, 12, 13, 15] (Red Red + 1-5,7 manzu), needs 14 (6 manzu) to win.
+    """
+    hand = [31, 31, 9, 10, 11, 12, 13, 15]  # Red Red + 1-5,7 manzu
     wall = []
     for v in MAN_VALUES + WIND_VALUES + DRAGON_VALUES:
         wall.extend([v] * TILE_COPIES)
     for t in hand:
         wall.remove(t)
+    # Ensure the winning tile (14, 6 manzu) is in the wall
+    if 14 in wall:
+        pass
+    else:
+        wall[random.randrange(len(wall))] = 14
     random.shuffle(wall)
     return hand.copy(), wall
 
