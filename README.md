@@ -16,7 +16,7 @@ A Python-based Single Player Mahjong:
 - Simplified 32-tile ruleset optimized
 - Monte Carlo Tree Search (MCTS) and Q-learning for automated strategy optimization
 - Dynamic Programming for minimal winning steps analysis
-- Web interface for interactive single-player Mahjong gameplay
+- A Flask-based web interface for interactive play and visualization (UI and tile images adapted from [Pomax/mahjong](https://github.com/Pomax/mahjong))
 - Automatic game simulation, result saving, and performance analysis
 - This is a **must-win game**: every deal is theoretically winnable with optimal play
 
