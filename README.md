@@ -1,17 +1,19 @@
 # Single Player Mahjong
 
-## Cultural Heritage
+## About Mahjong
 
 1. Mahjong originated in the Qing Dynasty (around 1840) in China.
 2. The four directions (East, South, West, North) form a complete circle of the universe.
 3. Character tiles (1-9) progress from unity to longevity, representing the cosmic order.
 4. The three Dragon tiles are: Red Dragon (center of the universe), Green Dragon (prosperity), and White Dragon (purity).
 
+**In oriental philosophy, their combination embodies Harmony.**
+
 ## Project Overview
 
 A Python-based Single Player Mahjong:
 
-- Simplified 32-tile ruleset optimized for AI learning
+- Simplified 32-tile ruleset optimized
 - Monte Carlo Tree Search (MCTS) and Q-learning for automated strategy optimization
 - Dynamic Programming for minimal winning steps analysis
 - Web interface for interactive single-player Mahjong gameplay
