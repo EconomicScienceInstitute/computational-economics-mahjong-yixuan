@@ -104,6 +104,19 @@ The AI strategy is based on:
 - **Value function:** Minimal expected steps to win from current state
 - **Memoization:** Use lru_cache to avoid redundant computation
 
+**Score Calculation Matrix**
+
+| Steps Taken | Base Score (100 - Steps) | All Character Tiles Bonus | Final Score (if all Characters) |
+|:-----------:|:-----------------------:|:------------------------:|:-------------------------------:|
+|      0      |          100            |           +20            |             120                 |
+|      1      |           99            |           +20            |             119                 |
+|      2      |           98            |           +20            |             118                 |
+|      5      |           95            |           +20            |             115                 |
+|     10      |           90            |           +20            |             110                 |
+|     20      |           80            |           +20            |             100                 |
+|     50      |           50            |           +20            |              70                 |
+|    100      |            0            |           +20            |              20                 |
+
 ## Project Structure
 - `single_player_mahjong.py`: Core game logic and AI
 - `app.py`: Web server and API
