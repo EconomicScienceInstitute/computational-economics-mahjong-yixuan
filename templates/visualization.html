@@ -74,9 +74,9 @@
         let simulationData = null;
 
         // Fetch and process data
-        fetch('/api/mcts_results')
-            .then(response => response.json())
-            .then(data => {
+    fetch('/api/mcts_results')
+      .then(response => response.json())
+      .then(data => {
                 simulationData = data.raw_data;
                 updateCharts(simulationData);
             });
@@ -113,14 +113,14 @@
                 marker: {
                     color: 'rgb(55, 83, 109)'
                 }
-            };
+        };
 
             const winRateLayout = {
-                title: 'Win Rate by Hand Type',
-                xaxis: { title: 'Hand Type' },
+          title: 'Win Rate by Hand Type',
+          xaxis: { title: 'Hand Type' },
                 yaxis: { title: 'Win Rate (%)' },
                 showlegend: false
-            };
+        };
 
             Plotly.newPlot('winrate_chart', [winRateTrace], winRateLayout);
 

@@ -1,5 +1,8 @@
 import random
 from collections import Counter, defaultdict # Import Counter for tile counting and defaultdict for MCTS statistics
+import math
+from concurrent.futures import ThreadPoolExecutor
+from q_learning import QLearningAgent
 
 # Define the tile set
 # Character tiles (1-9 man, but numbered 9-17 in images)
@@ -58,14 +61,14 @@ def is_ready(hand):
 
 def is_win(hand):
     """
-    Check if the hand (8 tiles) is a winning hand.
+    Check if the hand is a winning hand.
     Winning pattern requires:
-    - Exactly 8 tiles
+    - Exactly 8 or 9 tiles
     - One pair (exactly two identical tiles, only one allowed)
     - Two sequences (chows: three consecutive man tiles each, only in Characters 9-17)
     - No tile is used more than once
     """
-    if len(hand) != 8:
+    if len(hand) not in [8, 9]:
         return False
 
     tile_count = Counter(hand)
@@ -79,7 +82,7 @@ def is_win(hand):
     temp_count = tile_count.copy()
     temp_count[pair_tile] -= 2
 
-    # The remaining 6 tiles must all be man tiles (Characters 9-17)
+    # The remaining tiles must all be man tiles (Characters 9-17)
     remaining_tiles = list(temp_count.elements())
     if any(t < 9 or t > 17 for t in remaining_tiles):
         return False
@@ -111,85 +114,97 @@ def is_win(hand):
     return can_form_chows(c, 2)
 
 
-def mcts_decision(hand, wall, n_sim=10000):
+def get_qingyise_tingpai():
+    # 8 tiles, all in the same suit (Manzu 9-17), one tile away from winning
+    hand = [9, 10, 11, 12, 13, 14, 15, 16]  # 1-8 Manzu
+    wall = [i for i in range(9, 18)] * 4     # 1-9 Manzu
+    for t in hand:
+        wall.remove(t)
+    random.shuffle(wall)
+    return hand.copy(), wall
+
+
+def q_greedy_discard(hand, q_agent):
+    # Use Q-table to select the best discard
+    state = q_agent.state_to_tuple(hand)
+    possible_discards = list(set(hand))
+    q_values = [q_agent.q_table.get((state, a), 0) for a in possible_discards]
+    max_q = max(q_values)
+    best_actions = [a for a, q in zip(possible_discards, q_values) if q == max_q]
+    return random.choice(best_actions)
+
+
+def mcts_decision(hand, wall, n_sim=1000, q_agent=None):
     """
     Monte Carlo Tree Search for single-player mahjong.
-    Simulates multiple games for each possible discard to find the best move.
-    
-    Args:
-        hand (list): Current hand of tiles
-        wall (list): Remaining tiles in the wall
-        n_sim (int): Number of simulations to run for each discard (default: 10000)
-        
-    Returns:
-        tuple: A tuple containing three elements:
-            best_discard (int or None): 
-                - The recommended tile to discard
-                - None if no winning path is found
-            
-            best_avg (float): 
-                - Average steps needed to win if discarding best_discard
-                - float('inf') if no winning path is found
-            
-            best_stats (dict): Statistics about the recommended move
-                - 'min_steps' (int): Minimum steps to win in simulations
-                - 'max_steps' (int): Maximum steps to win in simulations
-                - 'win_rate' (float): Percentage of simulations that led to a win
+    If q_agent is provided, use Q-learning policy for rollout; otherwise, use original strategy.
     """
-    # If no tiles left in wall, can't win
     if not wall:
         return None, float('inf'), {'min_steps': float('inf'), 'max_steps': float('inf'), 'win_rate': 0}
-    
-    # Initialize statistics tracking
-    results = defaultdict(list)  # discard -> list of steps to win
-    stats = defaultdict(lambda: {'wins': 0, 'total_steps': 0, 'min_steps': float('inf'), 'max_steps': 0})
-    
-    # Try each possible discard
-    for discard in set(hand):
-        # Run multiple simulations for this discard
-        for _ in range(n_sim):
-            # Setup simulation
-            sim_hand = hand.copy()
-            sim_hand.remove(discard)
-            sim_wall = wall.copy()
-            random.shuffle(sim_wall)
-            steps = 0
-            temp_hand = sim_hand.copy()
-            temp_wall = sim_wall.copy()
-            
-            # Run simulation until win or timeout (30 steps)
-            while temp_wall and steps < 30:
-                # Draw a tile
-                draw = temp_wall.pop(0)
-                temp_hand.append(draw)
-                steps += 1
-                
-                # Check if we can win by discarding any tile
-                for possible_discard in temp_hand:
-                    test_hand = temp_hand.copy()
-                    test_hand.remove(possible_discard)
-                    if is_win(test_hand):
-                        # Record statistics for this winning path
-                        stats[discard]['wins'] += 1
-                        stats[discard]['total_steps'] += steps
-                        stats[discard]['min_steps'] = min(stats[discard]['min_steps'], steps)
-                        stats[discard]['max_steps'] = max(stats[discard]['max_steps'], steps)
-                        break
+    stats = defaultdict(lambda: {'wins': 0, 'total_steps': 0, 'min_steps': float('inf'), 'max_steps': 0, 'visits': 0})
+    C = 1.414
+    max_depth = 30
+
+    def uct_value(node_stats, parent_visits):
+        # Avoid math domain error: log(0) is undefined
+        if node_stats['visits'] == 0 or parent_visits <= 0:
+            return float('inf')
+        if node_stats['wins'] > 0:
+            avg_steps = node_stats['total_steps'] / node_stats['wins']
+            exploitation = (node_stats['wins'] / node_stats['visits']) * (1.0 / (1.0 + avg_steps/100.0))
+        else:
+            exploitation = 0
+        exploration = C * math.sqrt(math.log(parent_visits) / node_stats['visits'])
+        return exploitation + exploration
+
+    def simulate_game(discard):
+        sim_hand = hand.copy()
+        sim_hand.remove(discard)
+        sim_wall = wall.copy()
+        random.shuffle(sim_wall)
+        steps = 0
+        temp_hand = sim_hand.copy()
+        temp_wall = sim_wall.copy()
+        while temp_wall and steps < max_depth:
+            draw = temp_wall.pop(0)
+            temp_hand.append(draw)
+            steps += 1
+            # Check win
+            if is_win(temp_hand):
+                return steps
+            # Discard selection
+            if len(temp_hand) > 8:
+                if q_agent is not None:
+                    next_discard = q_greedy_discard(temp_hand, q_agent)
                 else:
-                    # If no winning move, discard randomly
-                    if len(temp_hand) > 8:
-                        temp_hand.remove(random.choice(temp_hand))
-            
-            # If simulation timed out (took too many steps), mark as infinite
-            if steps >= 30:
-                results[discard].append(float('inf'))
-            
-    # Find the best discard based on statistics
+                    best_uct = float('-inf')
+                    best_next_discard = None
+                    for next_discard in set(temp_hand):
+                        if next_discard not in stats:
+                            stats[next_discard] = {'wins': 0, 'total_steps': 0, 'min_steps': float('inf'), 'max_steps': 0, 'visits': 0}
+                        uct = uct_value(stats[next_discard], stats[discard]['visits'])
+                        if uct > best_uct:
+                            best_uct = uct
+                            best_next_discard = next_discard
+                    if best_next_discard is None:
+                        break
+                    next_discard = best_next_discard
+                temp_hand.remove(next_discard)
+                stats[next_discard]['visits'] += 1
+        return float('inf')
+
+    for discard in set(hand):
+        for _ in range(n_sim):
+            steps = simulate_game(discard)
+            if steps != float('inf'):
+                stats[discard]['wins'] += 1
+                stats[discard]['total_steps'] += steps
+                stats[discard]['min_steps'] = min(stats[discard]['min_steps'], steps)
+                stats[discard]['max_steps'] = max(stats[discard]['max_steps'], steps)
+            stats[discard]['visits'] += 1
     best_discard = None
     best_avg = float('inf')
     best_stats = {'min_steps': float('inf'), 'max_steps': 0, 'win_rate': 0}
-    
-    # Calculate average steps and win rate for each discard
     for discard, discard_stats in stats.items():
         if discard_stats['wins'] > 0:
             avg = discard_stats['total_steps'] / discard_stats['wins']
@@ -202,11 +217,8 @@ def mcts_decision(hand, wall, n_sim=10000):
                     'max_steps': discard_stats['max_steps'],
                     'win_rate': win_rate
                 }
-    
-    # If no winning path found, return None
     if best_avg == float('inf'):
         return None, float('inf'), {'min_steps': float('inf'), 'max_steps': float('inf'), 'win_rate': 0}
-    
     return best_discard, best_avg, best_stats
 
 
@@ -278,11 +290,9 @@ def shanten(hand):
 def calc_score(hand, steps):
     """
     Calculate the score for a winning hand based on both steps taken and tile combinations.
-    
     Args:
         hand (list): The winning hand of 8 tiles
         steps (int): Number of steps taken to win
-        
     Returns:
         tuple: (total_score, base_score, combination_bonus, details)
             total_score (int): Final score (base + bonus)

@@ -1,0 +1,4 @@
+DP_Hand,DP_Wall,DP_MinSteps
+"[9, 10, 11, 12, 13, 14, 27, 27]","[9, 10, 11, 12, 13, 14, 27, 28, 29, 30, 31, 32, 33, 15, 16, 17, 28, 29, 30, 31, 32, 33, 15, 16]",0
+
+Game,TotalScore,Steps,BaseScore,ComboBonus,Details,Win

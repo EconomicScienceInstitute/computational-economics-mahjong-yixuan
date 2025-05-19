@@ -6,7 +6,7 @@ from collections import Counter
 import time
 
 # Configuration
-TOTAL_GAMES = 1  # Number of games to simulate
+TOTAL_GAMES = 10  # Number of games to simulate
 N_SIMULATIONS = 100  # Number of MCTS simulations
 
 dp_calls = 0  # Counter for DP function calls
@@ -34,8 +34,8 @@ def dp(hand_tuple, wall_counter_tuple):
     """
     global dp_calls
     dp_calls += 1
-    if dp_calls % 5000 == 0:
-        print(f"DP calls: {dp_calls}")
+    # if dp_calls % 5000 == 0:
+    #     print(f"DP calls: {dp_calls}")
     wall_counter = Counter(dict(wall_counter_tuple))
     # Pruning: if not enough tiles to form a hand, return infinity
     if len(hand_tuple) + sum(wall_counter.values()) < 8:
@@ -136,19 +136,18 @@ def analyze_typical_hands():
     """
     Analyze multiple typical mahjong hands and save results to CSV.
     """
-    print("\nStarting analysis of typical hands...")
     results = []
     typical_hands = generate_typical_hands()
     # Create CSV file and write header
-    with open("dp_analysis_results.csv", "w", newline="") as csvfile:
+    with open("../../data/dp_analysis_results.csv", "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["HandType", "Hand", "Wall", "MinSteps", "Description"])
     for hand_info in typical_hands:
-        print(f"\nAnalyzing {hand_info['name']}...")
-        print(f"DP calls before: {dp_calls}")
+        # print(f"\nAnalyzing {hand_info['name']}...")
+        # print(f"DP calls before: {dp_calls}")
         wall_counter_tuple = tuple(sorted(Counter(hand_info['wall']).items()))
         result = dp(tuple(sorted(hand_info['hand'])), wall_counter_tuple)
-        print(f"DP calls after: {dp_calls}")
+        # print(f"DP calls after: {dp_calls}")
         # Save results
         results.append({
             'name': hand_info['name'],
@@ -158,7 +157,7 @@ def analyze_typical_hands():
             'description': hand_info['description']
         })
         # Write to CSV
-        with open("dp_analysis_results.csv", "a", newline="") as csvfile:
+        with open("../../data/dp_analysis_results.csv", "a", newline="") as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow([
                 hand_info['name'],
@@ -167,6 +166,9 @@ def analyze_typical_hands():
                 result,
                 hand_info['description']
             ])
+        # Only print the result line for each hand, including scores
+        score, base_score, combo_bonus, details = calc_score(hand_info['hand'], result)
+        print(f"Hand: {hand_info['name']}, MinSteps: {result}, BaseScore: {base_score}, Bonus: {combo_bonus}, TotalScore: {score}")
     print("\nAll hand analysis completed! Results saved to dp_analysis_results.csv")
     return results
 
@@ -291,7 +293,8 @@ def generate_typical_hands():
     
     # return hands  # Uncomment this line to restore full analysis
     # return hands[:10]  # For small-scale testing
-    return hands[:1]  # For minimal DP testing, only analyze the first hand
+    # For fastest DP testing, only analyze the first hand
+    return hands[:1]
 
 # =====================
 # Monte Carlo Tree Search (MCTS) Section
@@ -362,8 +365,11 @@ if __name__ == "__main__":
                 # Draw a new tile from the wall
                 draw = wall.pop(0)
 
-    # --- DP analysis for multiple typical hands ---
+    # --- Batch DP analysis for typical hands ---
+    print("\nRunning batch DP analysis for typical hands...")
     dp_results = analyze_typical_hands()
+    print(f"Batch DP analysis completed. Total hands analyzed: {len(dp_results)}")
+    print("Results saved to dp_analysis_results.csv")
     
     # --- MCTS simulation ---
     print("\nStarting MCTS simulation...")

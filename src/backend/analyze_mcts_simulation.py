@@ -8,7 +8,7 @@ def generate_typical_hands():
     # 1. One tile away from winning
     hands.append({
         'name': 'One-Tile-Away',
-        'hand': [9, 9, 10, 11, 12, 13, 14, 16],  # 需要15万
+        'hand': [9, 9, 10, 11, 12, 13, 14, 16],  # Needs 15 Man
         'wall': [15, 15, 15, 17, 17, 28, 29, 30, 31, 32, 33],
         'description': 'One tile away from winning (needs 15)'
     })
@@ -16,7 +16,7 @@ def generate_typical_hands():
     # 2. Two tiles away from winning
     hands.append({
         'name': 'Two-Tiles-Away',
-        'hand': [9, 9, 10, 11, 12, 13, 14, 17],  # 需要15和16
+        'hand': [9, 9, 10, 11, 12, 13, 14, 17],  # Needs 15 and 16
         'wall': [15, 15, 16, 16, 28, 29, 30, 31, 32, 33],
         'description': 'Two tiles away from winning (needs 15 and 16)'
     })
@@ -24,7 +24,7 @@ def generate_typical_hands():
     # 3. Mixed tiles with potential
     hands.append({
         'name': 'Mixed-Potential',
-        'hand': [9, 10, 11, 27, 27, 28, 29, 30],  # 需要形成顺子
+        'hand': [9, 10, 11, 27, 27, 28, 29, 30],  # Needs to form a chow
         'wall': [12, 13, 14, 15, 16, 17, 31, 32, 33],
         'description': 'Mixed tiles with potential to form chows'
     })
@@ -32,7 +32,7 @@ def generate_typical_hands():
     # 4. Dragon pair with mixed tiles
     hands.append({
         'name': 'Dragon-Mixed',
-        'hand': [31, 31, 9, 10, 11, 27, 28, 29],  # 需要形成顺子
+        'hand': [31, 31, 9, 10, 11, 27, 28, 29],  # Needs to form a chow
         'wall': [12, 13, 14, 15, 16, 17, 30, 32, 33],
         'description': 'Dragon pair with mixed tiles'
     })

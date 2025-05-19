@@ -2,7 +2,7 @@
 
 ## Cultural Heritage
 
-1. Mahjong originated in the Qing Dynasty (around 1840).
+1. Mahjong originated in the Qing Dynasty (around 1840) in China.
 2. The four directions (East, South, West, North) form a complete circle of the universe.
 3. Character tiles (1-9) progress from unity to longevity, representing the cosmic order.
 4. The three Dragon tiles are: Red Dragon (center of the universe), Green Dragon (prosperity), and White Dragon (purity).
