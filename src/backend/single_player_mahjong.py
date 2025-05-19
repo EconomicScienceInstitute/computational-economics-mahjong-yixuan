@@ -315,6 +315,30 @@ def calc_score(hand, steps):
     return total_score, base_score, combination_bonus, details
 
 
+def get_man_wind_tingpai():
+    """生成万+风的听牌（6张万+2张风）"""
+    hand = [9, 10, 11, 12, 13, 27, 28, 29]  # 1-5万+东南西
+    wall = []
+    for v in MAN_VALUES + WIND_VALUES + DRAGON_VALUES:
+        wall.extend([v] * TILE_COPIES)
+    for t in hand:
+        wall.remove(t)
+    random.shuffle(wall)
+    return hand.copy(), wall
+
+
+def get_man_dragon_tingpai():
+    """生成万+三元的听牌（6张万+2张三元）"""
+    hand = [9, 10, 11, 12, 31, 32, 33, 13]  # 1-4万+中发白+5万
+    wall = []
+    for v in MAN_VALUES + WIND_VALUES + DRAGON_VALUES:
+        wall.extend([v] * TILE_COPIES)
+    for t in hand:
+        wall.remove(t)
+    random.shuffle(wall)
+    return hand.copy(), wall
+
+
 def main():
     # Must-win test case
     test_hand = [9, 10, 11, 12, 13, 14, 27, 27]  # C1, C2, C3, C4, C5, C6, East, East
