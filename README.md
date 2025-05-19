@@ -1,5 +1,17 @@
 # Single Player Mahjong
 
+## Cultural Heritage
+
+Mahjong is more than just a game - it's a cultural artifact that embodies Oriental philosophy and cosmology:
+
+1. Mahjong originated in the Qing Dynasty (around 1840).
+
+2. The four directions (East, South, West, North) form a complete circle of the universe.
+
+3. Character tiles (1-9) progress from unity to longevity, representing the cosmic order.
+
+4. The three Dragon tiles are: Red Dragon (center of the universe), Green Dragon (prosperity), and White Dragon (purity).
+
 A Python-based Mahjong AI training platform featuring:
 - Monte Carlo Tree Search for real-time move suggestions
 - Dynamic Programming optimization for minimal winning steps
