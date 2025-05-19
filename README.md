@@ -86,6 +86,11 @@ Bonus: +20 points if all tiles are Characters
 |    100      |            0            |           +20            |              20                 |
 
 
+## Web Interface Example
+
+![Web Interface Example](static/images/web_interface_example.png)
+
+
 ## Mathematical Foundations: MDP, BE, DP, MCTS & Q-learning
 
 - **Markov Decision Process (MDP)**: 
@@ -237,6 +242,11 @@ You will see the full game process and final result.
 - Sometimes Q-learning helps: If the Q-table is well-trained (enough episodes, good reward design), it can guide MCTS to make smarter rollouts, especially in complex or less-explored situations.
 - Sometimes Q-learning is worse: If the Q-table is under-trained (not enough episodes), or the reward is not well-designed, it may mislead MCTS, resulting in worse performance than pure MCTS. In small or simple scenarios, MCTS alone may already be near-optimal, so Q-learning brings little or no improvement.
 
+**MCTS & Q-learning Experiment Results**
+
+![MCTS & Q-learning Results](static/images/mcts_qlearning_results.png)
+
+
 **Why might Q-learning not outperform MCTS in our experiments?**
 - Insufficient training: Q-learning needs many more episodes to cover the state space.
 - Reward design: If the reward for intermediate steps is too small or too large, the agent may not learn the right priorities.
@@ -259,12 +269,5 @@ You will see the full game process and final result.
 | DP             | Exhaustive search   | True optimal, interpretable | Not scalable to big spaces  | Theoretical best          |
 | MCTS           | Simulate & select   | Strong, flexible            | Slow, needs many rollouts   | Strong baseline           |
 
-## Appendix
 
-### 1. MCTS & Q-learning Experiment Results
 
-![MCTS & Q-learning Results](static/images/mcts_qlearning_results.png)
-
-### 2. Web Interface Example
-
-![Web Interface Example](static/images/web_interface_example.png)
