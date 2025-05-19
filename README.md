@@ -126,59 +126,10 @@ Where:
 - s': The next state after taking action a
 - maxₐ' Q(s', a'): The best Q-value for the next state
 
-
 **What is Q-table size?**
 - The Q-table size is the number of unique (state, action) pairs the agent has actually encountered and stored during training.
 - A larger Q-table means the agent has explored more possible situations.
 - In our experiments, Q-table size is printed after training, e.g., Q-table size: 23753.
-
-
-## Decision Optimization Methods and Training
-
-### Core Methods
-- **MCTS:** Monte Carlo Tree Search simulates thousands of games per move to select the discard with the best expected outcome.
-- **Q-learning:** A tabular reinforcement learning algorithm that learns optimal discard strategies through experience. Can be used to guide MCTS rollouts for improved efficiency.
-- **DP:** Dynamic Programming computes the theoretical minimum steps to win from any state using the Bellman equation.
-
-### Experimental Design and Results
-
-|                | Q-learning                                 | Dynamic Programming (DP)                |
-|----------------|-------------------------------------------|-----------------------------------------|
-| Philosophy     | Learn by trial and error, guided by reward | Systematically compute all possibilities|
-| Knowledge      | No need for full model, just feedback      | Needs full knowledge of all transitions |
-| Optimality     | Learns a "good enough" policy              | Finds the true optimal policy           |
-| Scalability    | Handles large/unknown spaces (with enough time) | Explodes in memory/time for large spaces|
-| Usage          | Good for unknown or complex environments   | Good for small, fully-known problems    |
-
-**How did we design our experiments?**
-- Q-learning: We trained a Q-learning agent on a fixed "tenpai" (one-away from win) hand, using rewards for winning and for each step closer to winning. After training, we used the Q-table to guide rollouts in MCTS, and compared the results to original MCTS (without Q-learning). We recorded the number of steps to win, total score, and Q-table size.
-- Dynamic Programming: We used DP to compute the true minimal number of steps to win from the same starting hand and wall, by exhaustively searching all possible sequences of discards and draws. This gives us the "theoretical best" result for comparison.
-- Original MCTS: We used Monte Carlo Tree Search to simulate many possible play sequences, choosing the move with the best average outcome. This serves as a strong baseline for comparison.
-
-**Results: When is Q-learning better or worse?**
-- Sometimes Q-learning helps: If the Q-table is well-trained (enough episodes, good reward design), it can guide MCTS to make smarter rollouts, especially in complex or less-explored situations.
-- Sometimes Q-learning is worse: If the Q-table is under-trained (not enough episodes), or the reward is not well-designed, it may mislead MCTS, resulting in worse performance than pure MCTS. In small or simple scenarios, MCTS alone may already be near-optimal, so Q-learning brings little or no improvement.
-
-**Why might Q-learning not outperform MCTS in our experiments?**
-- Insufficient training: Q-learning needs many more episodes to cover the state space.
-- Reward design: If the reward for intermediate steps is too small or too large, the agent may not learn the right priorities.
-- State space sparsity: Many possible hands are rarely or never seen in training, so Q-values are unreliable.
-- MCTS is already strong: In simple, must-win scenarios, MCTS can find the optimal path by brute-force simulation.
-
-**Suggestions for improvement**
-- Increase Q-learning training episodes (e.g., from 1,000 to 10,000+).
-- Tune reward structure to better encourage progress toward winning.
-- Save and reuse Q-tables to avoid retraining every time.
-- Reduce exploration (epsilon) after training to make the agent more "greedy" and stable.
-- Combine with other methods: Use DP for small subproblems, Q-learning for large/unknown spaces, and MCTS for real-time decision making.
-
-**Summary Table**
-
-| Method         | How it works         | Pros                        | Cons                        | Our Result                |
-|----------------|---------------------|-----------------------------|-----------------------------|---------------------------|
-| Q-learning     | Learn by reward     | Can adapt, model-free       | Needs lots of training      | Sometimes helps, sometimes not |
-| DP             | Exhaustive search   | True optimal, interpretable | Not scalable to big spaces  | Theoretical best          |
-| MCTS           | Simulate & select   | Strong, flexible            | Slow, needs many rollouts   | Strong baseline           |
 
 
 ## Project Structure
@@ -247,16 +198,12 @@ python3 test/test_integration_game.py
 ```
 You will see the full game process and final result.
 
-### Regression Test (C)
-(Optional) Run all tests at once:
-```bash
-python3 test/run_all_tests.py
-```
-This will automatically run all test scripts.
+### Other Test Scripts
+- `test_dp_cases.py`: Tests DP logic on a set of hands that cannot win immediately, checking the minimal steps to win.
+- `test_mcts.py`: Unit tests for MCTS and related logic, including must-win hands, no-win hands, ready hands, shanten calculation, and MCTS with different simulation counts.
+- `test_manzu_dp.py`: Tests DP on a specific all-Manzu hand with one tile left in the wall (edge case).
+- `test_qingyise_dp.py`: Runs DP analysis for the Qingyise hand multiple times and saves results to CSV.
 
-### Adding New Tests
-- To add new hand patterns for `is_win`, edit `test/test_is_win.py`.
-- To test specific game flows, modify or extend `test/test_integration_game.py`.
 
 ### Notes
 - All tests are self-contained and require only Python 3 and the dependencies in `requirements.txt`.
@@ -311,3 +258,13 @@ This will automatically run all test scripts.
 | Q-learning     | Learn by reward     | Can adapt, model-free       | Needs lots of training      | Sometimes helps, sometimes not |
 | DP             | Exhaustive search   | True optimal, interpretable | Not scalable to big spaces  | Theoretical best          |
 | MCTS           | Simulate & select   | Strong, flexible            | Slow, needs many rollouts   | Strong baseline           |
+
+## Appendix
+
+### 1. MCTS & Q-learning Experiment Results
+
+![MCTS & Q-learning Results](static/images/mcts_qlearning_results.png)
+
+### 2. Web Interface Example
+
+![Web Interface Example](static/images/web_interface_example.png)
