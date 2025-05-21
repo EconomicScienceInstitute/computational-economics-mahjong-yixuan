@@ -302,6 +302,8 @@ This setup allows us to measure the Q-learning agent's ability to learn optimal 
 | All (24 tiles)     | 10,000           | 5,000           | 1.77             | 1          | 115.96          | 119              | 4,319,214       | -0.2463      |
 | All (24 tiles)     | 100,000          | 5,000           | 1.86             | 1          | 115.84          | 119              | 4,319,214       | -0.2463      |
 
+**Note:** The "Wall Tiles" column shows the types of tiles included in the wall for each experiment. For example, "Manzu" means only Character tiles; "All" means Characters, Winds, and Dragons are all included.
+
 - **Initial hand:** [9, 10, 11, 12, 13, 14, 15, 16] (1-8 Manzu)
 - **Best Steps:** Minimum steps to win observed in this experiment (theoretical best is 1, and was achieved in all cases)
 - **Best Total Score:** Maximum total score observed in this experiment (theoretical best is 119, and was achieved in all cases)

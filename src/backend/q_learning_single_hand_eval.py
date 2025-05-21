@@ -4,6 +4,61 @@ import os
 import csv
 from datetime import datetime
 from q_learning import train_and_evaluate
+from collections import Counter
+
+def is_win_training(hand):
+    """
+    Modified is_win function for Q-learning training only.
+    Allows Characters (9-17), Winds (27-30), and Dragons (31-33) to be used as pairs.
+    """
+    if len(hand) not in [8, 9]:
+        return False
+
+    tile_count = Counter(hand)
+    # There must be exactly one pair (no more, no less)
+    pairs = [t for t in tile_count if tile_count[t] == 2]
+    if len(pairs) != 1:
+        return False
+
+    pair_tile = pairs[0]
+    # The pair must be a Character (9-17), a Wind (27-30), or a Dragon (31-33)
+    if not (9 <= pair_tile <= 17 or 27 <= pair_tile <= 33):
+        return False
+
+    # Remove the pair from the hand
+    temp_count = tile_count.copy()
+    temp_count[pair_tile] -= 2
+
+    # The remaining tiles must all be Characters (9-17)
+    remaining_tiles = list(temp_count.elements())
+    if any(t < 9 or t > 17 for t in remaining_tiles):
+        return False
+    # There must be no other pair or triplet in the remaining tiles
+    if any(temp_count[t] > 1 for t in temp_count if 9 <= t <= 17):
+        return False
+
+    # Try to form two chows (sequences of three consecutive man tiles)
+    def can_form_chows(counter, chows_left):
+        if chows_left == 0:
+            return sum(counter.values()) == 0
+        # Find the smallest tile with at least one left
+        for t in range(9, 16):
+            if counter[t] >= 1 and counter[t+1] >= 1 and counter[t+2] >= 1:
+                counter[t] -= 1
+                counter[t+1] -= 1
+                counter[t+2] -= 1
+                if can_form_chows(counter, chows_left - 1):
+                    return True
+                # backtrack
+                counter[t] += 1
+                counter[t+1] += 1
+                counter[t+2] += 1
+        return False
+
+    c = Counter()
+    for t in range(9, 18):
+        c[t] = temp_count[t]
+    return can_form_chows(c, 2)
 
 def save_results(
     hand, wall_size,
@@ -77,12 +132,15 @@ def main():
     Train Q-learning on a fixed hand for specified episodes, then evaluate and save detailed results to CSV (append mode).
     """
     # Configuration
-    N_EPISODES = 2000000  # Number of training episodes (reduced for faster run)
+    N_EPISODES = 1000000  # Number of training episodes
     N_EVAL = 5000      # Number of evaluation runs (unchanged)
     
     # 1. Define the fixed hand and wall (Qingyise: 1-8 Manzu)
     hand = [9, 10, 11, 12, 13, 14, 15, 16]  # 1-8 Manzu
+    # Build wall: all Characters (1-9, two copies each), all Dragons (31-33, two copies each), and all Winds (27-30, two copies each)
     wall = [i for i in range(9, 18)] * 2  # 1-9 Manzu, 2 copies each
+    wall += [31, 32, 33] * 2  # Add Green, Red, White Dragons, 2 copies each
+    wall += [27, 28, 29, 30] * 2  # Add East, South, West, North Winds, 2 copies each
     for t in hand:
         wall.remove(t)
     wall_size = len(wall)
@@ -98,17 +156,18 @@ def main():
     os.makedirs(results_dir, exist_ok=True)
     q_table_path = os.path.join(results_dir, 'q_table_single_hand.pkl')
     def custom_train_and_evaluate(hand, wall, n_episodes=10000, n_eval=1000):
-        from single_player_mahjong import is_win, calc_score
+        from single_player_mahjong import calc_score
         nonlocal agent
         from q_learning import QLearningAgent
-        agent = QLearningAgent(alpha=0.1, gamma=0.9, epsilon=0.2)
+        agent = QLearningAgent(alpha=0.1, gamma=0.9, epsilon=0.2, use_feature_state=True)
         # Load Q-table if exists
         if os.path.exists(q_table_path):
             agent.load_q_table(q_table_path)
             print(f"Loaded Q-table from {q_table_path}")
         else:
             print("No existing Q-table found. Training from scratch.")
-        agent.train(hand, wall, n_episodes)
+        # Train with is_win_training
+        agent.train(hand, wall, n_episodes, is_win_func=is_win_training)
         # Save Q-table after training
         agent.save_q_table(q_table_path)
         print(f"Saved Q-table to {q_table_path}")
@@ -121,7 +180,7 @@ def main():
             w = wall[:]
             random.shuffle(w)
             steps = 0
-            while not is_win(h):
+            while not is_win_training(h):
                 discard = agent.act_greedy(h)
                 if discard is None:
                     print(f"[DEBUG] Evaluation break: hand={h}, wall={w}, steps={steps}")
@@ -131,7 +190,7 @@ def main():
                     draw = w.pop()
                     h.append(draw)
                 steps += 1
-            if is_win(h):
+            if is_win_training(h):
                 steps_list.append(steps)
                 score, base_score, bonus, details = calc_score(h, steps)
                 base_scores.append(base_score)

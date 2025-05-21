@@ -16,95 +16,96 @@ def get_qingyise_tingpai():
     return hand.copy(), wall
 
 class QLearningAgent:
-    def __init__(self, alpha=0.1, gamma=0.9, epsilon=0.2):
-        self.q_table = defaultdict(float)  # key: (state, action), value: Q-value
-        self.alpha = alpha  # learning rate
-        self.gamma = gamma  # discount factor
-        self.epsilon = epsilon  # exploration rate
+    def __init__(self, alpha=0.1, gamma=0.9, epsilon=0.2, use_feature_state=False):
+        self.q_table = {}
+        self.alpha = alpha
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.use_feature_state = use_feature_state
 
-    def state_to_tuple(self, hand):
-        return tuple(sorted(hand))
+    def hand_to_features(self, hand):
+        from collections import Counter
+        c = Counter(hand)
+        num_pairs = sum(1 for v in c.values() if v == 2)
+        num_triplets = sum(1 for v in c.values() if v == 3)
+        num_winds = sum(1 for t in hand if 27 <= t <= 30)
+        num_dragons = sum(1 for t in hand if 31 <= t <= 33)
+        return (num_pairs, num_triplets, num_winds, num_dragons)
 
-    def choose_action(self, hand):
-        possible_discards = list(set(hand))
-        if not possible_discards:  # If hand is empty, return None
+    def state_key(self, hand):
+        if self.use_feature_state:
+            return self.hand_to_features(hand)
+        else:
+            return tuple(sorted(hand))
+
+    def get_q_value(self, hand, action):
+        return self.q_table.get((self.state_key(hand), action), 0.0)
+
+    def update_q_value(self, hand, action, reward, next_hand, next_actions):
+        key = (self.state_key(hand), action)
+        next_qs = [self.get_q_value(next_hand, a) for a in next_actions] if next_actions else [0.0]
+        max_next_q = max(next_qs)
+        old_q = self.q_table.get(key, 0.0)
+        self.q_table[key] = old_q + self.alpha * (reward + self.gamma * max_next_q - old_q)
+
+    def act_greedy(self, hand):
+        actions = list(set(hand))
+        if not actions:
             return None
-        if random.random() < self.epsilon:
-            return random.choice(possible_discards)
-        state = self.state_to_tuple(hand)
-        q_values = [self.q_table[(state, a)] for a in possible_discards]
+        q_values = [self.get_q_value(hand, a) for a in actions]
         max_q = max(q_values)
-        best_actions = [a for a, q in zip(possible_discards, q_values) if q == max_q]
+        best_actions = [a for a, q in zip(actions, q_values) if q == max_q]
         return random.choice(best_actions)
 
-    def train(self, hand, wall, n_episodes=10000):
+    def train(self, hand, wall, n_episodes=10000, is_win_func=None):
         """
         Train the Q-learning agent on a specific hand and wall configuration.
+        Args:
+            hand: Initial hand
+            wall: Wall tiles
+            n_episodes: Number of training episodes
+            is_win_func: Custom function to check for winning hand (optional)
         """
         # Import is_win here to avoid circular import
         from single_player_mahjong import is_win
+        if is_win_func is None:
+            is_win_func = is_win
         
         for episode in range(n_episodes):
             h = hand[:]
             w = wall[:]
             random.shuffle(w)
             
-            while not is_win(h):
+            while not is_win_func(h):
                 # Choose action using epsilon-greedy policy
                 if random.random() < self.epsilon:
                     if not h:  # If hand is empty, skip this iteration
                         break
-                    discard = random.choice(h)
+                    action = random.choice(list(set(h)))
                 else:
-                    state = self.state_to_tuple(h)
-                    possible_discards = list(set(h))
-                    if not possible_discards:  # If hand is empty, skip this iteration
-                        break
-                    q_values = [self.q_table[(state, a)] for a in possible_discards]
-                    max_q = max(q_values)
-                    best_actions = [a for a, q in zip(possible_discards, q_values) if q == max_q]
-                    discard = random.choice(best_actions)
+                    action = self.act_greedy(h)
+                
+                if action is None:
+                    break
                 
                 # Take action and observe next state
-                h.remove(discard)
+                h.remove(action)
                 if w:
                     draw = w.pop()
                     h.append(draw)
                 
                 # Update Q-value
-                state = self.state_to_tuple(h)
-                reward = 1 if is_win(h) else -1
+                reward = -1
+                next_actions = list(set(h))
+                self.update_q_value(hand, action, reward, h, next_actions)
                 
-                # Update Q-value using Q-learning update rule
-                old_value = self.q_table.get((state, discard), 0)
-                next_max = max([self.q_table.get((state, a), 0) for a in set(h)]) if h else 0
-                new_value = old_value + self.alpha * (reward + self.gamma * next_max - old_value)
-                self.q_table[(state, discard)] = new_value
-                
-                if is_win(h):
+                if is_win_func(h):
                     break
             
             if (episode + 1) % 1000 == 0:
                 print(f"Completed {episode + 1} training episodes")
         
         return self.q_table
-
-    def act_greedy(self, hand):
-        """
-        Choose the best action according to the trained Q-table.
-        If Q-table has no info for this state, fallback to random choice.
-        """
-        state = self.state_to_tuple(hand)
-        possible_discards = list(set(hand))
-        if not possible_discards:
-            return None
-        # Fallback: if Q-table has no info for this state, pick random
-        if all((state, a) not in self.q_table for a in possible_discards):
-            return random.choice(possible_discards)
-        q_values = [self.q_table.get((state, a), 0) for a in possible_discards]
-        max_q = max(q_values)
-        best_actions = [a for a, q in zip(possible_discards, q_values) if q == max_q]
-        return random.choice(best_actions)
 
     def save_q_table(self, filename):
         """Save the Q-table to a file using pickle."""

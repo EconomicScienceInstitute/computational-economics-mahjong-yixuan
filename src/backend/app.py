@@ -210,7 +210,7 @@ def discard_tile(tile):
             game_state['hand'].append(new_tile)
             game_state['hand'].sort(key=lambda x: x['number'])
             game_state['steps'] += 1
-
+            
             # Immediately check win condition after drawing
             current_tiles = [t['number'] for t in game_state['hand']]
             if len(current_tiles) == 8 and is_win(current_tiles):
