@@ -275,7 +275,7 @@ You will see the full game process and final result.
 In our Q-learning experiments, we focus on a **fixed single hand** scenario to analyze the agent's learning progress in a controlled setting.
 
 - **Initial Hand:**  
-  `[9, 10, 11, 12, 13, 14, 15, 16]`  
+  <img src="img/tiles/small/9.jpg" width="30"/> <img src="img/tiles/small/10.jpg" width="30"/> <img src="img/tiles/small/11.jpg" width="30"/> <img src="img/tiles/small/12.jpg" width="30"/> <img src="img/tiles/small/13.jpg" width="30"/> <img src="img/tiles/small/14.jpg" width="30"/> <img src="img/tiles/small/15.jpg" width="30"/> <img src="img/tiles/small/16.jpg" width="30"/>  
   This corresponds to the tiles **1-8 of Characters (Manzu, 万子)**. In Mahjong notation, these are the tiles C1, C2, C3, C4, C5, C6, C7, C8.
 
 - **Wall Tiles:**  
