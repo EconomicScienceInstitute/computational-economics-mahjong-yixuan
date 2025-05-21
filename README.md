@@ -303,14 +303,14 @@ This setup allows us to measure the Q-learning agent's ability to learn optimal 
 | All (24 tiles)     | 100,000          | 5,000           | 1.86             | 1          | 115.84          | 119              | 4,319,214       | -0.2463      |
 
 - **Initial hand:** [9, 10, 11, 12, 13, 14, 15, 16] (1-8 Manzu)
-- **Best Steps**：该组实验中最少步数（理论最优为1，实际也达到了）
-- **Best Total Score**：该组实验中最高分（理论最优为119，实际也达到了）
-- **Evaluation runs:** 见表格
+- **Best Steps:** Minimum steps to win observed in this experiment (theoretical best is 1, and was achieved in all cases)
+- **Best Total Score:** Maximum total score observed in this experiment (theoretical best is 119, and was achieved in all cases)
+- **Evaluation runs:** See table
 - **Agent:** Q-learning, feature-based state, persistent Q-table
 
 #### Observations
-- 所有实验中，Q-learning都能在部分回合达到理论最优步数和分数，且平均表现随着训练轮数提升逐步逼近最优。
-- Q-table size 和学习时间随墙体复杂度增加而增加，但训练足够时表现趋于收敛。
+- In all experiments, Q-learning was able to achieve the theoretical best steps and score in some evaluation runs, and the average performance approaches the optimum as training episodes increase.
+- Q-table size and training time increase with wall complexity, but performance converges with sufficient training.
 - Feature-based state representation enables efficient generalization and learning.
 
 **Interpretation:**  
