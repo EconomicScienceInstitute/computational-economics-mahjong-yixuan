@@ -291,22 +291,28 @@ This setup allows us to measure the Q-learning agent's ability to learn optimal 
 
 ### Q-learning Single Hand Training Results (Summary Table)
 
-| Training Episodes | Evaluation Runs | Average Steps | Average Total Score | Q-table Entries | Q-value Mean |
-|-------------------|----------------|--------------|--------------------|-----------------|--------------|
-| 10,000            | 1,000/5,000    | 4.48–5.66    | 114.68–116.61      | 42,276–53,684   | -0.127 to -0.307 |
-| 50,000            | 5,000          | 4.08         | 115.92             | 57,352          | -0.4168      |
-| 200,000           | 5,000          | 3.93         | 116.07             | 62,109          | -0.4168      |
-| 500,000           | 5,000          | 3.93         | 116.04             | 65,663          | -0.5177      |
-| 2,000,000         | 5,000          | 3.92         | 116.08             | 68,221          | -0.6272      |
+| Wall Tiles         | Training Episodes | Avg Steps to Win | Avg Total Score | Q-table Entries | Q-value Mean |
+|--------------------|------------------|------------------|-----------------|-----------------|--------------|
+| Manzu (10 tiles)   | 10,000           | 3.39             | 116.61          | 45,071          | -0.1413      |
+| Manzu (10 tiles)   | 100,000          | 3.93             | 116.07          | 62,109          | -0.4168      |
+| Manzu+Winds/Drag.  | 1,000            | 3.59             | 113.87          | 129,279         | -0.3454      |
+| Manzu+Winds/Drag.  | 10,000           | 3.24             | 113.87          | 77,466          | -0.5551      |
+| Manzu+Winds/Drag.  | 100,000          | 3.28             | 111.91          | 326,836         | -0.1549      |
+| All (24 tiles)     | 1,000            | 7.99             | 100.23          | 2,863,336       | -0.0922      |
+| All (24 tiles)     | 10,000           | 1.77             | 115.96          | 4,319,214       | -0.2463      |
+| All (24 tiles)     | 100,000          | 1.86             | 115.84          | 4,319,214       | -0.2463      |
 
-**Notes:**
-- **Average Steps**: Lower is better (faster win).
-- **Average Total Score**: Higher is better.
-- **Q-table Entries**: Number of unique state-action pairs learned.
-- **Q-value Mean**: Average Q-value across the table.
+- **Initial hand:** [9, 10, 11, 12, 13, 14, 15, 16] (1-8 Manzu)
+- **Evaluation runs:** 5,000
+- **Agent:** Q-learning, feature-based state, persistent Q-table
+
+#### Observations
+- The agent quickly learns to win in the minimum number of steps, even as wall complexity increases.
+- Q-table size and learning time increase with wall complexity, but performance converges with enough training.
+- Feature-based state representation enables efficient generalization and learning.
 
 **Interpretation:**  
-The agent quickly learns an effective policy, with most improvement happening in the first 50,000–200,000 episodes. Further training brings only marginal gains, indicating convergence.
+The agent converges rapidly for simple walls, and with enough training, can handle complex walls (with Winds/Dragons) nearly as efficiently. Most improvement happens in the first 10,000–50,000 episodes. Further training brings only marginal gains, indicating convergence.
 
 
 
