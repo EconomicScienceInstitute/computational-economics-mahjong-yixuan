@@ -77,8 +77,8 @@ def main():
     Train Q-learning on a fixed hand for specified episodes, then evaluate and save detailed results to CSV (append mode).
     """
     # Configuration
-    N_EPISODES = 10000  # Number of training episodes
-    N_EVAL = 1000      # Number of evaluation runs
+    N_EPISODES = 2000000  # Number of training episodes (reduced for faster run)
+    N_EVAL = 5000      # Number of evaluation runs (unchanged)
     
     # 1. Define the fixed hand and wall (Qingyise: 1-8 Manzu)
     hand = [9, 10, 11, 12, 13, 14, 15, 16]  # 1-8 Manzu
@@ -94,7 +94,9 @@ def main():
     from single_player_mahjong import is_win, calc_score
     agent_results = []
     agent = None
-    q_table_path = os.path.join('results', 'q_table_single_hand.pkl')
+    results_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'results')
+    os.makedirs(results_dir, exist_ok=True)
+    q_table_path = os.path.join(results_dir, 'q_table_single_hand.pkl')
     def custom_train_and_evaluate(hand, wall, n_episodes=10000, n_eval=1000):
         from single_player_mahjong import is_win, calc_score
         nonlocal agent
@@ -180,7 +182,8 @@ def main():
         min_steps, min_base, min_total,
         max_total, max_total_steps,
         N_EPISODES, N_EVAL,
-        qtable_entries, qtable_min, qtable_max, qtable_mean
+        qtable_entries, qtable_min, qtable_max, qtable_mean,
+        results_dir=results_dir
     )
 
     # Print a summary preview in the terminal
@@ -216,7 +219,7 @@ def main():
     print("===================================================\n")
 
     # Export Q-table to CSV for inspection
-    export_q_table_to_csv(agent, os.path.join('results', 'q_table_single_hand_dump.csv'))
+    export_q_table_to_csv(agent, os.path.join(results_dir, 'q_table_single_hand_dump.csv'))
 
 if __name__ == "__main__":
     main() 

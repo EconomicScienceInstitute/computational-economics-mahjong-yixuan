@@ -108,6 +108,7 @@ class QLearningAgent:
 
     def save_q_table(self, filename):
         """Save the Q-table to a file using pickle."""
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
         with open(filename, 'wb') as f:
             pickle.dump(dict(self.q_table), f)
 

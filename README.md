@@ -270,4 +270,43 @@ You will see the full game process and final result.
 | MCTS           | Simulate & select   | Strong, flexible            | Slow, needs many rollouts   | Strong baseline           |
 
 
+### About the Single Hand Experiment
+
+In our Q-learning experiments, we focus on a **fixed single hand** scenario to analyze the agent's learning progress in a controlled setting.
+
+- **Initial Hand:**  
+  `[9, 10, 11, 12, 13, 14, 15, 16]`  
+  This corresponds to the tiles **1-8 of Characters (Manzu, 万子)**. In Mahjong notation, these are the tiles C1, C2, C3, C4, C5, C6, C7, C8.
+
+- **Wall Tiles:**  
+  The wall consists of the remaining Character tiles (1-9, each with two copies), minus those already in the hand.  
+  For this experiment, the wall contains **10 tiles**:  
+  All Character tiles from 1 to 9 (with two copies each), except for the ones already in the initial hand.
+
+- **Goal:**  
+  The agent must draw and discard tiles to form a winning hand (two sequences and one pair) in as few steps as possible, maximizing the final score.
+
+This setup allows us to measure the Q-learning agent's ability to learn optimal play for a specific, challenging hand configuration.
+
+
+### Q-learning Single Hand Training Results (Summary Table)
+
+| Training Episodes | Evaluation Runs | Average Steps | Average Total Score | Q-table Entries | Q-value Mean |
+|-------------------|----------------|--------------|--------------------|-----------------|--------------|
+| 10,000            | 1,000/5,000    | 4.48–5.66    | 114.68–116.61      | 42,276–53,684   | -0.127 to -0.307 |
+| 50,000            | 5,000          | 4.08         | 115.92             | 57,352          | -0.4168      |
+| 200,000           | 5,000          | 3.93         | 116.07             | 62,109          | -0.4168      |
+| 500,000           | 5,000          | 3.93         | 116.04             | 65,663          | -0.5177      |
+| 2,000,000         | 5,000          | 3.92         | 116.08             | 68,221          | -0.6272      |
+
+**Notes:**
+- **Average Steps**: Lower is better (faster win).
+- **Average Total Score**: Higher is better.
+- **Q-table Entries**: Number of unique state-action pairs learned.
+- **Q-value Mean**: Average Q-value across the table.
+
+**Interpretation:**  
+The agent quickly learns an effective policy, with most improvement happening in the first 50,000–200,000 episodes. Further training brings only marginal gains, indicating convergence.
+
+
 
