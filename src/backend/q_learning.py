@@ -2,6 +2,7 @@ import random
 from collections import defaultdict
 import csv
 import os
+import pickle
 
 # Do not import from single_player_mahjong at the top to avoid circular import
 
@@ -22,14 +23,12 @@ class QLearningAgent:
         self.epsilon = epsilon  # exploration rate
 
     def state_to_tuple(self, hand):
-        # Import shanten here to avoid circular import
-        from single_player_mahjong import shanten
-        hand_tuple = tuple(sorted(hand))
-        shanten_num = shanten(hand)
-        return (hand_tuple, shanten_num)
+        return tuple(sorted(hand))
 
     def choose_action(self, hand):
         possible_discards = list(set(hand))
+        if not possible_discards:  # If hand is empty, return None
+            return None
         if random.random() < self.epsilon:
             return random.choice(possible_discards)
         state = self.state_to_tuple(hand)
@@ -38,56 +37,160 @@ class QLearningAgent:
         best_actions = [a for a, q in zip(possible_discards, q_values) if q == max_q]
         return random.choice(best_actions)
 
-    def learn(self, episodes=1000):
-        for ep in range(episodes):
-            hand, wall = get_qingyise_tingpai()
-            steps = 0
-            while True:
-                # Import is_win here to avoid circular import
-                from single_player_mahjong import is_win
-                if len(hand) == 8 and is_win(hand):
-                    reward = 1000 - steps
-                    break
-                if not wall:
-                    reward = 0
-                    break
-                state = self.state_to_tuple(hand)
-                action = self.choose_action(hand)
-                hand.remove(action)
-                if wall:
-                    draw = wall.pop(0)
-                    hand.append(draw)
-                next_state = self.state_to_tuple(hand)
-                current_shanten = state[1]
-                next_shanten = next_state[1]
-                shanten_reward = (current_shanten - next_shanten) * 10
-                next_possible_discards = list(set(hand))
-                if next_possible_discards:
-                    max_next_q = max([self.q_table[(next_state, a)] for a in next_possible_discards])
+    def train(self, hand, wall, n_episodes=10000):
+        """
+        Train the Q-learning agent on a specific hand and wall configuration.
+        """
+        # Import is_win here to avoid circular import
+        from single_player_mahjong import is_win
+        
+        for episode in range(n_episodes):
+            h = hand[:]
+            w = wall[:]
+            random.shuffle(w)
+            
+            while not is_win(h):
+                # Choose action using epsilon-greedy policy
+                if random.random() < self.epsilon:
+                    if not h:  # If hand is empty, skip this iteration
+                        break
+                    discard = random.choice(h)
                 else:
-                    max_next_q = 0
-                self.q_table[(state, action)] += self.alpha * (
-                    shanten_reward - 1 + self.gamma * max_next_q - self.q_table[(state, action)]
-                )
-                steps += 1
-            self.q_table[(state, action)] += self.alpha * (reward - self.q_table[(state, action)])
-            if (ep + 1) % 100 == 0:
-                print(f"Completed {ep + 1} training episodes")
+                    state = self.state_to_tuple(h)
+                    possible_discards = list(set(h))
+                    if not possible_discards:  # If hand is empty, skip this iteration
+                        break
+                    q_values = [self.q_table[(state, a)] for a in possible_discards]
+                    max_q = max(q_values)
+                    best_actions = [a for a, q in zip(possible_discards, q_values) if q == max_q]
+                    discard = random.choice(best_actions)
+                
+                # Take action and observe next state
+                h.remove(discard)
+                if w:
+                    draw = w.pop()
+                    h.append(draw)
+                
+                # Update Q-value
+                state = self.state_to_tuple(h)
+                reward = 1 if is_win(h) else -1
+                
+                # Update Q-value using Q-learning update rule
+                old_value = self.q_table.get((state, discard), 0)
+                next_max = max([self.q_table.get((state, a), 0) for a in set(h)]) if h else 0
+                new_value = old_value + self.alpha * (reward + self.gamma * next_max - old_value)
+                self.q_table[(state, discard)] = new_value
+                
+                if is_win(h):
+                    break
+            
+            if (episode + 1) % 1000 == 0:
+                print(f"Completed {episode + 1} training episodes")
+        
+        return self.q_table
 
     def act_greedy(self, hand):
-        possible_discards = list(set(hand))
+        """
+        Choose the best action according to the trained Q-table.
+        If Q-table has no info for this state, fallback to random choice.
+        """
         state = self.state_to_tuple(hand)
-        q_values = [self.q_table[(state, a)] for a in possible_discards]
+        possible_discards = list(set(hand))
+        if not possible_discards:
+            return None
+        # Fallback: if Q-table has no info for this state, pick random
+        if all((state, a) not in self.q_table for a in possible_discards):
+            return random.choice(possible_discards)
+        q_values = [self.q_table.get((state, a), 0) for a in possible_discards]
         max_q = max(q_values)
         best_actions = [a for a, q in zip(possible_discards, q_values) if q == max_q]
         return random.choice(best_actions)
 
+    def save_q_table(self, filename):
+        """Save the Q-table to a file using pickle."""
+        with open(filename, 'wb') as f:
+            pickle.dump(dict(self.q_table), f)
+
+    def load_q_table(self, filename):
+        """Load the Q-table from a file using pickle. If file does not exist, do nothing."""
+        if os.path.exists(filename):
+            with open(filename, 'rb') as f:
+                data = pickle.load(f)
+                self.q_table = defaultdict(float, data)
+
+def train_and_evaluate(hand, wall, n_episodes=10000, n_eval=1000):
+    """
+    Train a Q-learning agent and evaluate its performance.
+    During evaluation, record the score breakdown (base_score, bonus, total) for each win, and print the breakdown and summary statistics.
+    """
+    # Import is_win and calc_score here to avoid circular import
+    from single_player_mahjong import is_win, calc_score
+    
+    # Initialize and train agent
+    agent = QLearningAgent(alpha=0.1, gamma=0.9, epsilon=0.2)
+    print(f"\nTraining Q-learning agent for {n_episodes} episodes...")
+    agent.train(hand, wall, n_episodes)
+    print("Training complete.")
+
+    # Evaluate performance
+    print(f"\nEvaluating performance over {n_eval} runs...")
+    steps_list = []
+    base_scores = []
+    bonuses = []
+    total_scores = []
+    for i in range(n_eval):
+        h = hand[:]
+        w = wall[:]
+        random.shuffle(w)
+        steps = 0
+        while not is_win(h):
+            discard = agent.act_greedy(h)
+            if discard is None:
+                break
+            h.remove(discard)
+            if w:
+                draw = w.pop()
+                h.append(draw)
+            steps += 1
+        if is_win(h):
+            steps_list.append(steps)
+            score, base_score, bonus, details = calc_score(h, steps)
+            base_scores.append(base_score)
+            bonuses.append(bonus)
+            total_scores.append(score)
+        if (i + 1) % 100 == 0:
+            print(f"Completed {i + 1}/{n_eval} evaluation runs")
+    
+    if not steps_list:
+        print("\nNo successful wins in evaluation!")
+        return float('inf'), float('inf'), float('inf')
+    
+    # Calculate statistics
+    avg_steps = sum(steps_list) / len(steps_list)
+    min_steps = min(steps_list)
+    max_steps = max(steps_list)
+    avg_base = sum(base_scores) / len(base_scores)
+    avg_bonus = sum(bonuses) / len(bonuses)
+    avg_total = sum(total_scores) / len(total_scores)
+    total_total = sum(total_scores)
+    
+    print("\nEvaluation Results:")
+    print(f"Average steps to win: {avg_steps:.2f}")
+    print(f"Minimum steps: {min_steps}")
+    print(f"Maximum steps: {max_steps}")
+    print(f"Average base score: {avg_base:.2f}")
+    print(f"Average bonus: {avg_bonus:.2f}")
+    print(f"Average total score: {avg_total:.2f}")
+    print(f"Total score (all wins): {total_total}")
+    
+    return avg_steps, min_steps, max_steps, avg_base, avg_bonus, avg_total, total_total
+
 def main():
     # Import required functions here to avoid circular import
-    from single_player_mahjong import is_win, calc_score
+    from single_player_mahjong import calc_score
     agent = QLearningAgent(alpha=0.2, gamma=0.9, epsilon=0.2)
     print("Training Q-learning agent...")
-    agent.learn(episodes=1000)
+    agent.train(hand, wall)
     print(f"Q-table size: {len(agent.q_table)}")
     n_games = 10
     total_wins = 0
@@ -157,4 +260,11 @@ def main():
         print(f"Average total score: {total_score/total_wins:.1f}")
 
 if __name__ == "__main__":
+    # Example usage
+    hand = [9, 10, 11, 12, 13, 14, 15, 16]  # 1-8 Manzu
+    wall = [i for i in range(9, 18)] * 2  # 1-9 Manzu, 2 copies each
+    for t in hand:
+        wall.remove(t)
+    
+    avg_steps, min_steps, max_steps, avg_base, avg_bonus, avg_total, total_total = train_and_evaluate(hand, wall)
     main() 

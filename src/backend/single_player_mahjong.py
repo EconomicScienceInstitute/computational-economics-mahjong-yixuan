@@ -2,7 +2,6 @@ import random
 from collections import Counter, defaultdict # Import Counter for tile counting and defaultdict for MCTS statistics
 import math
 from concurrent.futures import ThreadPoolExecutor
-from q_learning import QLearningAgent
 
 # Define the tile set
 # Character tiles (1-9 man, but numbered 9-17 in images)
@@ -125,6 +124,8 @@ def get_qingyise_tingpai():
 
 
 def q_greedy_discard(hand, q_agent):
+    # Import QLearningAgent here to avoid circular import
+    from q_learning import QLearningAgent
     # Use Q-table to select the best discard
     state = q_agent.state_to_tuple(hand)
     possible_discards = list(set(hand))
