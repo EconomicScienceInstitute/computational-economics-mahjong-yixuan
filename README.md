@@ -1,5 +1,110 @@
 # Single Player Mahjong
 
+## 1. Game Introduction
+
+A Python-based Single Player Mahjong game where every deal is theoretically winnable with optimal play. The goal is to form a winning hand with minimal steps. 
+
+### Tile Set
+
+**Characters (Manzu, 万子):**
+1 (C1)   2 (C2)   3 (C3)   4 (C4)   5 (C5)   6 (C6)   7 (C7)   8 (C8)   9 (C9)
+
+<img src="img/tiles/small/9.jpg" width="40"/> <img src="img/tiles/small/10.jpg" width="40"/> <img src="img/tiles/small/11.jpg" width="40"/> <img src="img/tiles/small/12.jpg" width="40"/> <img src="img/tiles/small/13.jpg" width="40"/> <img src="img/tiles/small/14.jpg" width="40"/> <img src="img/tiles/small/15.jpg" width="40"/> <img src="img/tiles/small/16.jpg" width="40"/> <img src="img/tiles/small/17.jpg" width="40"/>
+
+**Winds (风牌):**
+East (东)   South (南)   West (西)   North (北)
+
+<img src="img/tiles/small/27.jpg" width="40"/> <img src="img/tiles/small/28.jpg" width="40"/> <img src="img/tiles/small/29.jpg" width="40"/> <img src="img/tiles/small/30.jpg" width="40"/>
+
+**Dragons (三元牌):**
+Green (绿/发)   Red (红/中)   White (白)
+
+<img src="img/tiles/small/31.jpg" width="40"/> <img src="img/tiles/small/32.jpg" width="40"/> <img src="img/tiles/small/33.jpg" width="40"/>
+
+### Winning Condition
+
+- Must have exactly 8 tiles
+- Required combinations:
+  * Two sequences (each: three consecutive Character tiles, e.g., 1-2-3)
+  * One pair (two identical tiles)
+- Only Character tiles (1-9) can form sequences
+
+**Example Winning Hand:**
+- Sequence 1: (1-2-3)  
+  <img src="img/tiles/small/9.jpg" width="30"/> <img src="img/tiles/small/10.jpg" width="30"/> <img src="img/tiles/small/11.jpg" width="30"/>
+- Sequence 2: (4-5-6)  
+  <img src="img/tiles/small/12.jpg" width="30"/> <img src="img/tiles/small/13.jpg" width="30"/> <img src="img/tiles/small/14.jpg" width="30"/>
+- Pair: (East-East)  
+  <img src="img/tiles/small/27.jpg" width="30"/> <img src="img/tiles/small/27.jpg" width="30"/>
+
+## 2. MDP Structure in This Project
+
+- **State:** The player's current hand and the remaining tiles in the wall
+- **Action:** Discarding one tile from the hand
+- **Transition:** After discarding, draw a new tile from the wall, forming a new state
+- **Reward:** Only the final hand is scored: 100 minus the number of steps taken, plus a 20-point bonus for all-Character hands. No intermediate rewards.
+
+## 3. Q-learning vs MCTS Results & Project Evolution
+
+### Project Evolution
+- **Initial Stage:** Used Dynamic Programming (DP) for theoretical optimal solutions, but was limited by computational complexity
+- **Current Focus:** MCTS and Q-learning comparison for practical, scalable solutions
+- **Conclusion:** Shifted from "theoretical optimality" to "practical feasibility" and reinforcement learning methods
+
+### Q-learning vs MCTS Results (Summary)
+- In simple hands (e.g., all Characters), both MCTS and Q-learning achieve near-optimal results
+- In complex hands (with Winds/Dragons), MCTS often outperforms Q-learning unless Q-learning is extensively trained
+- Q-learning converges rapidly for simple walls, but needs much more training for complex walls
+- See Appendix for detailed tables and analysis
+
+## 4. Setup and Run
+
+1. **Install dependencies:**
+```bash
+pip3 install -r requirements.txt
+```
+
+2. **Start the web server:**
+```bash
+python3 app.py
+```
+
+3. **Run experiments:**
+- MCTS vs Q-learning comparison:
+  ```bash
+  python3 src/backend/mcts_q_compare.py
+  ```
+- Single hand Q-learning training and evaluation:
+  ```bash
+  python3 src/backend/q_learning_single_hand_eval.py
+  ```
+
+4. **Run tests:**
+- Unit test:
+  ```bash
+  python3 test/test_is_win.py
+  ```
+- Integration test:
+  ```bash
+  python3 test/test_integration_game.py
+  ```
+- MCTS test:
+  ```bash
+  python3 test/test_mcts.py
+  ```
+
+## 5. Requirements
+- Python 3.6+
+- Flask
+- Flask-Session
+- Pillow
+
+---
+
+# Appendix
+
+## Detailed Game Rules, Tile Set, and Scoring
+
 ## About Mahjong
 
 1. Mahjong originated in the Qing Dynasty (around 1840) in China.
@@ -19,46 +124,6 @@ A Python-based Single Player Mahjong:
 - A Flask-based web interface for interactive play and visualization (UI and tile images adapted from [Pomax/mahjong](https://github.com/Pomax/mahjong))
 - Automatic game simulation, result saving, and performance analysis
 - This is a **must-win game**: every deal is theoretically winnable with optimal play
-
-## Project Evolution
-
-The project has evolved through three main stages:
-
-1. **Initial Stage (DP-focused)**
-   - Used Dynamic Programming (DP) to compute theoretical optimal solutions
-   - Implemented exhaustive search for minimal winning steps
-   - Included DP analysis for special cases (e.g., Qingyise hands)
-
-2. **Transition Stage**
-   - Introduced Monte Carlo Tree Search (MCTS) for practical solutions
-   - Added Q-learning for automated strategy optimization
-   - Maintained DP as a theoretical baseline
-
-3. **Current Stage (MCTS & Q-learning focused)**
-   - Removed DP implementation due to computational limitations
-   - Focused on MCTS and Q-learning comparison
-   - Emphasized practical solutions over theoretical optimality
-
-### Why We Moved Away from DP
-
-While DP provides theoretical optimal solutions, we found it impractical for our use case due to:
-
-1. **Computational Complexity**
-   - State space explosion in complex scenarios
-   - Excessive runtime for practical applications
-   - Memory constraints for large problems
-
-2. **Project Goals Shift**
-   - From "theoretical optimal solutions" to "practical feasible solutions"
-   - Greater focus on reinforcement learning method comparisons
-   - Emphasis on real-world application effectiveness
-
-3. **Better Alternatives**
-   - MCTS provides good solutions with reasonable computation time
-   - Q-learning offers adaptive strategies through experience
-   - Combined approach (MCTS + Q-learning) shows promising results
-
-This evolution reflects our commitment to developing practical, efficient solutions while maintaining theoretical understanding of the problem space.
 
 ## Game Rules
 1. **Basic Rules**
@@ -205,60 +270,10 @@ Where:
 ### Training and Analysis Scripts
 - `mcts_q_compare.py`: Batch simulation and comparison between MCTS and Q-learning
 - `q_learning_single_hand_eval.py`: Single hand Q-learning training and evaluation
+- `analyze_mcts_results.py`: (Optional, lower priority) Post-processing and visualization of MCTS and Q-learning comparison results. Reads experiment CSVs and generates summary statistics or plots.
+- `analyze_mcts_simulation.py`: (Optional, lower priority) Post-processing and visualization of pure MCTS simulation results.
 
-## Setup and Run
-1. Dependencies:
-```bash
-# Install required packages
-pip3 install -r requirements.txt
-```
-Required packages:
-- Flask: Web server framework
-- Flask-Session: Session management
-- Pillow: Image processing
-- Python 3.6+
-
-2. Start Server:
-```bash
-python3 app.py
-```
-
-3. Access Game:
-- Open browser: `http://127.0.0.1:8080`
-- Available routes:
-  * `/`: Main game interface
-  * `/api/new_game`: Start a new game
-  * `/api/discard/<tile>`: Process tile discard
-
-## Testing
-
-### Unit Test (A)
-Test the hand-winning logic (`is_win`) with a variety of hands:
-```bash
-python3 test/test_is_win.py
-```
-All test cases should show `PASS`.
-
-### Integration Test (B)
-Simulate a full single-player mahjong game with random tiles, AI decision, and scoring:
-```bash
-python3 test/test_integration_game.py
-```
-You will see the full game process and final result.
-
-### MCTS Test
-Test MCTS and related logic:
-```bash
-python3 test/test_mcts.py
-```
-Tests include must-win hands, no-win hands, ready hands, shanten calculation, and MCTS with different simulation counts.
-
-### Notes
-- All tests are self-contained and require only Python 3 and the dependencies in `requirements.txt`.
-- Each time you change core logic, please rerun all tests to ensure correctness.
-
-
-## Decision Optimization Methods and Training Results
+## Full Experimental Results and Tables
 
 ### Core Methods
 - **MCTS:** Monte Carlo Tree Search simulates thousands of games per move to select the discard with the best expected outcome.
@@ -361,4 +376,6 @@ This setup allows us to measure the Q-learning agent's ability to learn optimal 
 
 **Interpretation:**  
 The agent converges rapidly for simple walls, and with enough training, can handle complex walls (with Winds/Dragons) nearly as efficiently. Most improvement happens in the first 10,000–50,000 episodes. Further training brings only marginal gains, indicating convergence.
+
+## Notes, References, and Acknowledgements
 
