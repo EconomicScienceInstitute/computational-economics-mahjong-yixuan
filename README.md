@@ -272,10 +272,34 @@ Where:
 **Results: When is Q-learning better or worse?**
 - Sometimes Q-learning helps: If the Q-table is well-trained (enough episodes, good reward design), it can guide MCTS to make smarter rollouts, especially in complex or less-explored situations.
 - Sometimes Q-learning is worse: If the Q-table is under-trained (not enough episodes), or the reward is not well-designed, it may mislead MCTS, resulting in worse performance than pure MCTS. In small or simple scenarios, MCTS alone may already be near-optimal, so Q-learning brings little or no improvement.
+- In our experiments, with 1,000,000 training episodes, the Q-table is well-trained, but the improvement over pure MCTS is marginal. For all tested hand types, both methods achieve similar results, with MCTS sometimes slightly outperforming MCTS+Q.
 
-**MCTS & Q-learning Experiment Results**
+**Conclusion:**
+Overall, both methods are strong baselines for single-player Mahjong, and the choice between them may depend on computational resources and the complexity of the hand.
 
-![MCTS & Q-learning Results](static/images/mcts_qlearning_results.png)
+**MCTS & Q-learning Latest Experiment Results (1,000,000 simulations)**
+
+All results below are based on 1,000,000 simulation runs for each hand type and method. "MCTS+Q" refers to MCTS using a Q-learning-trained policy for rollouts. All values are averages over these simulations.
+
+| Hand Type      | Method    | Steps | Scores  |
+|--------------- |-----------|-------|---------|
+| Straight       | MCT       | 5.09  | 114.91  |
+| Straight       | MCTS+Q    | 5.36  | 114.64  |
+| MAN & WIND     | MCT       | 7.72  | 92.28   |
+| MAN & WIND     | MCTS+Q    | 8.18  | 91.82   |
+| MAN & DRAGON   | MCT       | 7.22  | 92.78   |
+| MAN & DRAGON   | MCTS+Q    | 8.05  | 91.96   |
+
+**MCT + Q Learning Evolution**
+
+| Hand Type      | Phase   | Steps | Scores  |
+|--------------- |---------|-------|---------|
+| Straight       | Before  | 4.99  | 115.01  |
+| Straight       | After   | 5.36  | 114.64  |
+| MAN & WIND     | Before  | 7.7   | 92.3    |
+| MAN & WIND     | After   | 8.18  | 91.82   |
+| MAN & DRAGON   | Before  | 8.35  | 91.65   |
+| MAN & DRAGON   | After   | 8.05  | 91.96   |
 
 
 **Why might Q-learning not outperform MCTS in our experiments?**
