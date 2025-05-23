@@ -4,40 +4,58 @@ from single_player_mahjong import mcts_decision, get_qingyise_tingpai, get_man_w
 from q_learning import QLearningAgent
 import pandas as pd
 import sys
+import random
 
 def main():
-    # Experiment parameters
-    N_GAMES = 100  # Number of test games for each method (per hand type, changed from 100 to 20)
-    N_SIM = 200   # Number of MCTS simulations per decision (keep small for speed)
+    N_GAMES = 1000  # Number of test games for each method (per hand type)
+    N_SIM = 200     # Number of MCTS simulations per decision
 
-    # Parse hand type from command line
     hand_types = {
         "QINGYISE": get_qingyise_tingpai,
         "MAN_WIND": get_man_wind_tingpai,
         "MAN_DRAGON": get_man_dragon_tingpai
     }
-    batch_types = ["MAN_WIND", "MAN_DRAGON"]
-    if len(sys.argv) > 1:
-        hand_label = sys.argv[1].upper()
-        if hand_label == "BOTH":
-            for label in batch_types:
-                run_experiment(label, hand_types[label], N_GAMES, N_SIM)
-            return
-        elif hand_label not in hand_types:
-            print(f"Unknown hand type: {hand_label}. Choose from: {list(hand_types.keys())} or BOTH")
-            return
-    else:
-        hand_label = "QINGYISE"
-    hand_func = hand_types[hand_label]
-    run_experiment(hand_label, hand_func, N_GAMES, N_SIM)
+    for hand_label, hand_func in hand_types.items():
+        run_experiment(hand_label, hand_func, N_GAMES, N_SIM)
 
-def run_experiment(hand_label, hand_func, N_GAMES, N_SIM):
+def run_experiment(hand_label, hand_func, n_games, n_sim):
     print(f"\n===== Testing Hand Type: {hand_label} =====")
 
-    # Prepare Q-learning agent (assume already trained or train here)
+    # Initialize Q-learning agent and train independently
     q_agent = QLearningAgent(alpha=0.2, gamma=0.9, epsilon=0.2)
     print("Training Q-learning agent for experiment...")
-    q_agent.learn(episodes=1000)
+    N_TRAIN = 1000
+    for episode in range(N_TRAIN):
+        hand, wall = hand_func()
+        steps = 0
+        done = False
+        while not done:
+            if len(hand) == 8 and is_win(hand):
+                break
+            if not wall:
+                break
+            state = tuple(sorted(hand))
+            possible_discards = list(set(hand))
+            # Epsilon-greedy policy
+            if (q_agent.epsilon > 0) and (random.random() < q_agent.epsilon):
+                discard = random.choice(possible_discards)
+            else:
+                q_values = [q_agent.q_table.get((state, a), 0) for a in possible_discards]
+                max_q = max(q_values)
+                best_actions = [a for a, q in zip(possible_discards, q_values) if q == max_q]
+                discard = random.choice(best_actions)
+            hand.remove(discard)
+            draw = wall.pop(0)
+            hand.append(draw)
+            next_state = tuple(sorted(hand))
+            reward = 1 if (len(hand) == 8 and is_win(hand)) else 0
+            done = (len(hand) == 8 and is_win(hand)) or (not wall)
+            # Q-learning update
+            old_q = q_agent.q_table.get((state, discard), 0)
+            next_qs = [q_agent.q_table.get((next_state, a), 0) for a in set(hand)]
+            max_next_q = max(next_qs) if next_qs else 0
+            q_agent.q_table[(state, discard)] = old_q + q_agent.alpha * (reward + q_agent.gamma * max_next_q - old_q)
+            steps += 1
     print(f"Q-table size: {len(q_agent.q_table)}")
 
     # Prepare CSV for saving results
@@ -45,10 +63,10 @@ def run_experiment(hand_label, hand_func, N_GAMES, N_SIM):
     results_path = os.path.abspath(results_path)
     os.makedirs(os.path.dirname(results_path), exist_ok=True)
 
-    # Run original MCTS (no Q-learning)
+    # Run original MCTS (no Q-learning guidance)
     print(f"\nRunning original MCTS for {hand_label}...")
     results = []
-    for game in range(N_GAMES):
+    for game in range(n_games):
         hand, wall = hand_func()
         steps = 0
         while True:
@@ -65,7 +83,7 @@ def run_experiment(hand_label, hand_func, N_GAMES, N_SIM):
                     f'MCTS_{hand_label}', game+1, ' '.join(map(str, sorted(hand))), steps, 0, 0, 0, '', 0
                 ])
                 break
-            discard, avg_steps, stats = mcts_decision(hand, wall, n_sim=N_SIM, q_agent=None)
+            discard, avg_steps, stats = mcts_decision(hand, wall, n_sim=n_sim, q_agent=None)
             if discard is None or discard not in hand:
                 results.append([
                     f'MCTS_{hand_label}', game+1, ' '.join(map(str, sorted(hand))), steps, 0, 0, 0, '', 0
@@ -78,7 +96,7 @@ def run_experiment(hand_label, hand_func, N_GAMES, N_SIM):
 
     # Run MCTS with Q-learning-guided rollout
     print(f"\nRunning MCTS+Q for {hand_label}...")
-    for game in range(N_GAMES):
+    for game in range(n_games):
         hand, wall = hand_func()
         steps = 0
         while True:
@@ -95,7 +113,7 @@ def run_experiment(hand_label, hand_func, N_GAMES, N_SIM):
                     f'MCTS+Q_{hand_label}', game+1, ' '.join(map(str, sorted(hand))), steps, 0, 0, 0, '', 0
                 ])
                 break
-            discard, avg_steps, stats = mcts_decision(hand, wall, n_sim=N_SIM, q_agent=q_agent)
+            discard, avg_steps, stats = mcts_decision(hand, wall, n_sim=n_sim, q_agent=q_agent)
             if discard is None or discard not in hand:
                 results.append([
                     f'MCTS+Q_{hand_label}', game+1, ' '.join(map(str, sorted(hand))), steps, 0, 0, 0, '', 0

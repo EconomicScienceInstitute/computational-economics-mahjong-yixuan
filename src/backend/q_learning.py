@@ -23,6 +23,10 @@ class QLearningAgent:
         self.epsilon = epsilon
         self.use_feature_state = use_feature_state
 
+    def state_to_tuple(self, hand):
+        """Convert a hand (list of tiles) to a sorted tuple for Q-table lookup."""
+        return tuple(sorted(hand))
+
     def hand_to_features(self, hand):
         from collections import Counter
         c = Counter(hand)

@@ -20,6 +20,46 @@ A Python-based Single Player Mahjong:
 - Automatic game simulation, result saving, and performance analysis
 - This is a **must-win game**: every deal is theoretically winnable with optimal play
 
+## Project Evolution
+
+The project has evolved through three main stages:
+
+1. **Initial Stage (DP-focused)**
+   - Used Dynamic Programming (DP) to compute theoretical optimal solutions
+   - Implemented exhaustive search for minimal winning steps
+   - Included DP analysis for special cases (e.g., Qingyise hands)
+
+2. **Transition Stage**
+   - Introduced Monte Carlo Tree Search (MCTS) for practical solutions
+   - Added Q-learning for automated strategy optimization
+   - Maintained DP as a theoretical baseline
+
+3. **Current Stage (MCTS & Q-learning focused)**
+   - Removed DP implementation due to computational limitations
+   - Focused on MCTS and Q-learning comparison
+   - Emphasized practical solutions over theoretical optimality
+
+### Why We Moved Away from DP
+
+While DP provides theoretical optimal solutions, we found it impractical for our use case due to:
+
+1. **Computational Complexity**
+   - State space explosion in complex scenarios
+   - Excessive runtime for practical applications
+   - Memory constraints for large problems
+
+2. **Project Goals Shift**
+   - From "theoretical optimal solutions" to "practical feasible solutions"
+   - Greater focus on reinforcement learning method comparisons
+   - Emphasis on real-world application effectiveness
+
+3. **Better Alternatives**
+   - MCTS provides good solutions with reasonable computation time
+   - Q-learning offers adaptive strategies through experience
+   - Combined approach (MCTS + Q-learning) shows promising results
+
+This evolution reflects our commitment to developing practical, efficient solutions while maintaining theoretical understanding of the problem space.
+
 ## Game Rules
 1. **Basic Rules**
    - Use 32 tiles (16 unique tiles, each appears twice)
@@ -138,10 +178,12 @@ Where:
 
 
 ## Project Structure
+- `app.py`: Web server and API (main entry point)
 - `single_player_mahjong.py`: Core game logic and AI
-- `app.py`: Web server and API
+- `mcts_q_compare.py`: MCTS vs Q-learning comparison experiments
+- `q_learning_single_hand_eval.py`: Single hand Q-learning training and evaluation
+- `q_learning.py`: Q-learning agent implementation (used by other scripts)
 - `index.html`: Web interface
-- `auto_train_mcts.py`: Training script
 
 ## Implementation Details
 
@@ -161,7 +203,8 @@ Where:
   - Shows expected steps needed and win probability
 
 ### Training and Analysis Scripts
-- `auto_train_mcts.py`: Batch simulation, Q-learning training, DP comparison, CSV export
+- `mcts_q_compare.py`: Batch simulation and comparison between MCTS and Q-learning
+- `q_learning_single_hand_eval.py`: Single hand Q-learning training and evaluation
 
 ## Setup and Run
 1. Dependencies:
@@ -203,12 +246,12 @@ python3 test/test_integration_game.py
 ```
 You will see the full game process and final result.
 
-### Other Test Scripts
-- `test_dp_cases.py`: Tests DP logic on a set of hands that cannot win immediately, checking the minimal steps to win.
-- `test_mcts.py`: Unit tests for MCTS and related logic, including must-win hands, no-win hands, ready hands, shanten calculation, and MCTS with different simulation counts.
-- `test_manzu_dp.py`: Tests DP on a specific all-Manzu hand with one tile left in the wall (edge case).
-- `test_qingyise_dp.py`: Runs DP analysis for the Qingyise hand multiple times and saves results to CSV.
-
+### MCTS Test
+Test MCTS and related logic:
+```bash
+python3 test/test_mcts.py
+```
+Tests include must-win hands, no-win hands, ready hands, shanten calculation, and MCTS with different simulation counts.
 
 ### Notes
 - All tests are self-contained and require only Python 3 and the dependencies in `requirements.txt`.
@@ -291,16 +334,17 @@ This setup allows us to measure the Q-learning agent's ability to learn optimal 
 
 ### Q-learning Single Hand Training Results (Summary Table)
 
-| Wall Tiles         | Training Episodes | Evaluation Runs | Avg Steps to Win | Best Steps | Avg Total Score | Best Total Score | Q-table Entries | Q-value Mean |
-|--------------------|------------------|-----------------|------------------|------------|-----------------|------------------|-----------------|--------------|
-| Manzu (10 tiles)   | 10,000           | 1,000           | 3.39             | 1          | 116.61          | 119              | 45,071          | -0.1413      |
-| Manzu (10 tiles)   | 100,000          | 5,000           | 3.93             | 1          | 116.07          | 119              | 62,109          | -0.4168      |
-| Manzu+Winds/Drag.  | 1,000            | 5,000           | 3.59             | 1          | 113.87          | 119              | 129,279         | -0.3454      |
-| Manzu+Winds/Drag.  | 10,000           | 5,000           | 3.24             | 1          | 113.87          | 119              | 77,466          | -0.5551      |
-| Manzu+Winds/Drag.  | 100,000          | 5,000           | 3.28             | 1          | 111.91          | 119              | 326,836         | -0.1549      |
-| All (24 tiles)     | 1,000            | 5,000           | 7.99             | 1          | 100.23          | 119              | 2,863,336       | -0.0922      |
-| All (24 tiles)     | 10,000           | 5,000           | 1.77             | 1          | 115.96          | 119              | 4,319,214       | -0.2463      |
-| All (24 tiles)     | 100,000          | 5,000           | 1.86             | 1          | 115.84          | 119              | 4,319,214       | -0.2463      |
+| Wall Tiles         | Training Episodes | Evaluation Runs | Avg Steps to Win | Best Steps | Avg Total Score | Best Total Score | Q-table Entries | Q-value Min | Q-value Max | Q-value Mean |
+|--------------------|------------------|-----------------|------------------|------------|-----------------|------------------|-----------------|-------------|-------------|--------------|
+| Manzu (10 tiles)   | 10,000           | 1,000           | 3.39             | 1          | 116.61          | 119              | 45,071          | -9.9991     | 8.0689      | -0.1413      |
+| Manzu (10 tiles)   | 100,000          | 5,000           | 3.93             | 1          | 116.07          | 119              | 62,109          | -10         | 10          | -0.4168      |
+| Manzu+Winds/Drag.  | 1,000            | 5,000           | 3.59             | 1          | 113.87          | 119              | 129,279         | -10         | 10          | -0.3454      |
+| Manzu+Winds/Drag.  | 10,000           | 5,000           | 3.24             | 1          | 113.87          | 119              | 77,466          | -10         | 10          | -0.5551      |
+| Manzu+Winds/Drag.  | 100,000          | 5,000           | 3.28             | 1          | 111.91          | 119              | 326,836         | -10         | 10          | -0.1549      |
+| All (24 tiles)     | 1,000            | 5,000           | 7.99             | 1          | 100.23          | 119              | 2,863,336       | -10         | 10          | -0.0922      |
+| All (24 tiles)     | 10,000           | 5,000           | 1.77             | 1          | 115.96          | 119              | 4,319,214       | -10         | 10          | -0.2463      |
+| All (24 tiles)     | 100,000          | 5,000           | 1.86             | 1          | 115.84          | 119              | 4,319,214       | -10         | 10          | -0.2463      |
+| All (24 tiles)     | 1,000,000        | 5,000           | 1.73             | 1          | 115.63          | 119              | 4,319,214       | -1.1355     | -1          | -1.0321      |
 
 **Note:** The "Wall Tiles" column shows the types of tiles included in the wall for each experiment. For example, "Manzu" means only Character tiles; "All" means Characters, Winds, and Dragons are all included.
 
@@ -317,6 +361,4 @@ This setup allows us to measure the Q-learning agent's ability to learn optimal 
 
 **Interpretation:**  
 The agent converges rapidly for simple walls, and with enough training, can handle complex walls (with Winds/Dragons) nearly as efficiently. Most improvement happens in the first 10,000–50,000 episodes. Further training brings only marginal gains, indicating convergence.
-
-
 
