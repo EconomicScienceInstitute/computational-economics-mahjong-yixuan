@@ -377,5 +377,4 @@ This setup allows us to measure the Q-learning agent's ability to learn optimal 
 **Interpretation:**  
 The agent converges rapidly for simple walls, and with enough training, can handle complex walls (with Winds/Dragons) nearly as efficiently. Most improvement happens in the first 10,000–50,000 episodes. Further training brings only marginal gains, indicating convergence.
 
-## Notes, References, and Acknowledgements
 
